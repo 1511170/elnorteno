@@ -37,9 +37,9 @@ Opciones:
   --category=<official|community>  Categoría para skills
 
 Ejemplos:
-  kinto init serviworldlogistics
-  kinto dev --site=serviworldlogistics
-  kinto skill:add testimonials --site=serviworldlogistics
+  ./kinto create-site mi-cliente
+  kinto dev --site=mi-cliente
+  kinto skill:add testimonials --site=mi-cliente
   kinto skill:create fleet-tracker
 `);
 }
@@ -114,8 +114,8 @@ function initSite(siteName) {
     mkdirSync(join(sitePath, 'config'), { recursive: true });
     mkdirSync(join(sitePath, 'scripts'), { recursive: true });
     
-    // Copiar desde serviworldlogistics como fallback
-    const examplePath = join(KINTO_ROOT, 'sites', 'serviworldlogistics');
+    // Template enterprise ya se copió arriba, esto es fallback legacy
+    const examplePath = join(KINTO_ROOT, 'templates', 'enterprise');
     if (existsSync(examplePath)) {
       // Copiar archivos clave
       const filesToCopy = [

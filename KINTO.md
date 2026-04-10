@@ -7,20 +7,23 @@
 ## ⚡ Comandos Esenciales (Empezar Aquí)
 
 ```bash
-# 1. Entrar al sitio del cliente
-cd sites/serviworldlogistics
+# 1. Crear nuevo sitio para el cliente
+./kinto create-site nombre-cliente
 
-# 2. Ver skills disponibles
+# 2. Entrar al sitio
+cd sites/nombre-cliente
+
+# 3. Ver skills disponibles
 node scripts/skill-list.js
 
-# 3. Instalar skills necesarias
+# 4. Instalar skills necesarias
 node scripts/skill-add.js cms-sveltia
 node scripts/skill-add.js testimonials
 
-# 4. Crear nueva skill (si no existe la que necesitas)
+# 5. Crear nueva skill (si no existe la que necesitas)
 node scripts/skill-create.js mi-nueva-skill
 
-# 5. Instalar dependencias y correr
+# 6. Instalar dependencias y correr
 npm install
 npm run dev
 ```
@@ -38,8 +41,8 @@ Cada sitio arranca limpio (solo Astro + Tailwind). No instales nada que no se pi
 - Si necesitas funcionalidad nueva, crea una skill, no código ad-hoc
 
 ### 3. **CMS Oculto**
-- Sitio público: `serviworldlogistics.com`
-- CMS privado: `swl.kinto.info/admin` (sin enlaces públicos)
+- Sitio público: `tudominio.com`
+- CMS privado: `admin.tudominio.com` (sin enlaces públicos)
 - El cliente edita contenido sin tocar código
 
 ---
@@ -54,9 +57,9 @@ kinto-cms/
 │   └── community/         # Skills creadas por IA
 │       └── testimonials/
 ├── sites/
-│   └── serviworldlogistics/    # ← Trabajas aquí
-│       ├── src/pages/          # Páginas Astro
-│       ├── config/             # site.config.ts
+│   └── [nombre-cliente]/  # ← Trabajas aquí
+│       ├── src/pages/     # Páginas Astro
+│       ├── config/        # site.config.ts
 │       └── skills-active.json  # Skills instaladas
 └── core/                  # No tocar - motor base
 ```
@@ -65,10 +68,16 @@ kinto-cms/
 
 ## 🎯 Workflow de Generación
 
-### Paso 1: Analizar el Brief
+### Paso 1: Crear el Sitio
+```bash
+./kinto create-site nombre-cliente
+cd sites/nombre-cliente
+```
+
+### Paso 2: Analizar el Brief
 Ejemplo: *"Necesito página de inicio con hero, servicios, testimonios y un formulario de contacto"*
 
-### Paso 2: Revisar Skills Existentes
+### Paso 3: Revisar Skills Existentes
 ```bash
 node scripts/skill-list.js
 ```
@@ -77,16 +86,16 @@ node scripts/skill-list.js
 - ✅ `cms-sveltia` - Panel de admin para el cliente
 - ✅ `testimonials` - Testimonios con schema.org
 
-### Paso 3: Instalar Skills Necesarias
+### Paso 4: Instalar Skills Necesarias
 ```bash
 node scripts/skill-add.js cms-sveltia
 node scripts/skill-add.js testimonials
 ```
 
-### Paso 4: Generar Contenido
+### Paso 5: Generar Contenido
 Editar `src/pages/index.astro` y crear las páginas necesarias usando las skills instaladas.
 
-### Paso 5: Si Falta una Skill, Crearla
+### Paso 6: Si Falta una Skill, Crearla
 ```bash
 # Ejemplo: Necesitamos un formulario de contacto
 node scripts/skill-create.js contact-form
@@ -137,8 +146,8 @@ skills/community/nombre-skill/
 
 | Recurso | Ubicación |
 |---------|-----------|
-| Config sitio | `sites/serviworldlogistics/config/site.config.ts` |
-| Skills activas | `sites/serviworldlogistics/skills-active.json` |
+| Config sitio | `sites/[nombre-cliente]/config/site.config.ts` |
+| Skills activas | `sites/[nombre-cliente]/skills-active.json` |
 | Skills disponibles | `kinto-cms/skills/` |
 | Guía completa IA | `kinto-cms/docs/AI_GENERATION.md` |
 | Arquitectura | `kinto-cms/STRUCTURE.md` |
@@ -176,5 +185,5 @@ const hasTestimonials = activeSkills.skills.includes('testimonials');
 
 **Empieza aquí:**
 ```bash
-cd sites/serviworldlogistics && node scripts/skill-list.js
+./kinto create-site mi-cliente && cd sites/mi-cliente && node scripts/skill-list.js
 ```

@@ -1,6 +1,4 @@
 ---
-import siteConfig from '../../../../sites/serviworldlogistics/config/site.config.ts';
-
 interface Props {
   title?: string;
   subtitle?: string;
@@ -10,32 +8,33 @@ interface Props {
   showCompany?: boolean;
   serviceSelect?: boolean;
   subject?: string;
+  web3formsKey?: string;
+  siteName?: string;
+  services?: Array<{ value: string; label: string }>;
 }
 
 const { 
   title = "Contáctanos", 
   subtitle = "",
-  recipientEmail = siteConfig.site?.contactEmail || "",
+  recipientEmail = "",
   submitLabel = "Enviar mensaje",
   showPhone = true,
   showCompany = true,
   serviceSelect = false,
-  subject = `Nuevo mensaje de ${siteConfig.site?.name || 'sitio web'}`
+  subject = "Nuevo mensaje desde el sitio web",
+  web3formsKey = "",
+  siteName = "",
+  services = [
+    { value: "", label: "Selecciona una opción" },
+    { value: "general", label: "Consulta general" },
+    { value: "soporte", label: "Soporte" },
+    { value: "ventas", label: "Ventas" },
+    { value: "otro", label: "Otro" },
+  ]
 } = Astro.props;
 
-// Web3Forms config
-const web3formsKey = (siteConfig as any).forms?.web3formsKey || '';
 const isConfigured = web3formsKey && web3formsKey.length > 10;
-
-const services = [
-  { value: "", label: "Selecciona un servicio" },
-  { value: "aereo", label: "Transporte Aéreo" },
-  { value: "maritimo", label: "Transporte Marítimo" },
-  { value: "terrestre", label: "Transporte Terrestre" },
-  { value: "aduanero", label: "Agenciamiento Aduanero" },
-  { value: "almacenamiento", label: "Almacenamiento" },
-  { value: "multiple", label: "Múltiples servicios" },
-];
+const emailSubject = subject || `Nuevo mensaje de ${siteName || 'sitio web'}`;
 ---
 
 <div class="bg-white rounded-xl p-8 shadow-xl shadow-slate-200/50 border border-slate-100">
@@ -46,8 +45,8 @@ const services = [
     <div class="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-lg">
       <p class="text-amber-800 text-sm">
         <strong>Modo Demo:</strong> El formulario está en modo demostración. 
-        Para recibir emails reales, configura <code>forms.web3formsKey</code> en 
-        <code>config/site.config.ts</code>. Obtén tu key gratis en 
+        Para recibir emails reales, configura <code>web3formsKey</code> como prop. 
+        Obtén tu key gratis en 
         <a href="https://web3forms.com/" target="_blank" class="underline">web3forms.com</a>
       </p>
     </div>
@@ -62,7 +61,7 @@ const services = [
     {isConfigured && (
       <>
         <input type="hidden" name="access_key" value={web3formsKey} />
-        <input type="hidden" name="subject" value={subject} />
+        <input type="hidden" name="subject" value={emailSubject} />
         {recipientEmail && <input type="hidden" name="from_name" value={recipientEmail} />}
         <input type="checkbox" name="botcheck" class="hidden" style="display: none;" />
       </>
@@ -157,7 +156,7 @@ const services = [
         rows="5" 
         required
         class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all outline-none resize-y" 
-        placeholder="Cuéntanos sobre tu necesidad logística..."
+        placeholder="Cuéntanos sobre tu consulta..."
       ></textarea>
     </div>
     

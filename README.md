@@ -35,7 +35,7 @@ kinto-cms/
 | Capa | Tecnología |
 |------|-----------|
 | Framework | Astro 5 (SSG) |
-| Styling | Tailwind CSS 4 |
+| Styling | Tailwind CSS 3 |
 | CMS | Sveltia CMS (Git-based) |
 | Hosting | Cloudflare Pages |
 | Testing | Puppeteer + Browser Automation |
@@ -74,15 +74,15 @@ kinto-cms/
 kinto skills:list
 
 # Instalar skill en un sitio
-kinto skill add seo-ai-citations --site=serviworldlogistics
+kinto skill add seo-ai-citations --site=nombre-cliente
 
 # Crear nueva skill (con ayuda de IA)
-kinto skill:create testimonials --site=serviworldlogistics
+kinto skill:create testimonials --site=nombre-cliente
 # → Crea en skills/community/testimonials/
 # → Disponible para todos los sitios futuros
 
 # Remover skill
-kinto skill remove testimonials --site=serviworldlogistics
+kinto skill remove testimonials --site=nombre-cliente
 ```
 
 ### Estructura de una Skill
@@ -102,8 +102,8 @@ skills/community/testimonials/
 ### 1. Inicializar Sitio (Core limpio)
 
 ```bash
-kinto init serviworldlogistics
-# Crea: sites/serviworldlogistics/ con solo Astro + Tailwind
+./kinto create-site nombre-cliente
+# Crea: sites/nombre-cliente/ con solo Astro + Tailwind
 ```
 
 ### 2. IA Analiza y Sugiere Skills
@@ -119,16 +119,18 @@ IA: "Este sitio necesita:
 ### 3. Instalar Skills Necesarias
 
 ```bash
-kinto skill add seo-ai-citations cms-sveltia forms-cloudflare --site=serviworldlogistics
+node scripts/skill-add.js seo-ai-citations
+node scripts/skill-add.js cms-sveltia
+node scripts/skill-add.js forms-cloudflare
 ```
 
 ### 4. Si no existe una skill → Crearla
 
 ```bash
 # IA crea nueva skill que luego se reutiliza
-kinto skill:create fleet-tracker --site=serviworldlogistics
+node scripts/skill-create.js fleet-tracker
 # → Guardado en skills/community/fleet-tracker/
-# → Disponible para logistics-future.com, etc.
+# → Disponible para todos los sitios futuros
 ```
 
 ## 🎨 Generación con Modelos de IA
@@ -139,8 +141,8 @@ kinto skill:create fleet-tracker --site=serviworldlogistics
 Estás usando KINTO CMS - sistema de sitios estáticos con skills.
 
 CONTEXTO ACTUAL:
-- Ubicación: /home/5toai/kinto-cms/
-- Site de trabajo: sites/serviworldlogistics/
+- Ubicación: /ruta/a/kinto-cms/
+- Site de trabajo: sites/[nombre-cliente]/
 - Core: Astro 5 + Tailwind 3 (sin skills activas)
 - Skills disponibles: [ver en skills/]
 
@@ -172,12 +174,12 @@ En `sites/[client]/config/site.config.ts`:
 ```typescript
 export default {
   site: {
-    domain: 'serviworldlogistics.com',
-    name: 'Serviworld Logistics'
+    domain: 'tudominio.com',
+    name: 'Nombre del Cliente'
   },
   cms: {
     enabled: true,
-    subdomain: 'swl.kinto.info',  // Oculto, no enlazado públicamente
+    subdomain: 'admin.tudominio.com',  // Oculto, no enlazado públicamente
     hidden: true,
     // Skills activas definen las colecciones disponibles
     collections: ['pages', 'blog']  // Auto-populado por skills
@@ -188,7 +190,7 @@ export default {
 ## 📁 Estructura de un Sitio
 
 ```
-sites/serviworldlogistics/
+sites/nombre-cliente/
 ├── src/
 │   ├── components/          # Componentes específicos (sin skills)
 │   ├── layouts/
@@ -206,8 +208,8 @@ sites/serviworldlogistics/
 ## 🛠️ Ejemplo: Flujo Completo
 
 ```bash
-# 1. Nuevo cliente de logística
-kinto init serviworldlogistics
+# 1. Crear sitio para nuevo cliente
+./kinto create-site nombre-cliente
 
 # 2. IA analiza y decide skills necesarias
 #    - seo-ai-citations (sí existe)

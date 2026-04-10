@@ -1,6 +1,6 @@
 /**
  * Skill: testimonials
- * Creada por IA para serviworldlogistics
+ * Sistema de testimonios con schema.org markup
  * Reutilizable para cualquier sitio
  */
 
@@ -14,7 +14,7 @@ export const config = {
   description: 'Testimonials system with schema.org markup for AI citations',
   category: 'content',
   author: 'Kimi Code',
-  createdFor: 'serviworldlogistics',
+  createdFor: 'kinto-cms',
   reusable: true
 };
 

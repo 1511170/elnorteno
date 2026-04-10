@@ -12,7 +12,7 @@ Sistema de testimonios con schema.org Review markup para SEO/AI citations.
 ## Instalación
 
 ```bash
-kinto skill add testimonials --site=serviworldlogistics
+node scripts/skill-add.js testimonials
 ```
 
 ## Uso en Astro
@@ -53,6 +53,6 @@ El cliente puede agregar testimonios via CMS:
 ## Creó esta skill
 
 - **Fecha**: 2024
-- **Proyecto**: serviworldlogistics (inicial)
+- **Proyecto**: kinto-cms (inicial)
 - **IA**: Kimi Code
 - **Reutilizable**: Sí, para cualquier sitio que necesite testimonios

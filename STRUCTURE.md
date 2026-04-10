@@ -39,8 +39,8 @@ kinto-cms/
 │           └── config/
 │               └── cms-fields.yml     # Config CMS
 │
-├── sites/                             # 🌐 SITIOS DE CLIENTES
-│   └── serviworldlogistics/           # Primer sitio
+├── sites/                             # 🌐 SITIOS DE CLIENTES (vacío en repo)
+│   └── [nombre-cliente]/              # Creado con ./kinto create-site
 │       ├── package.json
 │       ├── astro.config.mjs
 │       ├── tailwind.config.mjs
@@ -81,7 +81,7 @@ kinto-cms/
 ```json
 // skills-active.json
 {
-  "site": "serviworldlogistics",
+  "site": "nombre-cliente",
   "skills": []
 }
 ```
@@ -90,7 +90,7 @@ kinto-cms/
 ```json
 // skills-active.json
 {
-  "site": "serviworldlogistics", 
+  "site": "nombre-cliente", 
   "skills": [
     "cms-sveltia",
     "seo-ai-citations",
@@ -106,40 +106,40 @@ kinto-cms/
 // site.config.ts
 cms: {
   enabled: true,
-  subdomain: 'swl.kinto.info',  // No enlazado públicamente
-  hidden: true,                  // Solo accesible por URL directa
-  githubRepo: 'kinto-cms/...'
+  subdomain: 'admin.tudominio.com',  // No enlazado públicamente
+  hidden: true,                       // Solo accesible por URL directa
+  githubRepo: 'tu-org/tu-repo'
 }
 ```
 
-- **Público**: `serviworldlogistics.com`
-- **Admin**: `swl.kinto.info/admin` (oculto)
+- **Público**: `tudominio.com`
+- **Admin**: `admin.tudominio.com` (oculto)
 
 ## 🚀 Workflow
 
 ```bash
-# 1. Inicializar sitio
-kinto init serviworldlogistics
+# 1. Crear nuevo sitio
+./kinto create-site nombre-cliente
 
 # 2. IA revisa skills disponibles
-kinto skills:list
+node scripts/skill-list.js
 
 # 3. IA instala skills necesarias
-kinto skill add cms-sveltia
-kinto skill add testimonials
+node scripts/skill-add.js cms-sveltia
+node scripts/skill-add.js testimonials
 
 # 4. IA crea skills que faltan
-kinto skill:create fleet-tracker
+node scripts/skill-create.js fleet-tracker
 # → Crea en skills/community/fleet-tracker/
 # → Disponible para todos los sitios
 
 # 5. IA genera sitio usando skills
 
 # 6. Desarrollo
-kinto dev --site=serviworldlogistics
+npm run dev
 
 # 7. Build
-kinto build --site=serviworldlogistics
+npm run build
 ```
 
 ## 🧩 Ejemplo de Skill
@@ -163,10 +163,10 @@ export function install(context) {
 
 ```
 sites/
-├── serviworldlogistics/     # Logística
-├── dental-care/             # Dentista
-├── legal-firm/              # Abogados
-└── tech-startup/            # Startup
+├── cliente-logistica/       # Logística
+├── cliente-dental/          # Dentista
+├── cliente-abogados/        # Abogados
+└── cliente-startup/         # Startup
 
 Cada uno: core + skills específicas
 ```
@@ -176,10 +176,11 @@ Cada uno: core + skills específicas
 **Prompt clave:**
 ```
 Estás usando KINTO CMS.
-1. Revisa skills/ antes de escribir código
-2. Si existe skill similar → ÚSALA
-3. Si no existe → CREA skill reutilizable
-4. NUNCA copies código entre sitios
+1. Crea sitio con: ./kinto create-site [nombre]
+2. Revisa skills/ antes de escribir código
+3. Si existe skill similar → ÚSALA
+4. Si no existe → CREA skill reutilizable
+5. NUNCA copies código entre sitios
 ```
 
 ## ✅ Listo para usar

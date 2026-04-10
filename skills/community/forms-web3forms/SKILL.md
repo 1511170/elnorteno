@@ -18,28 +18,43 @@ node scripts/skill-add.js forms-web3forms
 ## Configuración
 
 1. Obtener API Key gratis en: https://web3forms.com/
-2. Configurar en `config/site.config.ts`:
-
-```typescript
-export default {
-  // ... otra config
-  forms: {
-    web3formsKey: 'TU-API-KEY-AQUI'  // Obtener en web3forms.com
-  }
-};
-```
+2. Usar el componente pasando la key como prop:
 
 ## Uso
 
 ```astro
 ---
 import { ContactForm } from '../../../skills/community/forms-web3forms';
+
+// Obtener de variables de entorno o config
+const WEB3FORMS_KEY = import.meta.env.WEB3FORMS_KEY || '';
 ---
 
 <ContactForm 
   title="Contáctanos"
   subtitle="Te responderemos en 24 horas"
-  recipientEmail="comercial@serviworldlogistics.com"
+  recipientEmail="hola@tudominio.com"
+  web3formsKey={WEB3FORMS_KEY}
+  siteName="Tu Empresa"
+/>
+```
+
+### Con selector de servicios personalizado
+
+```astro
+<ContactForm 
+  title="Solicita una cotización"
+  subtitle="Cuéntanos sobre tu proyecto"
+  recipientEmail="ventas@tudominio.com"
+  web3formsKey={WEB3FORMS_KEY}
+  siteName="Tu Empresa"
+  serviceSelect={true}
+  services={[
+    { value: "", label: "Selecciona un servicio" },
+    { value: "diseno", label: "Diseño Web" },
+    { value: "seo", label: "SEO" },
+    { value: "marketing", label: "Marketing Digital" },
+  ]}
 />
 ```
 
@@ -49,12 +64,16 @@ import { ContactForm } from '../../../skills/community/forms-web3forms';
 |------|------|---------|-------------|
 | `title` | string | "Contáctanos" | Título del formulario |
 | `subtitle` | string | "" | Subtítulo descriptivo |
-| `recipientEmail` | string | required | Email donde llegan los mensajes |
+| `recipientEmail` | string | "" | Email del destinatario |
 | `submitLabel` | string | "Enviar mensaje" | Texto del botón |
 | `showPhone` | boolean | true | Mostrar campo teléfono |
 | `showCompany` | boolean | true | Mostrar campo empresa |
-| `serviceSelect` | boolean | false | Selector de servicios |
+| `serviceSelect` | boolean | false | Mostrar selector de servicios |
+| `services` | array | [...] | Opciones para el selector |
+| `web3formsKey` | string | "" | API key de Web3Forms |
+| `siteName` | string | "" | Nombre del sitio (para el subject) |
+| `subject` | string | auto | Asunto del email |
 
 ## Sin Configuración (Modo Demo)
 
-Si no hay API key configurada, el formulario muestra un mensaje de éxito simulado para demo.
+Si no hay API key configurada (`web3formsKey`), el formulario muestra un mensaje de éxito simulado para demo.

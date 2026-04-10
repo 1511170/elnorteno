@@ -7,27 +7,27 @@
 ### Contexto Inmediato
 - **Sistema**: KINTO CMS - Generador de sitios estáticos con arquitectura de skills
 - **Stack**: Astro 5 + Tailwind 3 + Sveltia CMS
-- **Sitio activo**: `sites/serviworldlogistics/` (empresa de logística)
-- **Estado**: Core limpio, sin skills instaladas aún
+- **Estado**: Core limpio, sin sitios creados aún
 
 ### Tu Misión (Si eliges aceptarla)
-Generar el sitio web completo para Serviworld Logistics:
-1. Instalar skills necesarias
-2. Crear páginas: Home, Servicios, Nosotros, Blog, Contacto
-3. Configurar CMS para que el cliente edite contenido
+Crear un nuevo sitio web para el cliente:
+1. Crear el sitio con `./kinto create-site <nombre>`
+2. Instalar skills necesarias
+3. Generar páginas según requerimientos del cliente
+4. Configurar CMS para que el cliente edite contenido
 
 ---
 
 ## ⚡ Empezar (Flujo Paso a Paso)
 
-### Paso 1: Leer el Brief del Cliente
+### Paso 1: Crear Nuevo Sitio
 ```bash
-cat sites/serviworldlogistics/KINTO.md
+./kinto create-site nombre-cliente
 ```
 
-### Paso 2: Ver Skills Disponibles
+### Paso 2: Entrar al Sitio y Ver Skills Disponibles
 ```bash
-cd sites/serviworldlogistics
+cd sites/nombre-cliente
 node scripts/skill-list.js
 ```
 
@@ -35,6 +35,7 @@ node scripts/skill-list.js
 ```bash
 node scripts/skill-add.js cms-sveltia
 node scripts/skill-add.js testimonials
+# ... otras skills según necesidad
 ```
 
 ### Paso 4: Generar Contenido
@@ -50,8 +51,8 @@ node scripts/skill-add.js testimonials
 kinto-cms/
 ├── KINTO.md              # ← Guía completa del sistema (léela)
 ├── sites/
-│   └── serviworldlogistics/
-│       ├── KINTO.md      # ← Brief del cliente (léelo)
+│   └── [nombre-cliente]/ # ← Se crea con ./kinto create-site
+│       ├── KINTO.md      # ← Brief del cliente (léelo si existe)
 │       └── src/pages/    # ← Aquí trabajas
 └── skills/
     ├── official/         # Skills oficiales
@@ -63,9 +64,9 @@ kinto-cms/
 ## 🔗 Referencias
 
 - Guía sistema completa: `KINTO.md`
-- Brief del proyecto: `sites/serviworldlogistics/KINTO.md`
+- Brief del proyecto: `sites/[nombre-cliente]/KINTO.md` (si existe)
 - Arquitectura: `STRUCTURE.md`
 
 ---
 
-**TL;DR**: Entra a `sites/serviworldlogistics`, lee su `KINTO.md`, instala skills, genera el sitio.
+**TL;DR**: Crea sitio con `./kinto create-site <nombre>`, instala skills, genera el sitio.

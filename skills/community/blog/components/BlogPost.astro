@@ -7,6 +7,8 @@ interface Props {
   author: string;
   authorRole?: string;
   category?: string;
+  siteName?: string;
+  siteUrl?: string;
 }
 
 const { 
@@ -16,7 +18,9 @@ const {
   date, 
   author, 
   authorRole = "",
-  category = "General"
+  category = "General",
+  siteName = "",
+  siteUrl = ""
 } = Astro.props;
 
 const formattedDate = date.toLocaleDateString('es-ES', {
@@ -103,6 +107,7 @@ const formattedDate = date.toLocaleDateString('es-ES', {
   },
   "publisher": {
     "@type": "Organization",
-    "name": "Serviworld Logistics"
+    "name": siteName || "Blog",
+    "url": siteUrl || undefined
   }
 })} />
