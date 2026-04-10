@@ -13,7 +13,7 @@ Web scraping y crawling para extraer contenido, imágenes y assets de sitios web
 ## Instalación
 
 ```bash
-kinto skill add web-scraper --site=serviworldlogistics
+node scripts/skill-add.js web-scraper
 npm install puppeteer cheerio --legacy-peer-deps
 ```
 
@@ -21,17 +21,17 @@ npm install puppeteer cheerio --legacy-peer-deps
 
 ### Scrapear sitio completo
 ```bash
-node skills/community/web-scraper/scripts/scrape.js --url=https://serviworldlogistics.com --output=./scraped-content
+node skills/community/web-scraper/scripts/scrape.js --url=https://ejemplo.com --output=./scraped-content
 ```
 
 ### Scrapear solo una página
 ```bash
-node skills/community/web-scraper/scripts/scrape-page.js --url=https://serviworldlogistics.com/nosotros
+node skills/community/web-scraper/scripts/scrape-page.js --url=https://ejemplo.com/pagina
 ```
 
 ### Extraer solo imágenes
 ```bash
-node skills/community/web-scraper/scripts/download-images.js --url=https://serviworldlogistics.com --output=./images
+node skills/community/web-scraper/scripts/download-images.js --url=https://ejemplo.com --output=./images
 ```
 
 ## Output
@@ -55,8 +55,8 @@ scraped-content/
 ```json
 {
   "site": {
-    "url": "https://serviworldlogistics.com",
-    "title": "Serviworld Logistics",
+    "url": "https://ejemplo.com",
+    "title": "Nombre del Sitio",
     "description": "..."
   },
   "pages": [

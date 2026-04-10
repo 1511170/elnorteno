@@ -14,7 +14,7 @@ Automatización de navegador con Puppeteer + Chromium para testing visual y func
 ## Instalación
 
 ```bash
-kinto skill add browser-automation --site=serviworldlogistics
+node scripts/skill-add.js browser-automation
 ```
 
 Instala dependencias:

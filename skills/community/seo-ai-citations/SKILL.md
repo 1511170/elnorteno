@@ -234,5 +234,5 @@ Para maximizar LCP (Largest Contentful Paint) y minimizar CLS:
 - **Categoría**: community
 - **Creada**: 2026-02-12
 - **Versión**: 1.1.0
-- **Basada en**: Trabajo de serviworldlogistics
+- **Basada en**: KINTO CMS Community
 - **Reutilizable**: Sí

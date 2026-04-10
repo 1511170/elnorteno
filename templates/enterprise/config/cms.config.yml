@@ -3,9 +3,9 @@
 
 backend:
   name: github
-  repo: kinto-cms/serviworldlogistics-content
+  repo: {GITHUB_REPO}
   branch: main
-  base_url: https://swl-auth.kinto.workers.dev
+  base_url: {AUTH_URL}
   auth_endpoint: auth
 
 media_folder: "public/uploads"

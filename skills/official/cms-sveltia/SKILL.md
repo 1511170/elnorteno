@@ -12,7 +12,7 @@ Integra Sveltia CMS para edición visual de contenido vía Git.
 ## Instalación
 
 ```bash
-kinto skill add cms-sveltia --site=serviworldlogistics
+node scripts/skill-add.js cms-sveltia
 ```
 
 ## Configuración
@@ -24,7 +24,7 @@ cms: {
   enabled: true,
   subdomain: 'swl.kinto.info',  // Oculto
   hidden: true,
-  githubRepo: 'kinto-cms/serviworldlogistics-content'
+  githubRepo: 'tu-usuario/tu-repo-content'
 }
 ```
 

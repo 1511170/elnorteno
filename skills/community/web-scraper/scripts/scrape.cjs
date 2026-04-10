@@ -18,7 +18,7 @@ const args = process.argv.slice(2).reduce((acc, arg) => {
 }, {});
 
 const config = {
-  url: args.url || 'https://serviworldlogistics.com',
+  url: args.url || 'https://ejemplo.com',
   output: args.output || './scraped-content',
   maxPages: parseInt(args.maxPages) || 20,
   waitTime: parseInt(args.waitTime) || 3000

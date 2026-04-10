@@ -97,6 +97,19 @@ function initSite(siteName) {
       writeFileSync(configPath, configContent);
     }
     
+    // Personalizar cms.config.yml
+    const cmsConfigPath = join(sitePath, 'config', 'cms.config.yml');
+    if (existsSync(cmsConfigPath)) {
+      let cmsContent = readFileSync(cmsConfigPath, 'utf8');
+      const shortName = siteName.toLowerCase().slice(0, 3);
+      
+      cmsContent = cmsContent
+        .replace(/{GITHUB_REPO}/g, `tu-usuario/${siteName}-content`)
+        .replace(/{AUTH_URL}/g, `https://${shortName}-auth.tu-dominio.com`);
+      
+      writeFileSync(cmsConfigPath, cmsContent);
+    }
+    
     // Personalizar package.json
     const pkgPath = join(sitePath, 'package.json');
     if (existsSync(pkgPath)) {
