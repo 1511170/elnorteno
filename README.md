@@ -141,7 +141,7 @@ Estás usando KINTO CMS - sistema de sitios estáticos con skills.
 CONTEXTO ACTUAL:
 - Ubicación: /home/5toai/kinto-cms/
 - Site de trabajo: sites/serviworldlogistics/
-- Core: Astro 5 + Tailwind 4 (sin skills activas)
+- Core: Astro 5 + Tailwind 3 (sin skills activas)
 - Skills disponibles: [ver en skills/]
 
 REGLAS DE ORO:

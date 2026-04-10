@@ -1,4 +1,5 @@
 import { defineConfig } from 'astro/config';
+import tailwind from '@astrojs/tailwind';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
@@ -22,8 +23,8 @@ export default defineConfig({
   output: 'static',
   site: 'https://example.com', // Se actualiza en cada proyecto
   
-  // Sin integración de Tailwind - usamos PostCSS directo para Tailwind 4
-  integrations: [],
+  // Integración oficial de Tailwind 3 para Astro
+  integrations: [tailwind()],
   
   build: {
     format: 'directory',
@@ -47,8 +48,7 @@ export default defineConfig({
       }
     },
     css: {
-      // Configuración para Tailwind 4 via PostCSS
-      postcss: './postcss.config.mjs'
+      // Tailwind 3 se configura via @astrojs/tailwind
     }
   }
 });

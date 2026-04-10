@@ -50,9 +50,12 @@ check(
 );
 
 check(
-  'postcss.config.mjs existe (Tailwind 4)',
-  () => fs.existsSync(path.join(rootDir, 'postcss.config.mjs')),
-  'Crear postcss.config.mjs para Tailwind 4'
+  '@astrojs/tailwind configurado',
+  () => {
+    const pkg = JSON.parse(fs.readFileSync(path.join(rootDir, 'package.json'), 'utf-8'));
+    return pkg.devDependencies && pkg.devDependencies['@astrojs/tailwind'];
+  },
+  'Instalar: npm install -D @astrojs/tailwind tailwindcss@^3.4.0'
 );
 
 // 3. Verificar skills activas

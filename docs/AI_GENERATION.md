@@ -89,7 +89,7 @@ Cuando un usuario te pide generar un sitio, usa este prompt interno:
 CONTEXTO:
 - Proyecto: [NOMBRE_DEL_SITIO]
 - Ubicación: kinto-cms/sites/[NOMBRE]/
-- Core: Astro 5 + Tailwind 4
+- Core: Astro 5 + Tailwind 3
 - Estado actual: Core limpio (0 skills activas)
 
 MISIÓN:

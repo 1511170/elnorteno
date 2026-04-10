@@ -66,16 +66,14 @@ cp webflow-export/css/*.css sites/mi-sitio/public/css/
 #### Opción B: Migrar a Tailwind (Para rediseño futuro)
 
 ```bash
-# 1. Instalar Tailwind
-npm install -D tailwindcss @tailwindcss/vite
+# 1. Instalar Tailwind (ya incluido en el template)
+# El template usa @astrojs/tailwind con Tailwind 3.4
 
-# 2. Configurar astro.config.mjs
-import tailwindcss from '@tailwindcss/vite';
+# 2. Configurar astro.config.mjs (ya configurado)
+import tailwind from '@astrojs/tailwind';
 
 export default defineConfig({
-  vite: {
-    plugins: [tailwindcss()]
-  }
+  integrations: [tailwind()]
 });
 ```
 

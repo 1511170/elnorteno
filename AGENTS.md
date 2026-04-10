@@ -6,7 +6,7 @@
 
 ### Contexto Inmediato
 - **Sistema**: KINTO CMS - Generador de sitios estáticos con arquitectura de skills
-- **Stack**: Astro 5 + Tailwind 4 + Sveltia CMS
+- **Stack**: Astro 5 + Tailwind 3 + Sveltia CMS
 - **Sitio activo**: `sites/serviworldlogistics/` (empresa de logística)
 - **Estado**: Core limpio, sin skills instaladas aún
 
