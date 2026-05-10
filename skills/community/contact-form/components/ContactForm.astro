@@ -1,4 +1,9 @@
 ---
+interface ServiceOption {
+  value: string;
+  label: string;
+}
+
 interface Props {
   title?: string;
   subtitle?: string;
@@ -6,6 +11,7 @@ interface Props {
   showPhone?: boolean;
   showCompany?: boolean;
   serviceSelect?: boolean;
+  services?: ServiceOption[];
   action?: string;
 }
 
@@ -16,17 +22,12 @@ const {
   showPhone = true,
   showCompany = true,
   serviceSelect = false,
+  services = [
+    { value: "", label: "Selecciona un servicio" },
+    { value: "general", label: "Consulta general" },
+  ],
   action = "/api/contact"
 } = Astro.props;
-
-const services = [
-  { value: "", label: "Selecciona un servicio" },
-  { value: "aereo", label: "Transporte Aéreo" },
-  { value: "maritimo", label: "Transporte Marítimo" },
-  { value: "terrestre", label: "Transporte Terrestre" },
-  { value: "almacenamiento", label: "Almacenamiento" },
-  { value: "multiple", label: "Múltiples servicios" },
-];
 ---
 
 <div class="bg-white rounded-xl p-8 shadow-sm border border-gray-100">

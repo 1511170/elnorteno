@@ -21,6 +21,9 @@ export interface SiteContext {
   addComponent: (name: string, path: string) => void;
   addRoute: (path: string, component: string) => void;
   addCMSField: (collection: string, field: any) => void;
+  addCMSCollection: (collection: string, fields: any[]) => void;
+  addSchemaType: (type: string, data?: Record<string, any>) => void;
+  addConfigFile: (filename: string, content: string | object) => void;
   addMetaTag: (attrs: Record<string, string>) => void;
   addScript: (src: string, attrs?: Record<string, string>) => void;
   addStyle: (css: string) => void;
@@ -70,7 +73,7 @@ export function getSiteActiveSkills(sitePath: string): string[] {
   }
   
   try {
-    const content = require('fs').readFileSync(configPath, 'utf-8');
+    const content = readFileSync(configPath, 'utf-8');
     return JSON.parse(content).skills || [];
   } catch {
     return [];

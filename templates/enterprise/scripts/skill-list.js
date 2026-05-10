@@ -13,7 +13,16 @@ const activeSkillsPath = join(process.cwd(), 'skills-active.json');
 console.log('🧩 KINTO CMS - Skills\n');
 
 // Skills activas en este sitio
-const activeConfig = JSON.parse(readFileSync(activeSkillsPath, 'utf-8'));
+let activeConfig = { site: 'unknown', skills: [] };
+if (existsSync(activeSkillsPath)) {
+  try {
+    activeConfig = JSON.parse(readFileSync(activeSkillsPath, 'utf-8'));
+  } catch {
+    console.warn('⚠️  skills-active.json corrupto, usando defaults');
+  }
+} else {
+  console.warn('⚠️  No skills-active.json encontrado. ¿Estás dentro de un sitio?');
+}
 console.log(`📍 Sitio: ${activeConfig.site}`);
 console.log(`✅ Skills activas: ${activeConfig.skills.length ? activeConfig.skills.join(', ') : 'Ninguna (core limpio)'}`);
 console.log('');

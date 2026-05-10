@@ -6,7 +6,7 @@
  * Uso: node scripts/skill-add.js [skill-name]
  */
 
-import { readFileSync, writeFileSync, existsSync } from 'fs';
+import { readFileSync, writeFileSync, existsSync, readdirSync } from 'fs';
 import { join, resolve } from 'path';
 
 const skillName = process.argv[2];
