@@ -1,3 +1,14 @@
+---
+name: webflow-effects
+category: community
+version: 1.0.0
+description: Animaciones premium con GSAP y ScrollTrigger
+tags: [animation, gsap, premium]
+requires: []
+needs: []
+recommendedFor: [static]
+---
+
 # Skill: webflow-effects
 
 Efectos premium tipo Webflow - animaciones GSAP, micro-interacciones, diseño de alta gama.

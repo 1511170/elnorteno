@@ -1,3 +1,14 @@
+---
+name: image-optimizer
+category: community
+version: 1.0.0
+description: Optimización y compresión de imágenes en build
+tags: [images, performance]
+requires: []
+needs: []
+recommendedFor: [static, ecommerce]
+---
+
 # Skill: image-optimizer
 
 Optimización automática de imágenes para sitios KINTO. Convierte JPG/PNG a WebP usando Sharp (incluido en Astro) con alta calidad y mínimo peso.

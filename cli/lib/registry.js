@@ -41,7 +41,7 @@ export function scanSkills(root) {
   return skills.sort((a, b) => a.name.localeCompare(b.name));
 }
 
-/** Genera y escribe `skills/registry.json`. Devuelve el objeto registry. */
+/** Genera y escribe `skills/registry.json` + `MARKETPLACE.md`. */
 export function generateRegistry(root) {
   const p = paths(root);
   const registry = {
@@ -51,7 +51,48 @@ export function generateRegistry(root) {
   };
   registry.count = registry.skills.length;
   writeFileSync(p.registry, JSON.stringify(registry, null, 2) + "\n");
+  writeFileSync(join(p.root, "MARKETPLACE.md"), renderMarketplace(registry));
   return registry;
+}
+
+/** Renderiza MARKETPLACE.md (catálogo legible) a partir del registry. */
+function renderMarketplace(registry) {
+  const lines = [
+    "# 🛍️ KINTO Marketplace",
+    "",
+    "> Catálogo de site-skills instalables. **Generado automáticamente** desde",
+    "> `skills/registry.json` — no lo edites a mano (corre `kinto skill validate`).",
+    "",
+    `Total: **${registry.count} skills** · Última generación: ${registry.generated.slice(0, 10)}`,
+    "",
+    "Instala cualquier skill con: `kinto skill add <nombre> --site=<sitio>`",
+    "",
+  ];
+  for (const category of ["official", "community"]) {
+    const group = registry.skills.filter((s) => s.category === category);
+    if (!group.length) continue;
+    lines.push(
+      `## ${category === "official" ? "✅ Oficiales" : "🌐 Comunidad"}`,
+      "",
+    );
+    lines.push("| Skill | Versión | Descripción | Tags | Requisitos |");
+    lines.push("|-------|---------|-------------|------|------------|");
+    for (const s of group) {
+      const tags = s.tags.length ? s.tags.join(", ") : "—";
+      const needs = s.needs.length ? s.needs.join(", ") : "—";
+      lines.push(
+        `| \`${s.name}\` | ${s.version} | ${s.description} | ${tags} | ${needs} |`,
+      );
+    }
+    lines.push("");
+  }
+  lines.push(
+    "---",
+    "",
+    "¿Quieres aportar una skill? Lee [CONTRIBUTING.md](./CONTRIBUTING.md).",
+    "",
+  );
+  return lines.join("\n");
 }
 
 /** Lee el registry desde disco; lo regenera si no existe. */

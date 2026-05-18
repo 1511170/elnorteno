@@ -1,3 +1,14 @@
+---
+name: browser-automation
+category: community
+version: 1.0.0
+description: Testing E2E y screenshots con Puppeteer
+tags: [testing, qa, puppeteer]
+requires: []
+needs: []
+recommendedFor: [static, ecommerce]
+---
+
 # Skill: browser-automation
 
 Automatización de navegador con Puppeteer + Chromium para testing visual y funcional.

@@ -1,3 +1,14 @@
+---
+name: webflow-migration
+category: community
+version: 1.0.0
+description: Conversor de sitios Webflow a Astro
+tags: [migration, webflow]
+requires: []
+needs: []
+recommendedFor: [static]
+---
+
 # Webflow Migration
 
 Skill para migrar sitios Webflow a Astro manteniendo el diseño original.

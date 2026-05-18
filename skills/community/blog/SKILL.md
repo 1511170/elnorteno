@@ -1,3 +1,14 @@
+---
+name: blog
+category: community
+version: 1.0.0
+description: Sistema de blog con listados, posts y schema.org BlogPosting
+tags: [blog, content, seo]
+requires: []
+needs: []
+recommendedFor: [static]
+---
+
 # Skill: blog
 
 Sistema de blog completo con listado, posts individuales y componentes reutilizables.

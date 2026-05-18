@@ -1,3 +1,14 @@
+---
+name: contact-form
+category: community
+version: 1.0.0
+description: Formulario de contacto con validación y estilos Tailwind
+tags: [forms, contact]
+requires: []
+needs: []
+recommendedFor: [static]
+---
+
 # Skill: contact-form
 
 Formulario de contacto profesional con validación y estilos Tailwind.

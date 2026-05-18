@@ -1,0 +1,57 @@
+name: skill-ci
+
+# Valida el marketplace de skills en cada PR:
+#  1. El registry y MARKETPLACE.md están en sync con los SKILL.md.
+#  2. Todas las skills tienen frontmatter válido.
+#  3. Un sitio estático con skills se scaffoldea y buildea.
+
+on:
+  pull_request:
+    paths:
+      - "skills/**"
+      - "cli/**"
+      - "bin/**"
+      - "templates/**"
+  push:
+    branches: [main]
+
+jobs:
+  validate-skills:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Validar skills y regenerar registry
+        run: node bin/kinto.js skill validate
+
+      - name: Verificar que el registry no quedó desincronizado
+        run: |
+          if ! git diff --quiet skills/registry.json MARKETPLACE.md; then
+            echo "::error::registry.json o MARKETPLACE.md están desactualizados."
+            echo "Ejecuta 'kinto skill validate' y commitea los cambios."
+            git diff skills/registry.json MARKETPLACE.md
+            exit 1
+          fi
+
+  build-smoke-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Scaffold de un sitio estático de prueba
+        run: node bin/kinto.js create-site ci-smoke --template=static
+
+      - name: Instalar dependencias del sitio
+        working-directory: sites/ci-smoke
+        run: npm install --no-audit --no-fund
+
+      - name: Build del sitio
+        run: node bin/kinto.js build --site=ci-smoke

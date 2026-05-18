@@ -1,3 +1,14 @@
+---
+name: web-scraper
+category: community
+version: 1.0.0
+description: Scraping de contenido para migración de sitios
+tags: [scraping, migration]
+requires: []
+needs: []
+recommendedFor: [static]
+---
+
 # Skill: web-scraper
 
 Web scraping y crawling para extraer contenido, imágenes y assets de sitios web existentes.

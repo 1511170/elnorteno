@@ -1,3 +1,14 @@
+---
+name: seo-ai-citations
+category: community
+version: 1.0.0
+description: SEO + schema.org (6+ tipos) optimizado para citaciones de IA
+tags: [seo, schema-org, ai]
+requires: []
+needs: []
+recommendedFor: [static, ecommerce]
+---
+
 # Skill: seo-ai-citations
 
 SEO + AEO (AI Citation Optimization) con Schema.org completo para máxima visibilidad en buscadores y LLMs.

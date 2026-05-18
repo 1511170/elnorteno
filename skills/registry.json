@@ -1,104 +1,159 @@
 {
-  "generated": "2026-05-18T03:07:27.570Z",
-  "count": 15,
+  "generated": "2026-05-18T03:25:53.174Z",
+  "count": 16,
   "skills": [
     {
       "name": "blog",
       "category": "community",
-      "version": "0.0.0",
-      "description": "",
-      "tags": [],
+      "version": "1.0.0",
+      "description": "Sistema de blog con listados, posts y schema.org BlogPosting",
+      "tags": [
+        "blog",
+        "content",
+        "seo"
+      ],
       "requires": [],
       "needs": [],
-      "recommendedFor": [],
+      "recommendedFor": [
+        "static"
+      ],
       "path": "skills/community/blog"
     },
     {
       "name": "browser-automation",
       "category": "community",
-      "version": "0.0.0",
-      "description": "",
-      "tags": [],
+      "version": "1.0.0",
+      "description": "Testing E2E y screenshots con Puppeteer",
+      "tags": [
+        "testing",
+        "qa",
+        "puppeteer"
+      ],
       "requires": [],
       "needs": [],
-      "recommendedFor": [],
+      "recommendedFor": [
+        "static",
+        "ecommerce"
+      ],
       "path": "skills/community/browser-automation"
     },
     {
       "name": "cloudflare-pages",
       "category": "community",
-      "version": "0.0.0",
-      "description": "",
-      "tags": [],
+      "version": "1.0.0",
+      "description": "Configuración de deploy a Cloudflare Pages",
+      "tags": [
+        "deploy",
+        "cloudflare"
+      ],
       "requires": [],
       "needs": [],
-      "recommendedFor": [],
+      "recommendedFor": [
+        "static"
+      ],
       "path": "skills/community/cloudflare-pages"
     },
     {
       "name": "cloudflare-tunnel",
       "category": "community",
-      "version": "0.0.0",
-      "description": "",
-      "tags": [],
+      "version": "1.0.0",
+      "description": "Túnel cloudflared persistente para exponer el sitio local",
+      "tags": [
+        "cloudflare",
+        "tunnel",
+        "dev"
+      ],
       "requires": [],
       "needs": [],
-      "recommendedFor": [],
+      "recommendedFor": [
+        "static",
+        "ecommerce"
+      ],
       "path": "skills/community/cloudflare-tunnel"
     },
     {
       "name": "cms-sveltia",
       "category": "official",
-      "version": "0.0.0",
-      "description": "",
-      "tags": [],
+      "version": "1.0.0",
+      "description": "CMS visual Git-based con Sveltia — panel de edición para el cliente",
+      "tags": [
+        "cms",
+        "sveltia",
+        "content"
+      ],
       "requires": [],
       "needs": [],
-      "recommendedFor": [],
+      "recommendedFor": [
+        "static",
+        "ecommerce"
+      ],
       "path": "skills/official/cms-sveltia"
     },
     {
       "name": "contact-form",
       "category": "community",
-      "version": "0.0.0",
-      "description": "",
-      "tags": [],
+      "version": "1.0.0",
+      "description": "Formulario de contacto con validación y estilos Tailwind",
+      "tags": [
+        "forms",
+        "contact"
+      ],
       "requires": [],
       "needs": [],
-      "recommendedFor": [],
+      "recommendedFor": [
+        "static"
+      ],
       "path": "skills/community/contact-form"
     },
     {
       "name": "forms-web3forms",
       "category": "community",
-      "version": "0.0.0",
-      "description": "",
-      "tags": [],
+      "version": "1.0.0",
+      "description": "Formularios serverless vía Web3Forms (sin backend propio)",
+      "tags": [
+        "forms",
+        "serverless"
+      ],
       "requires": [],
       "needs": [],
-      "recommendedFor": [],
+      "recommendedFor": [
+        "static"
+      ],
       "path": "skills/community/forms-web3forms"
     },
     {
       "name": "image-optimizer",
       "category": "community",
-      "version": "0.0.0",
-      "description": "",
-      "tags": [],
+      "version": "1.0.0",
+      "description": "Optimización y compresión de imágenes en build",
+      "tags": [
+        "images",
+        "performance"
+      ],
       "requires": [],
       "needs": [],
-      "recommendedFor": [],
+      "recommendedFor": [
+        "static",
+        "ecommerce"
+      ],
       "path": "skills/community/image-optimizer"
     },
     {
       "name": "seo-ai-citations",
       "category": "community",
-      "version": "0.0.0",
-      "description": "",
-      "tags": [],
+      "version": "1.0.0",
+      "description": "SEO + schema.org (6+ tipos) optimizado para citaciones de IA",
+      "tags": [
+        "seo",
+        "schema-org",
+        "ai"
+      ],
       "requires": [],
       "needs": [],
-      "recommendedFor": [],
+      "recommendedFor": [
+        "static",
+        "ecommerce"
+      ],
       "path": "skills/community/seo-ai-citations"
     },
     {
@@ -126,12 +181,18 @@
     {
       "name": "testimonials",
       "category": "community",
-      "version": "0.0.0",
-      "description": "",
-      "tags": [],
+      "version": "1.0.0",
+      "description": "Testimonios de clientes con schema.org Review",
+      "tags": [
+        "social-proof",
+        "seo"
+      ],
       "requires": [],
       "needs": [],
-      "recommendedFor": [],
+      "recommendedFor": [
+        "static",
+        "ecommerce"
+      ],
       "path": "skills/community/testimonials"
     },
     {
@@ -156,24 +217,51 @@
     {
       "name": "web-scraper",
       "category": "community",
-      "version": "0.0.0",
-      "description": "",
-      "tags": [],
+      "version": "1.0.0",
+      "description": "Scraping de contenido para migración de sitios",
+      "tags": [
+        "scraping",
+        "migration"
+      ],
       "requires": [],
       "needs": [],
-      "recommendedFor": [],
+      "recommendedFor": [
+        "static"
+      ],
       "path": "skills/community/web-scraper"
     },
     {
       "name": "webflow-effects",
       "category": "community",
-      "version": "0.0.0",
-      "description": "",
-      "tags": [],
+      "version": "1.0.0",
+      "description": "Animaciones premium con GSAP y ScrollTrigger",
+      "tags": [
+        "animation",
+        "gsap",
+        "premium"
+      ],
       "requires": [],
       "needs": [],
-      "recommendedFor": [],
+      "recommendedFor": [
+        "static"
+      ],
       "path": "skills/community/webflow-effects"
+    },
+    {
+      "name": "webflow-migration",
+      "category": "community",
+      "version": "1.0.0",
+      "description": "Conversor de sitios Webflow a Astro",
+      "tags": [
+        "migration",
+        "webflow"
+      ],
+      "requires": [],
+      "needs": [],
+      "recommendedFor": [
+        "static"
+      ],
+      "path": "skills/community/webflow-migration"
     },
     {
       "name": "whatsapp-cta",

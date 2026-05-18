@@ -1,3 +1,14 @@
+---
+name: cloudflare-tunnel
+category: community
+version: 1.0.0
+description: Túnel cloudflared persistente para exponer el sitio local
+tags: [cloudflare, tunnel, dev]
+requires: []
+needs: []
+recommendedFor: [static, ecommerce]
+---
+
 # Cloudflare Tunnel
 
 Skill para crear túneles seguros de desarrollo con Cloudflare Tunnel.

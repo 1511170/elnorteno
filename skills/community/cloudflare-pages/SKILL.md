@@ -1,3 +1,14 @@
+---
+name: cloudflare-pages
+category: community
+version: 1.0.0
+description: Configuración de deploy a Cloudflare Pages
+tags: [deploy, cloudflare]
+requires: []
+needs: []
+recommendedFor: [static]
+---
+
 # Cloudflare Pages
 
 Skill para deployar sitios estáticos Astro a Cloudflare Pages con flujo de trabajo dev/prod.

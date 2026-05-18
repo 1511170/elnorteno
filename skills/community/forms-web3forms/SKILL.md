@@ -1,3 +1,14 @@
+---
+name: forms-web3forms
+category: community
+version: 1.0.0
+description: Formularios serverless vía Web3Forms (sin backend propio)
+tags: [forms, serverless]
+requires: []
+needs: []
+recommendedFor: [static]
+---
+
 # Skill: forms-web3forms
 
 Formularios de contacto funcionales sin backend propio, usando Web3Forms.

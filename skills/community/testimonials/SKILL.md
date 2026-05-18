@@ -1,3 +1,14 @@
+---
+name: testimonials
+category: community
+version: 1.0.0
+description: Testimonios de clientes con schema.org Review
+tags: [social-proof, seo]
+requires: []
+needs: []
+recommendedFor: [static, ecommerce]
+---
+
 # Skill: testimonials
 
 Sistema de testimonios con schema.org Review markup para SEO/AI citations.

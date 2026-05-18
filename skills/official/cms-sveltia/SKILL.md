@@ -1,3 +1,14 @@
+---
+name: cms-sveltia
+category: official
+version: 1.0.0
+description: CMS visual Git-based con Sveltia — panel de edición para el cliente
+tags: [cms, sveltia, content]
+requires: []
+needs: []
+recommendedFor: [static, ecommerce]
+---
+
 # Skill: cms-sveltia
 
 Integra Sveltia CMS para edición visual de contenido vía Git.

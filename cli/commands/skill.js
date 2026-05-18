@@ -201,8 +201,19 @@ function validateSkills(root) {
   let errors = 0;
   for (const s of registry.skills) {
     const dir = join(root, s.path);
-    if (!existsSync(join(dir, "index.ts"))) {
-      log.error(`${s.name}: falta index.ts`);
+    // index.ts solo es obligatorio para skills de componentes; las skills de
+    // tooling/config (tunnels, scrapers, deploy) no exportan componentes.
+    if (
+      existsSync(join(dir, "components")) &&
+      !existsSync(join(dir, "index.ts"))
+    ) {
+      log.error(
+        `${s.name}: tiene components/ pero falta index.ts que los exporte`,
+      );
+      errors++;
+    }
+    if (!existsSync(join(dir, "SKILL.md"))) {
+      log.error(`${s.name}: falta SKILL.md`);
       errors++;
     }
     if (!s.description || s.description.startsWith("TODO")) {
