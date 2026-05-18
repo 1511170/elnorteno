@@ -2,7 +2,7 @@
 # KINTO CMS — instalador de una línea para macOS / Linux.
 #
 # Uso:
-#   curl -fsSL https://raw.githubusercontent.com/kinto-cms/kinto-cms/main/install.sh | bash
+#   curl -fsSL https://raw.githubusercontent.com/1511170/kinto-cms/main/install.sh | bash
 #
 # Verifica Node >= 18 y lanza el wizard `kinto start` vía npx.
 
