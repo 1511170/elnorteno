@@ -41,3 +41,7 @@ coverage/
 # Agent configs — track shared configs, ignore local sessions
 .claude/sessions/
 .kimi/sessions/
+
+# KINTO CMS
+.kinto-backup/
+graphify-out/

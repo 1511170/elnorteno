@@ -1,17 +1,29 @@
 {
   "name": "kinto-cms",
-  "version": "1.0.0",
-  "description": "KINTO Content Site Manager - Static sites with skill-based architecture",
+  "version": "3.0.0",
+  "description": "KINTO CMS — generador de sitios estáticos agent-native con arquitectura de skills",
   "type": "module",
   "bin": {
-    "kinto": "./kinto.js"
+    "kinto": "./bin/kinto.js"
   },
+  "files": [
+    "bin/",
+    "cli/",
+    "core/",
+    "skills/official/",
+    "templates/",
+    ".claude/",
+    "AGENTS.md",
+    "CLAUDE.md",
+    "KINTO.md",
+    "README.md"
+  ],
   "scripts": {
-    "init": "node kinto.js init",
-    "dev": "node kinto.js dev",
-    "build": "node kinto.js build",
-    "skills:list": "node kinto.js skills:list",
-    "sites:list": "ls -1 sites/"
+    "kinto": "node bin/kinto.js",
+    "start": "node bin/kinto.js start",
+    "doctor": "node bin/kinto.js doctor",
+    "skills:validate": "node bin/kinto.js skill validate",
+    "marketplace": "node bin/kinto.js marketplace"
   },
   "keywords": [
     "astro",
@@ -19,9 +31,19 @@
     "cms",
     "headless",
     "cloudflare",
+    "shopify",
+    "ecommerce",
     "ai-citations",
-    "skills"
+    "skills",
+    "agent-native"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kinto-cms/kinto-cms.git"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "author": "KINTO",
   "license": "MIT",
   "engines": {

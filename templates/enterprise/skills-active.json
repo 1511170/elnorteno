@@ -1,5 +1,5 @@
 {
   "site": "{SITE_NAME}",
   "skills": [],
-  "_comment": "Skills se añaden con: node scripts/skill-add.js [nombre]"
+  "_comment": "Skills se añaden con: kinto skill add <nombre> --site=<sitio>"
 }
