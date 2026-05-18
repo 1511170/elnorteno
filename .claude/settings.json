@@ -6,8 +6,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "npm run format || npx prettier --write . || echo 'No formatter configured'",
-            "description": "Auto-format code after writes"
+            "command": "node .claude/hooks/format-file.mjs",
+            "description": "Formatea solo el archivo editado (no todo el repo)"
           }
         ]
       }
@@ -28,8 +28,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "npm run build || echo 'Build check: No site directory or build failed'",
-            "description": "Verify build before session ends"
+            "command": "node bin/kinto.js skill validate || echo 'Recuerda: kinto build --site=<sitio> antes de entregar'",
+            "description": "Valida el registry de skills al cerrar la sesión"
           }
         ]
       }
