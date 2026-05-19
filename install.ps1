@@ -2,7 +2,7 @@
 # KINTO CMS - instalador de una linea para Windows / PowerShell.
 #
 # Uso:
-#   irm https://raw.githubusercontent.com/1511170/kinto-cms/main/install.ps1 | iex
+#   irm get.kinto.co | iex
 #
 # Verifica Node >= 18 y lanza el wizard `kinto start` via npx.
 

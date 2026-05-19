@@ -8,10 +8,10 @@ de mantener por agentes de IA (Claude Code, Kimi, Qwen, Codex, Cursor).
 
 ```bash
 # Windows (PowerShell)
-irm https://raw.githubusercontent.com/1511170/kinto-cms/main/install.ps1 | iex
+irm get.kinto.co | iex
 
 # macOS / Linux
-curl -fsSL https://raw.githubusercontent.com/1511170/kinto-cms/main/install.sh | bash
+curl -fsSL get.kinto.co | bash
 
 # o directamente con npx
 npx kinto-cms@latest start

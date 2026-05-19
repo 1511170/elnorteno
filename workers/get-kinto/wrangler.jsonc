@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json.schemastore.org/wrangler.json",
+  "name": "get-kinto",
+  "account_id": "948994a95e4d7d23badec650fa303120",
+  "main": "src/index.js",
+  "compatibility_date": "2026-05-01",
+  "workers_dev": true,
+  "observability": { "enabled": true },
+  "routes": [
+    { "pattern": "get.kinto.co", "custom_domain": true }
+  ]
+}

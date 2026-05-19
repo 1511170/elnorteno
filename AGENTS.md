@@ -27,9 +27,9 @@ reutilizables. Nunca escribas código ad-hoc si existe o puedes crear una skill.
 ```bash
 # Proyecto nuevo desde cero (instala, configura y levanta todo):
 npx kinto-cms@latest start
-# o el instalador de una línea:
-#   Windows : irm https://raw.githubusercontent.com/1511170/kinto-cms/main/install.ps1 | iex
-#   Unix    : curl -fsSL https://raw.githubusercontent.com/1511170/kinto-cms/main/install.sh | bash
+# o el instalador de una línea (Worker get.kinto.co detecta el SO):
+#   Windows : irm get.kinto.co | iex
+#   Unix    : curl -fsSL get.kinto.co | bash
 
 # Dentro de un repo KINTO ya clonado:
 kinto start                 # wizard interactivo
