@@ -13,8 +13,9 @@ irm get.kinto.co | iex
 # macOS / Linux
 curl -fsSL get.kinto.co | bash
 
-# o directamente con npx
-npx kinto-cms@latest start
+# o manualmente: clona el repo y lanza el wizard dentro
+git clone https://github.com/1511170/kinto-cms.git
+cd kinto-cms && node bin/kinto.js start
 ```
 
 El wizard `kinto start` instala dependencias, te pregunta el tipo de sitio

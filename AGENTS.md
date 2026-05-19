@@ -25,11 +25,14 @@ reutilizables. Nunca escribas código ad-hoc si existe o puedes crear una skill.
 ## ⚡ Arranque en un comando
 
 ```bash
-# Proyecto nuevo desde cero (instala, configura y levanta todo):
-npx kinto-cms@latest start
-# o el instalador de una línea (Worker get.kinto.co detecta el SO):
+# Proyecto nuevo desde cero — instalador de una línea (clona el repo y
+# lanza el wizard; el Worker get.kinto.co detecta el SO):
 #   Windows : irm get.kinto.co | iex
 #   Unix    : curl -fsSL get.kinto.co | bash
+
+# o manualmente: clona el repo y lanza el wizard dentro
+git clone https://github.com/1511170/kinto-cms.git
+cd kinto-cms && node bin/kinto.js start
 
 # Dentro de un repo KINTO ya clonado:
 kinto start                 # wizard interactivo
@@ -190,16 +193,17 @@ kinto update    # actualiza core/skills/templates/.claude; sites/ queda intacto
 
 > **Regla:** si descubres uno nuevo, agrégalo aquí.
 
-| #   | Anti-Patrón                                      | Por qué está mal                  | En su lugar                         |
-| --- | ------------------------------------------------ | --------------------------------- | ----------------------------------- |
-| 1   | Hardcodear valores de cliente en una skill       | La skill deja de ser reutilizable | `site.config.ts` o props            |
-| 2   | Copiar componentes entre sitios                  | Duplicación imposible de mantener | Extraer a `skills/community/`       |
-| 3   | Modificar `core/`                                | Rompe todos los sitios            | Crear una skill                     |
-| 4   | Instalar skills que el brief no pide             | Bloat, builds lentos              | Solo lo necesario                   |
-| 5   | Olvidar `kinto build` antes de terminar          | Errores en producción             | Build + preview obligatorios        |
-| 6   | Commitear `.env` o secrets                       | Riesgo de seguridad               | `.env` está en `.gitignore`         |
-| 7   | Editar `MARKETPLACE.md` o `registry.json` a mano | Se sobrescriben                   | `kinto skill validate` los regenera |
-| 8   | Confundir site-skill con agent-skill             | Van en carpetas distintas         | Ver la tabla de arriba              |
+| #   | Anti-Patrón                                      | Por qué está mal                                                   | En su lugar                             |
+| --- | ------------------------------------------------ | ------------------------------------------------------------------ | --------------------------------------- |
+| 1   | Hardcodear valores de cliente en una skill       | La skill deja de ser reutilizable                                  | `site.config.ts` o props                |
+| 2   | Copiar componentes entre sitios                  | Duplicación imposible de mantener                                  | Extraer a `skills/community/`           |
+| 3   | Modificar `core/`                                | Rompe todos los sitios                                             | Crear una skill                         |
+| 4   | Instalar skills que el brief no pide             | Bloat, builds lentos                                               | Solo lo necesario                       |
+| 5   | Olvidar `kinto build` antes de terminar          | Errores en producción                                              | Build + preview obligatorios            |
+| 6   | Commitear `.env` o secrets                       | Riesgo de seguridad                                                | `.env` está en `.gitignore`             |
+| 7   | Editar `MARKETPLACE.md` o `registry.json` a mano | Se sobrescriben                                                    | `kinto skill validate` los regenera     |
+| 8   | Confundir site-skill con agent-skill             | Van en carpetas distintas                                          | Ver la tabla de arriba                  |
+| 9   | Mover/copiar un sitio fuera de `sites/`          | Rompe el alias `@skills` y `findCli` — los sitios no son portables | Trabaja siempre dentro del repo clonado |
 
 ---
 
@@ -218,7 +222,8 @@ kinto update    # actualiza core/skills/templates/.claude; sites/ queda intacto
 ## 🚀 TL;DR
 
 ```bash
-npx kinto-cms@latest start          # arranque out-of-the-box
+irm get.kinto.co | iex              # arranque out-of-the-box (Windows)
+curl -fsSL get.kinto.co | bash      # arranque out-of-the-box (macOS / Linux)
 kinto create-site cliente --template=static
 kinto skill add testimonials --site=cliente
 kinto build --site=cliente          # verificar SIEMPRE

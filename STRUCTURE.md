@@ -17,9 +17,7 @@ kinto-cms/
 │       │   └── Layout.astro           # Layout base mínimo
 │       ├── pages/
 │       │   └── index.astro            # Página welcome core
-│       ├── components/                # (vacío - llenar con skills)
-│       └── utils/
-│           └── skill-loader.ts        # Loader de skills
+│       └── components/                # (vacío - llenar con skills)
 │
 ├── skills/                            # 🧩 MARKETPLACE DE SKILLS
 │   ├── official/                      # Skills oficiales mantenidas
@@ -78,6 +76,7 @@ kinto-cms/
 ## 🎯 Principio: Core Mínimo + Skills Bajo Demanda
 
 ### Estado Inicial (Core Limpio)
+
 ```json
 // skills-active.json
 {
@@ -87,10 +86,11 @@ kinto-cms/
 ```
 
 ### Después de instalar skills
+
 ```json
 // skills-active.json
 {
-  "site": "nombre-cliente", 
+  "site": "nombre-cliente",
   "skills": [
     "cms-sveltia",
     "seo-ai-citations",
@@ -174,6 +174,7 @@ Cada uno: core + skills específicas
 ## 🎨 Para IA (Kimi Code / Claude Code)
 
 **Prompt clave:**
+
 ```
 Estás usando KINTO CMS.
 1. Crea sitio con: ./kinto create-site [nombre]
@@ -186,6 +187,7 @@ Estás usando KINTO CMS.
 ## ✅ Listo para usar
 
 El sistema está diseñado para:
+
 - ✅ Generación completa por IA
 - ✅ Skills bajo demanda
 - ✅ Reutilización máxima

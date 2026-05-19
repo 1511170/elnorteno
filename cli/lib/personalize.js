@@ -17,7 +17,9 @@ export function buildTokens(siteName, overrides = {}) {
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-|-$/g, "");
-  const prefix = slug.slice(0, 3);
+  // Prefijo de 3 letras para subdominios — sin guiones, para no generar
+  // hosts inválidos tipo "mi-.kinto.info" o "mi--auth.kinto.workers.dev".
+  const prefix = slug.replace(/-/g, "").slice(0, 3);
   return {
     SITE_NAME: siteName,
     SITE_SLUG: slug,

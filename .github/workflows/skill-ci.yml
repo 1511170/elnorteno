@@ -12,6 +12,8 @@ on:
       - "cli/**"
       - "bin/**"
       - "templates/**"
+      - "install.ps1"
+      - "install.sh"
   push:
     branches: [main]
 
@@ -55,3 +57,49 @@ jobs:
 
       - name: Build del sitio
         run: node bin/kinto.js build --site=ci-smoke
+
+  install-flow-test:
+    # Cubre el flujo del instalador get.kinto.co: las dos guardas y el wizard
+    # end-to-end. Evita regresiones del bug de "sitio enterrado en la caché".
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Sintaxis del instalador Unix
+        run: bash -n install.sh
+
+      - name: Sintaxis del instalador Windows
+        shell: pwsh
+        run: $null = [scriptblock]::Create((Get-Content install.ps1 -Raw))
+
+      - name: Guarda — kinto desde node_modules debe fallar
+        run: |
+          mkdir -p /tmp/pkg/node_modules/kinto-cms /tmp/pkg/work
+          cp -r bin cli skills templates package.json /tmp/pkg/node_modules/kinto-cms/
+          if (cd /tmp/pkg/work && node /tmp/pkg/node_modules/kinto-cms/bin/kinto.js doctor); then
+            echo "::error::kinto no debería ejecutarse desde node_modules"
+            exit 1
+          fi
+          echo "OK: la guarda de findRoot() cortó como se esperaba"
+
+      - name: Guarda — wizard sin TTY ni --yes debe fallar
+        run: |
+          if node bin/kinto.js start --site=_should-not-exist --template=static; then
+            echo "::error::kinto start no debería correr sin --yes en entorno sin TTY"
+            exit 1
+          fi
+          test ! -d sites/_should-not-exist || { echo "::error::se creó un sitio inesperado"; exit 1; }
+          echo "OK: la guarda del wizard cortó como se esperaba"
+
+      - name: Wizard end-to-end (no-interactivo)
+        run: node bin/kinto.js start --site=ci-start --template=ecommerce --skills=shopify-ecommerce --yes
+
+      - name: El sitio quedó en sites/ y compiló
+        run: |
+          test -f sites/ci-start/dist/index.html || { echo "::error::el wizard no generó sites/ci-start/dist/index.html"; exit 1; }
+          grep -q shopify-ecommerce sites/ci-start/skills-active.json || { echo "::error::skill no activada"; exit 1; }
+          echo "OK: sitio creado en sites/ci-start/ y compilado"

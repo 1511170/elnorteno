@@ -4,7 +4,8 @@
 # Uso:
 #   curl -fsSL get.kinto.co | bash
 #
-# Verifica Node >= 18 y lanza el wizard `kinto start` vía npx.
+# Clona el repo kinto-cms en la carpeta actual y lanza el wizard `kinto start`
+# dentro del repo. El sitio queda en kinto-cms/sites/<nombre>/.
 
 set -euo pipefail
 
@@ -22,8 +23,27 @@ if [ "$NODE_MAJOR" -lt 18 ]; then
   echo "❌ Se requiere Node >= 18 (tienes $(node -v))."
   exit 1
 fi
-
 echo "✅ Node $(node -v)"
+
+if ! command -v git >/dev/null 2>&1; then
+  echo "❌ git no encontrado. Instálalo desde https://git-scm.com"
+  exit 1
+fi
+
+REPO_URL="https://github.com/1511170/kinto-cms.git"
+TARGET="$(pwd)/kinto-cms"
+
+if [ -d "$TARGET" ]; then
+  echo "▸ 'kinto-cms' ya existe; actualizando con git pull..."
+  git -C "$TARGET" pull --ff-only
+else
+  echo "▸ Clonando KINTO CMS en $TARGET ..."
+  git clone "$REPO_URL" "$TARGET"
+fi
+
+cd "$TARGET"
 echo "▸ Lanzando el wizard de KINTO..."
 echo ""
-exec npx --yes kinto-cms@latest start
+# `curl | bash` deja el script en stdin; el wizard es interactivo, así que
+# redirigimos stdin al terminal controlador.
+exec node bin/kinto.js start < /dev/tty

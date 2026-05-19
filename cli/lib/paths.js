@@ -20,7 +20,22 @@ export function findRoot(start = process.cwd()) {
   }
   // Fallback: raíz relativa a este archivo (cli/lib/paths.js -> ../../).
   const selfRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
-  if (isKintoRoot(selfRoot)) return selfRoot;
+  if (isKintoRoot(selfRoot)) {
+    // Si el paquete vive dentro de node_modules, KINTO corre como dependencia
+    // instalada o vía `npx` — no como repo clonado. Crear sitios aquí los
+    // enterraría en la caché de npm (efímera e invisible). Error claro en vez
+    // del fallback silencioso.
+    if (selfRoot.split(/[\\/]/).includes("node_modules")) {
+      throw new Error(
+        "KINTO CMS se está ejecutando como paquete npm, no como repo clonado.\n" +
+          "Clona el repo y ejecuta el wizard dentro:\n" +
+          "  git clone https://github.com/1511170/kinto-cms.git\n" +
+          "  cd kinto-cms && node bin/kinto.js start\n" +
+          "O usa el instalador: irm get.kinto.co | iex",
+      );
+    }
+    return selfRoot;
+  }
   throw new Error(
     "No se encontró la raíz de KINTO CMS. Ejecuta el comando dentro del repo.",
   );

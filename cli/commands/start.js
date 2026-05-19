@@ -24,6 +24,16 @@ export default async function start({ flags }) {
 
   log.info("\n🚀 KINTO CMS — Start\n");
 
+  // El wizard es interactivo. Sin TTY (script, agente, pipe) las preguntas
+  // devolverían sus defaults en silencio y crearían un sitio inesperado —
+  // exige --yes como confirmación explícita del modo no-interactivo.
+  if (process.stdin.isTTY !== true && !flags.yes) {
+    throw new Error(
+      "kinto start es interactivo. En un script o agente pasa flags explícitos:\n" +
+        "  kinto start --site=<nombre> --template=<static|ecommerce> --skills=<a,b> --yes",
+    );
+  }
+
   // 1. Nombre del sitio.
   let siteName = flags.site || (await text("Nombre del sitio", "mi-sitio"));
   siteName = String(siteName).trim();

@@ -4,7 +4,8 @@
 # Uso:
 #   irm get.kinto.co | iex
 #
-# Verifica Node >= 18 y lanza el wizard `kinto start` via npx.
+# Clona el repo kinto-cms en la carpeta actual y lanza el wizard `kinto start`
+# dentro del repo. El sitio queda en kinto-cms/sites/<nombre>/.
 
 $ErrorActionPreference = 'Stop'
 Write-Host ''
@@ -21,8 +22,25 @@ if ($nodeMajor -lt 18) {
     Write-Host "X  Se requiere Node >= 18 (tienes $(node -v))." -ForegroundColor Red
     exit 1
 }
-
 Write-Host "OK Node $(node -v)" -ForegroundColor Green
+
+if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
+    Write-Host 'X  git no encontrado. Instalalo desde https://git-scm.com' -ForegroundColor Red
+    exit 1
+}
+
+$repoUrl = 'https://github.com/1511170/kinto-cms.git'
+$target = Join-Path (Get-Location) 'kinto-cms'
+
+if (Test-Path $target) {
+    Write-Host "-> 'kinto-cms' ya existe; actualizando con git pull..." -ForegroundColor Cyan
+    git -C $target pull --ff-only
+} else {
+    Write-Host "-> Clonando KINTO CMS en $target ..." -ForegroundColor Cyan
+    git clone $repoUrl $target
+}
+
+Set-Location $target
 Write-Host '-> Lanzando el wizard de KINTO...' -ForegroundColor Cyan
 Write-Host ''
-npx --yes kinto-cms@latest start
+node bin/kinto.js start

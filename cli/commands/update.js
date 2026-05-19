@@ -29,7 +29,8 @@ export default async function update({ flags }) {
 
   if (!isRepo(root)) {
     throw new Error(
-      "Este directorio no es un repo git. Para un proyecto nuevo usa: npx kinto-cms@latest start",
+      "Este directorio no es un repo git. Clona KINTO con el instalador " +
+        "(irm get.kinto.co | iex) o: git clone https://github.com/1511170/kinto-cms.git",
     );
   }
   if (isDirty(root)) {

@@ -1,6 +1,6 @@
 {
   "name": "kinto-cms",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "KINTO CMS — generador de sitios estáticos agent-native con arquitectura de skills",
   "type": "module",
   "bin": {
