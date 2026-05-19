@@ -21,9 +21,10 @@ const FILES = {
 };
 
 function pickInstaller(ua) {
-  // PowerShell, curl en Windows, o cualquier UA que mencione Windows -> ps1.
-  // El resto (curl/wget en Mac/Linux, bash, etc.) -> sh.
-  return /Windows|PowerShell|WindowsPowerShell/i.test(ua) ? "ps1" : "sh";
+  // Cualquier UA que mencione Windows -> ps1. PowerShell en Windows siempre
+  // incluye "Windows" en el UA; matchear "PowerShell" a secas confundiría a
+  // pwsh en Mac/Linux. El resto (curl/wget/bash en Unix) -> sh.
+  return /Windows/i.test(ua) ? "ps1" : "sh";
 }
 
 async function serveInstaller(kind, request) {
