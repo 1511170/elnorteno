@@ -82,21 +82,53 @@ function addSkill(root, name, flags) {
       toInstall.push(dep);
   }
 
-  let installed = 0;
+  const newlyInstalled = [];
   for (const skillName of toInstall) {
     if (active.skills.includes(skillName)) continue;
     active.skills.push(skillName);
-    installed++;
+    newlyInstalled.push(skillName);
     log.ok(`Skill "${skillName}" añadida a ${site.name}.`);
   }
-  if (!installed)
+  if (!newlyInstalled.length)
     return log.warn(`"${name}" ya estaba instalada en ${site.name}.`);
 
   writeFileSync(activePath, JSON.stringify(active, null, 2) + "\n");
 
+  // Mergea el `.env.example` de cada skill nueva al `<site>/.env.example`.
+  // Las env vars son contrato de la skill — el sitio no debería tener que
+  // saber qué necesita cada una. El header marca el origen y permite el
+  // chequeo anti-duplicados al reinstalar.
+  const siteEnvPath = join(site.path, ".env.example");
+  let envChanged = false;
+  for (const skillName of newlyInstalled) {
+    const entry = findSkill(root, skillName);
+    if (!entry) continue;
+    const skillEnvPath = join(root, entry.path, ".env.example");
+    if (!existsSync(skillEnvPath)) continue;
+    const skillEnvText = readFileSync(skillEnvPath, "utf8");
+    if (existsSync(siteEnvPath)) {
+      const existing = readFileSync(siteEnvPath, "utf8");
+      if (existing.includes(skillEnvText.trim())) continue;
+      const block = `\n# === skill: ${skillName} ===\n${skillEnvText}`;
+      writeFileSync(siteEnvPath, existing.replace(/\s*$/, "") + "\n" + block);
+    } else {
+      writeFileSync(
+        siteEnvPath,
+        `# === skill: ${skillName} ===\n${skillEnvText}`,
+      );
+    }
+    envChanged = true;
+    log.ok(`.env.example actualizado con vars de "${skillName}".`);
+  }
+
   if (skillEntry.needs.length) {
     log.warn(
       `Requisitos externos de "${name}": ${skillEntry.needs.join(", ")}`,
+    );
+  }
+  if (envChanged) {
+    log.hint(
+      "Copia .env.example a .env y completa los valores antes de buildear.",
     );
   }
   log.hint(`Verifica con: kinto build --site=${site.name}`);

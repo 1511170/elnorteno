@@ -103,3 +103,9 @@ jobs:
           test -f sites/ci-start/dist/index.html || { echo "::error::el wizard no generó sites/ci-start/dist/index.html"; exit 1; }
           grep -q shopify-ecommerce sites/ci-start/skills-active.json || { echo "::error::skill no activada"; exit 1; }
           echo "OK: sitio creado en sites/ci-start/ y compilado"
+
+      - name: .env.example mergeado desde la skill
+        run: |
+          test -f sites/ci-start/.env.example || { echo "::error::falta .env.example en el sitio"; exit 1; }
+          grep -q SHOPIFY_STORE_DOMAIN sites/ci-start/.env.example || { echo "::error::env vars de shopify-ecommerce no aplicadas"; exit 1; }
+          echo "OK: .env.example contiene las vars de la skill"

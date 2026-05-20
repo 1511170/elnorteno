@@ -86,7 +86,10 @@ export default async function start({ flags }) {
 
   // 5. Ejecución.
   log.step("Creando el sitio");
-  await createSite({ _: [siteName], flags: { template } });
+  // `silent: true` evita que createSite imprima sus propias "Siguientes pasos"
+  // — `start` está por correr `npm install` y la skill add él mismo, y emite
+  // un mensaje final unificado más abajo.
+  await createSite({ _: [siteName], flags: { template, silent: true } });
 
   const sitePath = p.sitePath(siteName);
   if (flags["no-install"] !== true) {
@@ -112,8 +115,18 @@ export default async function start({ flags }) {
 
   log.info("");
   log.ok(`Sitio "${siteName}" listo en sites/${siteName}/`);
-  log.info(`  kinto dev --site=${siteName}     # servidor local`);
-  log.info(`  kinto deploy --site=${siteName}  # publicar`);
+  log.info("");
+  log.info("▸ Desarrollar localmente:");
+  log.info(`    cd sites/${siteName}`);
+  log.info("    npm run dev");
+  log.info("");
+  log.info("▸ Comandos KINTO (desde la raíz del repo):");
+  log.info(`    node bin/kinto.js dev --site=${siteName}`);
+  log.info(`    node bin/kinto.js build --site=${siteName}`);
+  log.info(`    node bin/kinto.js deploy --site=${siteName}`);
+  log.info("");
+  log.info("▸ (Opcional) habilita el comando `kinto` global:");
+  log.info("    npm link");
 
   if (flags.dev) {
     log.step("Levantando servidor de desarrollo");

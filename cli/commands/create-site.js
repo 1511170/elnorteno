@@ -64,14 +64,14 @@ export default async function createSite({ _, flags }) {
   }
 
   log.ok(`Sitio creado en sites/${siteName}/`);
+
+  // `start` invoca este comando con `silent: true` porque ya va a correr
+  // `npm install` y las skills él mismo; imprimir aquí sería ruido duplicado.
+  if (flags.silent) return;
+
   log.info("");
   log.info("Siguientes pasos:");
   log.info(`  cd sites/${siteName}`);
   log.info("  npm install");
-  log.info(`  kinto dev --site=${siteName}`);
-  if (templateName === "ecommerce") {
-    log.hint(
-      "Modo tienda: copia .env.example a .env y completa las credenciales de Shopify.",
-    );
-  }
+  log.info("  npm run dev");
 }
