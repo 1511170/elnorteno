@@ -182,6 +182,23 @@ kinto skill validate
 
 Detalle completo del flujo de PR: `CONTRIBUTING.md`.
 
+### Shopify Headless — Lecciones del Deploy (El Norteño)
+
+| Problema | Causa raíz | Solución |
+| -------- | ---------- | -------- |
+| Productos publicados pero invisibles en Storefront API | Faltaba publicación en el canal ligado al token (Admin App) | `bulk-publish-admin-app.mjs` publica masivamente a ambos canales |
+| Productos con stock=0 no aparecen | Shopify Storefront API oculta automáticamente items sin inventario | Cambiar `inventory_policy` a `continue` en Shopify, o mantener stock |
+| Subcolecciones vacías (camping, outdoor) | Inferencia dinámica desde productos fallaba cuando colecciones no tenían productos visibles | `CATEGORY_HIERARCHY` estático en `src/config/categories.ts` |
+| Footer transparente | Variable CSS `--ink` no estaba definida en `shopify-tokens.css` | Definir todos los tokens que consumen los componentes |
+| PDP con imágenes pixeladas | Sin transformaciones de Shopify CDN (`width`, `height`, `crop`) | Usar `shopifyImageUrl()` de `skills/official/shopify-ecommerce/lib/shopify-image.ts` |
+
+**Scripts de operación reutilizables** (ver `sites/elnorteno/scripts/`):
+- `bulk-publish-products.mjs` — publica a "Online Store"
+- `bulk-publish-admin-app.mjs` — publica a "Admin App" (Storefront visibility)
+- `check-storefront-publication.mjs` — diagnóstico de visibilidad dual
+- `check-inventory.mjs` — auditoría de stock vs visibilidad
+- `create-missing-collections.mjs` — crea colecciones faltantes desde CSV
+
 ### Actualizar el motor KINTO en un proyecto existente
 
 ```bash
@@ -205,6 +222,10 @@ kinto update    # actualiza core/skills/templates/.claude; sites/ queda intacto
 | 7   | Editar `MARKETPLACE.md` o `registry.json` a mano | Se sobrescriben                                                    | `kinto skill validate` los regenera     |
 | 8   | Confundir site-skill con agent-skill             | Van en carpetas distintas                                          | Ver la tabla de arriba                  |
 | 9   | Mover/copiar un sitio fuera de `sites/`          | Rompe el alias `@skills` y `findCli` — los sitios no son portables | Trabaja siempre dentro del repo clonado |
+| 10  | Asumir que "publicado en Shopify" = visible en Storefront API | Shopify requiere **dual publication**: "Online Store" + la app ligada al token (ej. "Admin App") | Verificar con `check-storefront-publication.mjs` |
+| 11  | Inferir jerarquía de categorías desde productos  | Productos pueden faltar en colecciones hijas; la UI queda incompleta | Mapeo estático `CATEGORY_HIERARCHY` en config |
+| 12  | Dejar variables CSS undefined                      | Backgrounds transparentes, layouts rotos (ej. footer sin `--ink`) | Definir siempre los tokens que usa el componente |
+| 13  | Olvidar que stock=0 oculta productos en Storefront API | Shopify auto-oculta productos sin inventario aunque estén publicados | Cambiar `inventory_policy` a `continue` o gestionar stock |
 
 ---
 
