@@ -61,12 +61,19 @@ export const MAIN_CATEGORIES: MainCategory[] = [
   },
   {
     title: "Outdoor",
-    parentHandle: null,
+    parentHandle: "outdoor",
     subs: [
       {
         handle: "nueva-importacion-outdoor",
         title: "Nueva importación outdoor",
       },
+      { handle: "herramientas-alicates-y-otros", title: "Herramientas" },
+      { handle: "calcutta", title: "Calcutta" },
+      { handle: "bass-pro-shops", title: "Bass Pro Shops" },
+      { handle: "creme", title: "Creme" },
+      { handle: "yamamoto", title: "Yamamoto" },
+      { handle: "netbait", title: "Netbait" },
+      { handle: "junnie-s-cat-tracker", title: "Junnie's Cat Tracker" },
     ],
   },
   {

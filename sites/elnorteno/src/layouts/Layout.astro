@@ -22,6 +22,11 @@ interface Props {
   modifiedTime?: string;
   author?: string;
   noindex?: boolean;
+  whatsappContext?: {
+    type: 'product' | 'collection' | 'general';
+    name?: string;
+    url?: string;
+  };
 }
 
 const {
@@ -34,10 +39,26 @@ const {
   modifiedTime,
   author = siteConfig.site.name,
   noindex = false,
+  whatsappContext = { type: 'general' },
 } = Astro.props;
 
 const siteName = siteConfig.site.name;
 const siteUrl = `https://${siteConfig.site.domain}`;
+
+// Generar mensaje de WhatsApp contextual
+function buildWhatsappMessage(ctx: typeof whatsappContext): string {
+  const url = ctx.url ?? `${siteUrl}${Astro.url.pathname}`;
+  switch (ctx.type) {
+    case 'product':
+      return `Hola, me interesa "${ctx.name}". ¿Está disponible? ${url}`;
+    case 'collection':
+      return `Hola, quiero ver más de ${ctx.name}. ${url}`;
+    default:
+      return 'Hola, vengo de El Norteño y quiero información.';
+  }
+}
+const whatsappMessage = buildWhatsappMessage(whatsappContext);
+const whatsappUrl = `https://wa.me/573156819303?text=${encodeURIComponent(whatsappMessage)}`;
 const fullImage = image.startsWith('http') ? image : `${siteUrl}${image}`;
 const titleFull = title === siteName ? title : `${title} | ${siteName}`;
 
@@ -114,10 +135,10 @@ const gaId = import.meta.env.GA_MEASUREMENT_ID;
     </main>
 
     <StoreFooter collections={collections} brandName={siteName} />
-    <CartDrawer />
+    <CartDrawer whatsappUrl={whatsappUrl} />
     <WhatsappFloatingButton
       phone="573156819303"
-      message="Hola, vengo de El Norteño y quiero información."
+      message={whatsappMessage}
       label="Escribir por WhatsApp"
     />
   </body>

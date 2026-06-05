@@ -83,7 +83,7 @@ function colImage(handle: string) {
 }
 ---
 
-<Layout title="El Norteño — Equipo outdoor desde 1987">
+<Layout title="El Norteño — Equipo outdoor desde 1987" whatsappContext={{ type: 'general' }}>
   <!-- ===== HERO ===== -->
   <section class="hero">
     <div class="hero-text">
@@ -183,8 +183,8 @@ function colImage(handle: string) {
         </div>
 
         <div class="cat-grid">
-          {navCollections.slice(0, 2).map((col: any) => (
-            <a href={`/store/${col.handle}`} class="cat-card cat-card-main">
+          {navCollections.slice(0, 4).map((col: any) => (
+            <a href={`/store/${col.handle}`} class="cat-card">
               <div
                 class="cat-card-img"
                 style={CAT_IMAGES[col.handle.toLowerCase()]
@@ -205,51 +205,6 @@ function colImage(handle: string) {
               </div>
             </a>
           ))}
-
-          <div class="cat-grid-right">
-            {navCollections.slice(2, 4).map((col: any) => (
-              <a href={`/store/${col.handle}`} class="cat-card cat-card-small">
-                <div
-                  class="cat-card-img"
-                  style={CAT_IMAGES[col.handle.toLowerCase()]
-                    ? `background-image: url(${CAT_IMAGES[col.handle.toLowerCase()]}); background-size: cover; background-position: center`
-                    : col.image
-                      ? `background-image: url(${col.image.url}); background-size: cover; background-position: center`
-                      : `background: ${colBg(col.handle)}`}
-                ></div>
-                <div class="cat-card-overlay"></div>
-                <div class="cat-card-content">
-                  <div>
-                    <h3>{col.title}</h3>
-                    {colSub(col.handle) && <div class="cat-sub">{colSub(col.handle)}</div>}
-                  </div>
-                  <div class="cat-arrow">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                  </div>
-                </div>
-              </a>
-            ))}
-            {navCollections.length > 4 && (
-              <div class="cat-grid-right-bottom">
-                {navCollections.slice(4, 6).map((col: any) => (
-                  <a href={`/store/${col.handle}`} class="cat-card cat-card-small">
-                    <div
-                      class="cat-card-img"
-                      style={CAT_IMAGES[col.handle.toLowerCase()]
-                        ? `background-image: url(${CAT_IMAGES[col.handle.toLowerCase()]}); background-size: cover; background-position: center`
-                        : col.image
-                          ? `background-image: url(${col.image.url}); background-size: cover; background-position: center`
-                          : `background: ${colBg(col.handle)}`}
-                    ></div>
-                    <div class="cat-card-overlay"></div>
-                    <div class="cat-card-content" style="padding:18px">
-                      <div><h3 style="font-size:22px">{col.title}</h3></div>
-                    </div>
-                  </a>
-                ))}
-              </div>
-            )}
-          </div>
         </div>
 
         <div class="cat-cta">
@@ -604,18 +559,7 @@ function colImage(handle: string) {
   /* ===== CATEGORY GRID ===== */
   .cat-grid {
     display: grid;
-    grid-template-columns: 1.4fr 1fr;
-    gap: 16px;
-    height: 580px;
-  }
-  .cat-grid-right {
-    display: grid;
-    grid-template-rows: 1fr 1fr;
-    gap: 16px;
-  }
-  .cat-grid-right-bottom {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(2, 1fr);
     gap: 16px;
   }
   .cat-card {
@@ -627,9 +571,8 @@ function colImage(handle: string) {
     cursor: pointer;
     text-decoration: none;
     color: var(--white);
+    aspect-ratio: 16 / 10;
   }
-  .cat-card-main { }
-  .cat-card-small { }
   .cat-card-img {
     position: absolute;
     inset: 0;
@@ -847,10 +790,8 @@ function colImage(handle: string) {
     .hero-visual { min-height: 320px; }
     .hero-text { padding: 48px 32px; }
     .stat-bar-grid { grid-template-columns: repeat(2, 1fr); }
-    .cat-grid { grid-template-columns: 1fr; height: auto; }
-    .cat-card-main { aspect-ratio: 16/9; }
-    .cat-grid-right { grid-template-columns: 1fr 1fr; grid-template-rows: none; }
-    .cat-grid-right-bottom { grid-template-columns: 1fr 1fr; }
+    .cat-grid { grid-template-columns: 1fr; }
+    .cat-card { aspect-ratio: 16/9; }
     .products-grid,
     .products-grid-4 { grid-template-columns: repeat(2, 1fr); }
     .banner { grid-template-columns: 1fr; }
@@ -861,8 +802,7 @@ function colImage(handle: string) {
   @media (max-width: 600px) {
     .stat-bar-grid { grid-template-columns: 1fr; }
     .hero-meta { flex-direction: column; gap: 16px; }
-    .cat-grid-right { grid-template-columns: 1fr; }
-    .cat-grid-right-bottom { grid-template-columns: 1fr 1fr; }
+    .cat-card { aspect-ratio: 16/10; }
     .banner-text { padding: 40px 28px; }
   }
 </style>

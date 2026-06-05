@@ -37,7 +37,7 @@ function fmtPrice(n: number) {
 ---
 
 {notFound && (
-  <Layout title="Producto no encontrado">
+  <Layout title="Producto no encontrado" whatsappContext={{ type: 'general' }}>
     <div style="text-align:center;padding:120px 24px;">
       <h1 style="font-family:var(--font-display);font-size:48px;color:var(--pine);text-transform:uppercase;margin:0 0 16px;">Producto no encontrado</h1>
       <p style="color:var(--slate);margin:0 0 24px;">El producto que buscas no existe o fue removido.</p>
@@ -51,6 +51,11 @@ function fmtPrice(n: number) {
     title={product.seo?.title || product.title}
     description={product.seo?.description || product.description}
     image={product.featuredImage?.url}
+    whatsappContext={{
+      type: 'product',
+      name: product.title,
+      url: `${Astro.site?.origin ?? 'https://elnorteno.com'}/products/${product.handle}`,
+    }}
   >
     <ProductSchema product={product} url={Astro.url.href} slot="head" />
 

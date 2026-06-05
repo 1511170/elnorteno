@@ -148,12 +148,12 @@ const eyebrowParts = [
           <button class="pdp-qty-btn" data-qty-plus aria-label="Aumentar cantidad">+</button>
         </div>
         <button
-          class="btn btn-lg pdp-add"
+          class="btn btn-lg btn-primary pdp-add"
           data-add-to-cart
           data-variant-id={variant?.id}
           disabled={!product.availableForSale}
         >
-          {product.availableForSale ? 'Agregar al Carrito' : 'Agotado'}
+          {product.availableForSale ? 'Agregar al carrito' : 'Agotado'}
         </button>
       </div>
 
@@ -441,14 +441,25 @@ const eyebrowParts = [
 
     addBtn?.addEventListener('click', async () => {
       const vid = addBtn.dataset.variantId;
-      if (!vid) return;
+      if (!vid) {
+        if (feedback) {
+          feedback.textContent = 'Error: no se encontró la variante del producto.';
+          feedback.hidden = false;
+          setTimeout(() => { feedback.hidden = true; feedback.textContent = 'Agregado al carrito'; }, 3000);
+        }
+        console.error('[ProductInfo] variantId missing on add-to-cart button');
+        return;
+      }
       addBtn.disabled = true;
       const original = addBtn.textContent;
       addBtn.textContent = 'Agregando…';
 
       const v = findVariant() ?? productData.variants[0];
+      let resolved = false;
 
       const onSuccess = () => {
+        if (resolved) return;
+        resolved = true;
         if (window.dataLayer && v) {
           window.dataLayer.push({
             event: 'add_to_cart',
@@ -475,11 +486,21 @@ const eyebrowParts = [
       };
 
       const onError = (err) => {
+        if (resolved) return;
+        resolved = true;
         console.error('[ProductInfo] addToCart failed', err);
         addBtn.textContent = 'Error';
         setTimeout(() => { addBtn.textContent = original; }, 2000);
         addBtn.disabled = !productData.availableForSale;
       };
+
+      // Safety timeout: if CartDrawer never responds, reset button
+      setTimeout(() => {
+        if (!resolved) {
+          console.warn('[ProductInfo] addToCart timed out — CartDrawer may not be listening');
+          onError(new Error('Timeout'));
+        }
+      }, 5000);
 
       document.dispatchEvent(new CustomEvent('cart-add-request', {
         detail: { variantId: vid, quantity: getQty(), onSuccess, onError },

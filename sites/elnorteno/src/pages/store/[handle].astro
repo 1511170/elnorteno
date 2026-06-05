@@ -71,7 +71,7 @@ const hasAvailability = (products as any[]).some((p: any) => p.availableForSale 
 ---
 
 {notFound && (
-  <Layout title="Colección no encontrada">
+  <Layout title="Colección no encontrada" whatsappContext={{ type: 'general' }}>
     <div style="text-align:center;padding:120px 24px;">
       <h1 style="font-family:var(--font-display);font-size:48px;color:var(--pine);text-transform:uppercase;margin:0 0 16px;">Colección no encontrada</h1>
       <p style="color:var(--slate);margin:0 0 24px;">La colección que buscas no existe.</p>
@@ -85,6 +85,11 @@ const hasAvailability = (products as any[]).some((p: any) => p.availableForSale 
     title={collection.title}
     description={collection.description}
     image={collection.image?.url}
+    whatsappContext={{
+      type: 'collection',
+      name: collection.title,
+      url: `${Astro.site?.origin ?? 'https://elnorteno.com'}/store/${collection.handle}`,
+    }}
   >
     <!-- Breadcrumb -->
     <nav class="crumb" aria-label="Breadcrumb">
