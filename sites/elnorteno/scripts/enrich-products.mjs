@@ -1,371 +1,368 @@
-#!/usr/bin/env node
-/**
- * enrich-products.mjs — analiza productos de Shopify y propone vendor + productType
- * derivados del título y las colecciones. Por defecto corre en modo DRY-RUN.
- *
- * Uso:
- *   node scripts/enrich-products.mjs            # dry-run: muestra qué cambiaría
- *   node scripts/enrich-products.mjs --apply    # aplica los cambios via Admin API
- *   node scripts/enrich-products.mjs --apply --only=vendor   # solo vendor
- *   node scripts/enrich-products.mjs --apply --only=type     # solo productType
- *   node scripts/enrich-products.mjs --limit=10              # procesa solo 10
- *
- * Lee SHOPIFY_ACCESS_TOKEN y SHOPIFY_STORE_DOMAIN del .env del sitio.
- */
+import fs from "fs";
+import path from "path";
+import { parse } from "csv-parse/sync";
+import { stringify } from "csv-stringify/sync";
 
-import { readFileSync } from "node:fs";
-import { fileURLToPath } from "node:url";
-import { dirname, join } from "node:path";
+const IMPORT_CSV = path.resolve("data/shopify-import-corrected.csv");
+const OUTPUT_CSV = path.resolve("data/shopify-import-enriched.csv");
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const envPath = join(__dirname, "..", ".env");
+const csvText = fs.readFileSync(IMPORT_CSV, "utf-8");
+const rows = parse(csvText, { columns: true, skip_empty_lines: true });
 
-// --- Parse .env ---
-const env = {};
-for (const line of readFileSync(envPath, "utf-8").split("\n")) {
-  const m = line.match(/^([A-Z_][A-Z0-9_]*)=(.*)$/);
-  if (m) env[m[1]] = m[2].trim();
-}
-const TOKEN = env.SHOPIFY_ACCESS_TOKEN;
-const DOMAIN = env.SHOPIFY_STORE_DOMAIN;
-const API_VERSION = env.SHOPIFY_API_VERSION || "2025-10";
+// ── Clasificador de tipo de producto ────────────────────────────────────────
+function classifyProduct(row) {
+  const title = (row.Title || "").toLowerCase();
+  const tags = (row.Tags || "")
+    .toLowerCase()
+    .split(",")
+    .map((t) => t.trim());
 
-if (!TOKEN || !DOMAIN) {
-  console.error("❌ Falta SHOPIFY_ACCESS_TOKEN o SHOPIFY_STORE_DOMAIN en .env");
-  process.exit(1);
-}
-
-// --- CLI args ---
-const args = process.argv.slice(2);
-const APPLY = args.includes("--apply");
-const ONLY = args.find((a) => a.startsWith("--only="))?.split("=")[1]; // 'vendor' | 'type'
-const LIMIT = parseInt(
-  args.find((a) => a.startsWith("--limit="))?.split("=")[1] ?? "0",
-  10,
-);
-
-// === Reglas de derivación ===
-
-/** Marcas conocidas — orden importa (matches primero gana). */
-const KNOWN_BRANDS = [
-  // Pesca
-  "SHAKESPEARE",
-  "BERKLEY",
-  "YAMAMOTO",
-  "YO-ZURI",
-  "YO ZURI",
-  "CALCUTTA",
-  "NETBAIT",
-  "CREME",
-  "BASS PRO",
-  "PENN",
-  "SHIMANO",
-  "DAIWA",
-  "ABU GARCIA",
-  "RAPALA",
-  "OWNER",
-  "GAMAKATSU",
-  "MUSTAD",
-  "POWER PRO",
-  "SPIDERWIRE",
-  "PFLUEGER",
-  "PLANO",
-  "OKUMA",
-  "STREN",
-  "TRILENE",
-  "UGLY STIK",
-  "SILSTAR",
-  "EAGLE CLAW",
-  "STORM",
-  "STRIKE KING",
-  "ZOOM",
-  "Z-MAN",
-  "MEGABASS",
-  "JACKALL",
-  "LUCKY CRAFT",
-  "JUNNIE",
-  // Camping
-  "COLEMAN",
-  "INTEX",
-  "OZARK TRAIL",
-  "NATIONAL GEOGRAPHIC",
-  // Tiro deportivo / armas de aire
-  "GAMO",
-  "CROSMAN",
-  "BENJAMIN",
-  "STOEGER",
-  "HATSAN",
-  "WEIHRAUCH",
-  "DIANA",
-  "BEEMAN",
-  "RUGER",
-  "UMAREX",
-  "WALTHER",
-  "WINCHESTER",
-  "DAISY",
-];
-
-function deriveVendor(title, collections) {
-  const upper = title.toUpperCase();
-  for (const brand of KNOWN_BRANDS) {
-    if (upper.includes(brand)) {
-      // Normaliza a Title Case
-      return brand
-        .toLowerCase()
-        .replace(/\b\w/g, (c) => c.toUpperCase())
-        .replace("Bass Pro", "Bass Pro Shops")
-        .replace("Yo-zuri", "Yo-Zuri")
-        .replace("Yo Zuri", "Yo-Zuri");
-    }
-  }
-  // Fallback: si está en una collection que ES una marca conocida (no productos individuales)
-  const brandHandles = [
-    "berkley",
-    "berkley-1",
-    "yamamoto",
-    "calcutta",
-    "netbait",
-    "creme",
-    "bass-pro-shops",
-  ];
-  for (const h of collections ?? []) {
-    if (brandHandles.includes(h)) {
-      return h
-        .replace(/-1$/, "")
-        .split("-")
-        .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-        .join(" ");
-    }
-  }
-  return null; // no cambia
-}
-
-/** Tipo derivado de collections */
-const TYPE_RULES = [
-  {
-    match: ["canas-para-pesca", "canas-de-spinning", "canas-de-casting"],
-    type: "Caña",
-  },
-  {
-    match: [
-      "molinetes-de-pesca",
-      "molinetes-de-spinning",
-      "molinetes-de-casting",
-      "molinetes-de-mosqueo",
-    ],
-    type: "Molinete",
-  },
-  { match: ["anzuelos"], type: "Anzuelo" },
-  { match: ["combos-cana-para-pesca", "combos-spinning"], type: "Combo" },
-  {
-    match: ["senuelos-y-carnadas", "duras", "suaves", "jigs"],
-    type: "Señuelo",
-  },
-  {
-    match: ["nylon-para-pesca", "monofilamento", "fluorocarbono"],
-    type: "Línea",
-  },
-  { match: ["terminales-para-pesca", "uniones"], type: "Terminal" },
-  { match: ["herramientas-alicates-y-otros"], type: "Herramienta" },
-  { match: ["colchones-inflables-y-colchonetas"], type: "Colchón" },
-  {
-    match: ["armas-de-aire", "rifles-de-aire-comprimido"],
-    type: "Arma de aire",
-  },
-  { match: ["camping"], type: "Camping" }, // fallback genérico
-];
-
-function deriveProductType(collections) {
-  const cols = collections ?? [];
-  for (const rule of TYPE_RULES) {
-    if (rule.match.some((h) => cols.includes(h))) return rule.type;
-  }
-  return null;
-}
-
-// === Shopify Admin GraphQL ===
-
-const ENDPOINT = `https://${DOMAIN}/admin/api/${API_VERSION}/graphql.json`;
-
-async function gql(query, variables = {}) {
-  const res = await fetch(ENDPOINT, {
-    method: "POST",
-    headers: {
-      "X-Shopify-Access-Token": TOKEN,
-      "Content-Type": "application/json",
+  // PRIORIDAD 1: Palabras clave EXACTAS en título (más confiable que tags)
+  const titleKeywords = [
+    // Camping (alta prioridad para no confundir)
+    {
+      words: [
+        "campingaz",
+        "colchoneta",
+        "colchón",
+        "silla camping",
+        "mesa camping",
+        "saco de dormir",
+        "sleeping bag",
+        "estufa camping",
+        "carpa",
+      ],
+      type: "Camping",
     },
-    body: JSON.stringify({ query, variables }),
-  });
-  const json = await res.json();
-  if (json.errors) throw new Error(JSON.stringify(json.errors));
-  return json.data;
-}
+    // Caza / Tiro (alta prioridad)
+    {
+      words: [
+        "aceite arma",
+        "aceite carabina",
+        "aceite pistola",
+        "rifle",
+        "pistola",
+        "munición",
+        "casco tiro",
+        "camo",
+        "caza",
+        "caceria",
+        "diabolo",
+        "perdigón",
+        "carabina",
+        "co2",
+      ],
+      type: "Caza",
+    },
+    // Electrónica
+    {
+      words: [
+        "router",
+        "switch ",
+        "switching",
+        "antena",
+        "access point",
+        "gateway",
+        "mikrotik",
+        "ubiquiti",
+        "poe",
+        "conversor",
+        "bombillo",
+        "convertidor",
+      ],
+      type: "Electrónica",
+    },
+    // Misceláneos (muy alta prioridad para no confundir con pesca)
+    {
+      words: [
+        "abrazadera",
+        "bisagra",
+        "aseo",
+        "bebes",
+        "cuidado capilar",
+        "shampoo",
+        "acondicionador",
+        "icopor",
+        "billy boy",
+        "pañales",
+        "jabón",
+      ],
+      type: "Misceláneos",
+    },
+    // Outdoor
+    {
+      words: [
+        "mochila",
+        "linterna",
+        "gorra",
+        "navaja",
+        "multiherramienta",
+        "victorinox",
+        "afilador",
+        "cuchillo",
+        "cantimplora",
+        "brújula",
+        "cantil",
+      ],
+      type: "Outdoor",
+    },
+    // Pesca (default, pero solo si no matchea nada arriba)
+    {
+      words: [
+        "señuelo",
+        "anzuelo",
+        "molinete",
+        "caña",
+        "nylon",
+        "sedal",
+        "flotador",
+        "jig",
+        "spinner",
+        "rapala",
+        "minnow",
+        "shad",
+        "lure",
+        "bait",
+        "hook",
+        "reel",
+        "rod",
+        "cuchara",
+        "powerbait",
+        "bass",
+        "flicker",
+        "trolling",
+        "casting",
+        "fishing",
+        "sinker",
+        "plomo",
+        "boya",
+        "line",
+        "leader",
+        "swivel",
+        "snap",
+        "worm",
+        "grub",
+        "stick",
+        "jerkbait",
+        "crankbait",
+        "topwater",
+        "jersey",
+      ],
+      type: "Pesca",
+    },
+  ];
 
-async function* fetchAllProducts() {
-  let cursor = null;
-  while (true) {
-    const data = await gql(
-      `query($cursor: String) {
-        products(first: 100, after: $cursor) {
-          edges {
-            cursor
-            node {
-              id
-              title
-              vendor
-              productType
-              collections(first: 30) { edges { node { handle } } }
-            }
-          }
-          pageInfo { hasNextPage }
-        }
-      }`,
-      { cursor },
-    );
-    const edges = data.products.edges;
-    for (const e of edges) {
-      yield {
-        id: e.node.id,
-        title: e.node.title,
-        vendor: e.node.vendor,
-        productType: e.node.productType,
-        collections: e.node.collections.edges.map((ce) => ce.node.handle),
-      };
-    }
-    if (!data.products.pageInfo.hasNextPage) break;
-    cursor = edges[edges.length - 1].cursor;
+  for (const { words, type } of titleKeywords) {
+    if (words.some((w) => title.includes(w))) return type;
   }
+
+  // PRIORIDAD 2: Tags específicos (solo para casos claros donde el título no ayuda)
+  if (
+    tags.some((t) =>
+      [
+        "switching & routing",
+        "routers",
+        "router",
+        "mikrotik",
+        "ubiquiti",
+        "antenas",
+      ].includes(t),
+    )
+  )
+    return "Electrónica";
+  if (tags.some((t) => ["caceria", "tiro deportivo"].includes(t)))
+    return "Caza";
+  if (tags.some((t) => ["parrilas camping", "camping"].includes(t)))
+    return "Camping";
+  if (
+    tags.some((t) =>
+      [
+        "aseo",
+        "aseo bebes",
+        "cuidado capilar bebes",
+        "aseo hogar",
+        "icopor",
+        "bisagra",
+        "billy boy",
+      ].includes(t),
+    )
+  )
+    return "Misceláneos";
+
+  // PRIORIDAD 3: Tags generales (Pesca es el default porque es la mayoría)
+  if (
+    tags.some((t) =>
+      [
+        "pesca",
+        "señuelo",
+        "anzuelo",
+        "molinete",
+        "caña",
+        "nylon",
+        "sedal",
+        "flotador",
+        "spinning",
+      ].includes(t),
+    )
+  )
+    return "Pesca";
+  if (
+    tags.some((t) =>
+      [
+        "outdoor",
+        "gorra",
+        "mochila",
+        "linterna",
+        "multiherramienta",
+        "victorinox",
+      ].includes(t),
+    )
+  )
+    return "Outdoor";
+
+  return "Otros";
 }
 
-async function updateProduct(id, fields) {
-  const data = await gql(
-    `mutation($input: ProductInput!) {
-      productUpdate(input: $input) {
-        product { id vendor productType }
-        userErrors { field message }
+// ── Generador de descripción por reglas ─────────────────────────────────────
+function generateDescription(row) {
+  const title = row.Title || "";
+  const vendor = row.Vendor || "";
+  const type = classifyProduct(row);
+  const sku = row["Variant SKU"] || "";
+  const price = row["Variant Price"] || "";
+
+  // Extraer datos del título con regex
+  const mmMatch = title.match(/(\d+)mm/i);
+  const mm = mmMatch ? mmMatch[1] + "mm" : null;
+
+  const ozMatch = title.match(/(\d+[\/\.]?\d*)\s*oz/i);
+  const oz = ozMatch ? ozMatch[1] + " oz" : null;
+
+  const lbMatch = title.match(/(\d+)\s*lb/i);
+  const lb = lbMatch ? lbMatch[1] + " lb" : null;
+
+  const sizeMatch = title.match(/size\s*(\d+)/i);
+  const size = sizeMatch ? "tamaño " + sizeMatch[1] : null;
+
+  const bbMatch = title.match(/(\d+)\s*bb/i);
+  const bb = bbMatch ? bbMatch[1] + " rodamientos" : null;
+
+  const colorMatch = title.match(
+    /(black|blue|red|green|silver|gold|white|chartreuse|sardine|mullet|mackerel|pearl|yellow|orange|pink|purple|brown)/i,
+  );
+  const color = colorMatch ? colorMatch[1] : null;
+
+  const piecesMatch = title.match(/(\d+)\s*pzs?/i);
+  const pieces = piecesMatch ? piecesMatch[1] + " piezas" : null;
+
+  // Construir descripción según tipo
+  let desc = "";
+  const specs = [mm, oz, lb, size, bb, color, pieces].filter(Boolean);
+  const specsText = specs.length > 0 ? specs.join(" · ") : "";
+
+  switch (type) {
+    case "Pesca":
+      if (
+        title.toLowerCase().includes("señuelo") ||
+        title.toLowerCase().includes("lure")
+      ) {
+        desc = `<strong>${title}</strong>. Señuelo de alta calidad${vendor ? ` de la marca ${vendor}` : ""}${specsText ? ", con especificaciones: " + specsText : ""}. Diseñado para atraer especies depredadoras en agua dulce y salada. Ideal para pesca deportiva de bass, trucha y mar.`;
+      } else if (
+        title.toLowerCase().includes("molinete") ||
+        title.toLowerCase().includes("reel")
+      ) {
+        desc = `<strong>${title}</strong>. Molinete${vendor ? ` ${vendor}` : ""}${specsText ? " con " + specsText : ""}. Construcción robusta para largas jornadas de pesca. Sistema de arrastre suave y recuperado preciso.`;
+      } else if (
+        title.toLowerCase().includes("caña") ||
+        title.toLowerCase().includes("rod")
+      ) {
+        desc = `<strong>${title}</strong>. Caña de pesca${vendor ? ` ${vendor}` : ""}${specsText ? ", " + specsText : ""}. Fabricada con materiales de alto rendimiento para máxima sensibilidad y resistencia.`;
+      } else if (
+        title.toLowerCase().includes("anzuelo") ||
+        title.toLowerCase().includes("hook")
+      ) {
+        desc = `<strong>${title}</strong>. Anzuelo${vendor ? ` ${vendor}` : ""}${specsText ? ", " + specsText : ""}. Punta ultraafilada y acero templado para máxima penetración. Perfecto para todo tipo de carnadas.`;
+      } else if (
+        title.toLowerCase().includes("nylon") ||
+        title.toLowerCase().includes("sedal") ||
+        title.toLowerCase().includes("line")
+      ) {
+        desc = `<strong>${title}</strong>. Línea de pesca${vendor ? ` ${vendor}` : ""}${specsText ? ", " + specsText : ""}. Alta resistencia a la abrasión y nudos firmes. Rendimiento óptimo en todo tipo de condiciones.`;
+      } else {
+        desc = `<strong>${title}</strong>. Producto de pesca${vendor ? ` de la marca ${vendor}` : ""}${specsText ? ", " + specsText : ""}. Equipo confiable para tu próxima salida de pesca.`;
       }
-    }`,
-    { input: { id, ...fields } },
-  );
-  const errors = data.productUpdate.userErrors;
-  if (errors.length)
-    throw new Error(errors.map((e) => `${e.field}: ${e.message}`).join("; "));
-  return data.productUpdate.product;
+      break;
+
+    case "Electrónica":
+      desc = `<strong>${title}</strong>. Equipo profesional de red${vendor ? ` ${vendor}` : ""}${specsText ? ", " + specsText : ""}. Diseñado para instalaciones residenciales y comerciales que requieren alta performance y confiabilidad.`;
+      break;
+
+    case "Caza":
+      desc = `<strong>${title}</strong>. Accesorio especializado para caza y tiro deportivo${vendor ? ` ${vendor}` : ""}${specsText ? ", " + specsText : ""}. Materiales duraderos diseñados para resistir las condiciones más exigentes del campo.`;
+      break;
+
+    case "Camping":
+      desc = `<strong>${title}</strong>. Equipo esencial para camping y aventura outdoor${vendor ? ` ${vendor}` : ""}${specsText ? ", " + specsText : ""}. Confort y durabilidad para disfrutar la naturaleza sin preocupaciones.`;
+      break;
+
+    case "Outdoor":
+      desc = `<strong>${title}</strong>. Accesorio outdoor${vendor ? ` ${vendor}` : ""}${specsText ? ", " + specsText : ""}. Versátil y resistente, pensado para acompañarte en cada expedición.`;
+      break;
+
+    case "Misceláneos":
+      desc = `<strong>${title}</strong>${vendor ? ` de ${vendor}` : ""}${specsText ? ", " + specsText : ""}. Producto disponible en El Norteño con envío a toda Colombia.`;
+      break;
+
+    default:
+      desc = `<strong>${title}</strong>${vendor ? ` de ${vendor}` : ""}${specsText ? ", " + specsText : ""}. Producto disponible en El Norteño con envío a toda Colombia.`;
+  }
+
+  // Agregar SKU y precio
+  desc += ` <br><br><em>Referencia: ${sku}${price ? ` · Valor: $${Math.round(parseFloat(price)).toLocaleString("es-CO")}` : ""}. Disponible en tiendas Bucaramanga, Medellín y Valledupar. Envío nacional por Servientrega y Coordinadora.</em>`;
+
+  return desc;
 }
 
-// === Main ===
+// ── Procesar ────────────────────────────────────────────────────────────────
+console.log(`Procesando ${rows.length} productos...\n`);
 
-async function main() {
-  console.log(
-    `\n📦 enrich-products.mjs — ${APPLY ? "⚠️  APPLY MODE" : "🔍 DRY-RUN"}\n`,
-  );
-  console.log(`  store:  ${DOMAIN}`);
-  console.log(`  filter: ${ONLY ? `only ${ONLY}` : "vendor + type"}`);
-  if (LIMIT) console.log(`  limit:  ${LIMIT}`);
-  console.log();
+const typeCounts = {};
+const enriched = rows.map((row) => {
+  const type = classifyProduct(row);
+  const description = generateDescription(row);
 
-  const proposed = [];
-  const stats = { total: 0, vendorChanges: 0, typeChanges: 0, noChange: 0 };
+  typeCounts[type] = (typeCounts[type] || 0) + 1;
 
-  for await (const p of fetchAllProducts()) {
-    stats.total++;
-    const newVendor =
-      ONLY === "type" ? null : deriveVendor(p.title, p.collections);
-    const newType = ONLY === "vendor" ? null : deriveProductType(p.collections);
-
-    const updates = {};
-    // Solo cambiar vendor si es el default ("El Norteño") y derivamos algo distinto
-    if (newVendor && newVendor !== p.vendor && p.vendor === "El Norteño") {
-      updates.vendor = newVendor;
-      stats.vendorChanges++;
-    }
-    // Solo cambiar productType si está vacío
-    if (newType && !p.productType) {
-      updates.productType = newType;
-      stats.typeChanges++;
-    }
-
-    if (Object.keys(updates).length === 0) {
-      stats.noChange++;
-      continue;
-    }
-
-    proposed.push({
-      id: p.id,
-      title: p.title,
-      before: { vendor: p.vendor, type: p.productType },
-      after: updates,
-    });
-
-    if (LIMIT && proposed.length >= LIMIT) break;
-  }
-
-  // Resumen
-  console.log(`\n📊 Estadísticas\n`);
-  console.log(`  total productos:           ${stats.total}`);
-  console.log(`  cambios de vendor:         ${stats.vendorChanges}`);
-  console.log(`  cambios de productType:    ${stats.typeChanges}`);
-  console.log(`  sin cambios:               ${stats.noChange}`);
-  console.log(`  a actualizar:              ${proposed.length}\n`);
-
-  // Muestra primeras 12
-  console.log("📋 Primeros 12 cambios propuestos:\n");
-  for (const c of proposed.slice(0, 12)) {
-    const t = c.title.length > 70 ? c.title.slice(0, 67) + "…" : c.title;
-    console.log(`  ${t}`);
-    if (c.after.vendor)
-      console.log(`    vendor: "${c.before.vendor}" → "${c.after.vendor}"`);
-    if (c.after.productType)
-      console.log(`    type:   "${c.before.type}" → "${c.after.productType}"`);
-  }
-
-  // Distribución vendor/type
-  const vendorDist = {};
-  const typeDist = {};
-  for (const c of proposed) {
-    if (c.after.vendor)
-      vendorDist[c.after.vendor] = (vendorDist[c.after.vendor] ?? 0) + 1;
-    if (c.after.productType)
-      typeDist[c.after.productType] = (typeDist[c.after.productType] ?? 0) + 1;
-  }
-  console.log("\n🏷️  Distribución vendor propuesto:");
-  for (const [v, n] of Object.entries(vendorDist)
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 12)) {
-    console.log(`    ${v.padEnd(20)} ${n}`);
-  }
-  console.log("\n🏷️  Distribución productType propuesto:");
-  for (const [t, n] of Object.entries(typeDist).sort((a, b) => b[1] - a[1])) {
-    console.log(`    ${t.padEnd(20)} ${n}`);
-  }
-
-  if (!APPLY) {
-    console.log(
-      `\n✅ DRY-RUN completo. Para aplicar:\n   node scripts/enrich-products.mjs --apply\n`,
-    );
-    return;
-  }
-
-  // === APPLY ===
-  console.log(`\n🚀 Aplicando ${proposed.length} actualizaciones...\n`);
-  let ok = 0,
-    fail = 0;
-  for (const c of proposed) {
-    try {
-      await updateProduct(c.id, c.after);
-      ok++;
-      if (ok % 50 === 0) console.log(`  ${ok}/${proposed.length} OK`);
-    } catch (e) {
-      fail++;
-      console.error(`  ❌ ${c.id}: ${e.message}`);
-    }
-    // throttle suave: ~10 req/s deja headroom (cost ~10, max 2000, restore 100/s)
-    await new Promise((r) => setTimeout(r, 100));
-  }
-  console.log(`\n✅ Listo: ${ok} actualizados, ${fail} errores\n`);
-}
-
-main().catch((e) => {
-  console.error("❌ Fatal:", e.message);
-  process.exit(1);
+  return {
+    ...row,
+    Type: type,
+    "Product Category": type,
+    "Body (HTML)": description,
+  };
 });
+
+console.log("Distribución por tipo:");
+Object.entries(typeCounts)
+  .sort((a, b) => b[1] - a[1])
+  .forEach(([t, c]) =>
+    console.log(`  ${t.padEnd(15)} ${c.toString().padStart(5)}`),
+  );
+
+// Guardar CSV enriquecido
+const out = stringify(enriched, { header: true });
+fs.writeFileSync(OUTPUT_CSV, out);
+console.log(`\n✅ CSV enriquecido guardado en: ${OUTPUT_CSV}`);
+
+// Guardar también un JSON con solo los cambios para la API
+const changes = enriched.map((r) => ({
+  handle: r.Handle,
+  type: r.Type,
+  description: r["Body (HTML)"],
+}));
+fs.writeFileSync(
+  path.resolve("data/shopify-product-changes.json"),
+  JSON.stringify(changes, null, 2),
+);
+console.log(
+  `✅ JSON de cambios guardado en: data/shopify-product-changes.json`,
+);

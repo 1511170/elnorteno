@@ -7,9 +7,39 @@ const allProducts = await getCachedProducts();
 const allCollections = await getCachedCollections();
 
 const INTERNAL_HANDLES = new Set(['frontpage', 'home-page', 'home', 'all']);
-const navCollections = allCollections
-  .filter((c: any) => !INTERNAL_HANDLES.has(c.handle.toLowerCase()))
-  .slice(0, 6);
+
+// Categorías principales del home en orden exacto
+const MAIN_CATEGORIES = ['pesca', 'camping', 'tiro-deportivo', 'outdoor', 'caza'];
+
+// Imágenes locales para las categorías principales (no dependen de Shopify)
+const CAT_IMAGES: Record<string, string> = {
+  pesca:            '/images/categories/pesca.jpeg',
+  camping:          '/images/categories/camping.jpeg',
+  'tiro-deportivo': '/images/categories/tiro-deportivo.jpeg',
+  tiro:             '/images/categories/tiro-deportivo.jpeg',
+  outdoor:          '/images/categories/outdoor.jpeg',
+  caza:             '/images/categories/caza.jpeg',
+};
+
+// Placeholders para categorías principales que no existan en Shopify (vacías = no expuestas)
+const MAIN_PLACEHOLDERS: Record<string, any> = {
+  outdoor: { handle: 'outdoor', title: 'Outdoor', image: null },
+  caza:    { handle: 'caza',    title: 'Caza',    image: null },
+};
+
+const navCollections = [
+  // Primero las categorías principales en orden (placeholder si no existe)
+  ...MAIN_CATEGORIES.map(handle => {
+    const found = allCollections.find((c: any) => c.handle.toLowerCase() === handle);
+    return found ?? MAIN_PLACEHOLDERS[handle] ?? null;
+  }).filter(Boolean),
+  // Luego el resto (hasta completar 6)
+  ...allCollections
+    .filter((c: any) =>
+      !INTERNAL_HANDLES.has(c.handle.toLowerCase()) &&
+      !MAIN_CATEGORIES.includes(c.handle.toLowerCase())
+    )
+].slice(0, 6);
 
 const featuredProducts = allProducts.slice(0, 8);
 const newProducts = allProducts.slice(8, 12);
@@ -26,18 +56,20 @@ const promoHandle = promoCollection?.handle ?? 'pesca';
 const promoTitle = promoCollection?.title ?? 'Pesca';
 
 const catColors: Record<string, string> = {
-  pesca:   'linear-gradient(135deg, #1f3a3e 0%, #0e2126 100%)',
-  camping: 'linear-gradient(135deg, #a35a2c 0%, #5a2f15 100%)',
-  tiro:    'linear-gradient(135deg, #2a2a2a 0%, #0e0e0e 100%)',
-  outdoor: 'linear-gradient(135deg, #1f4a3c 0%, #0e2a20 100%)',
-  caza:    'linear-gradient(135deg, #3a2a10 0%, #1f1508 100%)',
+  pesca:           'linear-gradient(135deg, #1f3a3e 0%, #0e2126 100%)',
+  camping:         'linear-gradient(135deg, #a35a2c 0%, #5a2f15 100%)',
+  'tiro-deportivo':'linear-gradient(135deg, #2a2a2a 0%, #0e0e0e 100%)',
+  tiro:            'linear-gradient(135deg, #2a2a2a 0%, #0e0e0e 100%)',
+  outdoor:         'linear-gradient(135deg, #1f4a3c 0%, #0e2a20 100%)',
+  caza:            'linear-gradient(135deg, #3a2a10 0%, #1f1508 100%)',
 };
 const catSubtitles: Record<string, string> = {
-  pesca:   'Río · Lago · Mar',
-  camping: 'Vivir afuera',
-  tiro:    'Precisión',
-  outdoor: 'Sendero · Montaña',
-  caza:    'Campo · Monte',
+  pesca:            'Río · Lago · Mar',
+  camping:          'Vivir afuera',
+  'tiro-deportivo': 'Precisión',
+  tiro:             'Precisión',
+  outdoor:          'Sendero · Montaña',
+  caza:             'Campo · Monte',
 };
 
 function colBg(handle: string) {
@@ -45,6 +77,9 @@ function colBg(handle: string) {
 }
 function colSub(handle: string) {
   return catSubtitles[handle.toLowerCase()] ?? '';
+}
+function colImage(handle: string) {
+  return CAT_IMAGES[handle.toLowerCase()] ?? col.image?.url ?? null;
 }
 ---
 
@@ -152,9 +187,11 @@ function colSub(handle: string) {
             <a href={`/store/${col.handle}`} class="cat-card cat-card-main">
               <div
                 class="cat-card-img"
-                style={col.image
-                  ? `background-image: url(${col.image.url}); background-size: cover; background-position: center`
-                  : `background: ${colBg(col.handle)}`}
+                style={CAT_IMAGES[col.handle.toLowerCase()]
+                  ? `background-image: url(${CAT_IMAGES[col.handle.toLowerCase()]}); background-size: cover; background-position: center`
+                  : col.image
+                    ? `background-image: url(${col.image.url}); background-size: cover; background-position: center`
+                    : `background: ${colBg(col.handle)}`}
               ></div>
               <div class="cat-card-overlay"></div>
               <div class="cat-card-content">
@@ -174,9 +211,11 @@ function colSub(handle: string) {
               <a href={`/store/${col.handle}`} class="cat-card cat-card-small">
                 <div
                   class="cat-card-img"
-                  style={col.image
-                    ? `background-image: url(${col.image.url}); background-size: cover; background-position: center`
-                    : `background: ${colBg(col.handle)}`}
+                  style={CAT_IMAGES[col.handle.toLowerCase()]
+                    ? `background-image: url(${CAT_IMAGES[col.handle.toLowerCase()]}); background-size: cover; background-position: center`
+                    : col.image
+                      ? `background-image: url(${col.image.url}); background-size: cover; background-position: center`
+                      : `background: ${colBg(col.handle)}`}
                 ></div>
                 <div class="cat-card-overlay"></div>
                 <div class="cat-card-content">
@@ -196,9 +235,11 @@ function colSub(handle: string) {
                   <a href={`/store/${col.handle}`} class="cat-card cat-card-small">
                     <div
                       class="cat-card-img"
-                      style={col.image
-                        ? `background-image: url(${col.image.url}); background-size: cover; background-position: center`
-                        : `background: ${colBg(col.handle)}`}
+                      style={CAT_IMAGES[col.handle.toLowerCase()]
+                        ? `background-image: url(${CAT_IMAGES[col.handle.toLowerCase()]}); background-size: cover; background-position: center`
+                        : col.image
+                          ? `background-image: url(${col.image.url}); background-size: cover; background-position: center`
+                          : `background: ${colBg(col.handle)}`}
                     ></div>
                     <div class="cat-card-overlay"></div>
                     <div class="cat-card-content" style="padding:18px">
@@ -422,16 +463,18 @@ function colSub(handle: string) {
   .hero-img {
     position: absolute;
     inset: 0;
-    background: linear-gradient(135deg, #2a3a2c 0%, #1d2e25 40%, #14201a 100%);
+    background-image: url('/images/hero-paramo.jpeg');
+    background-size: cover;
+    background-position: center 30%;
   }
   .hero-img::before {
     content: '';
     position: absolute;
     inset: 0;
-    background-image:
-      radial-gradient(circle at 30% 40%, rgba(184,90,42,.25), transparent 50%),
-      radial-gradient(circle at 70% 70%, rgba(192,138,58,.2), transparent 60%),
-      repeating-linear-gradient(45deg, transparent 0 22px, rgba(0,0,0,.08) 22px 23px);
+    background:
+      linear-gradient(135deg, rgba(20,32,26,.55) 0%, rgba(29,46,37,.35) 50%, rgba(20,32,26,.6) 100%),
+      radial-gradient(circle at 30% 40%, rgba(184,90,42,.15), transparent 50%),
+      radial-gradient(circle at 70% 70%, rgba(192,138,58,.1), transparent 60%);
   }
   .hero-label {
     position: absolute;

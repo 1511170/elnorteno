@@ -1,6 +1,7 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import { getCachedCollections, getCachedProducts } from '../../lib/build-data';
+import { CATEGORY_HIERARCHY, CATEGORY_LABELS } from '../../config/categories';
 
 export async function getStaticPaths() {
   const collections = await getCachedCollections();
@@ -36,25 +37,35 @@ function fmtPrice(n: number) {
   return '$' + Math.round(n).toLocaleString('es-CO');
 }
 
-// Sub-colecciones para filtrar: otras collections donde están los productos de ESTA
-const subColCounts = new Map<string, number>();
+// Imágenes locales para categorías principales
+const CAT_IMAGES: Record<string, string> = {
+  pesca:            '/images/categories/pesca.jpeg',
+  camping:          '/images/categories/camping.jpeg',
+  'tiro-deportivo': '/images/categories/tiro-deportivo.jpeg',
+  tiro:             '/images/categories/tiro-deportivo.jpeg',
+  outdoor:          '/images/categories/outdoor.jpeg',
+  caza:             '/images/categories/caza.jpeg',
+};
+
+// Sub-colecciones definidas estáticamente para cada categoría principal
+const subCollections: { handle: string; title: string; count: number }[] = [];
 if (collection) {
-  for (const p of products as any[]) {
-    for (const h of (p.collections ?? [])) {
-      if (h === collection.handle) continue;
-      if (INTERNAL.has(h)) continue;
-      subColCounts.set(h, (subColCounts.get(h) ?? 0) + 1);
+  const subHandles = CATEGORY_HIERARCHY[collection.handle] ?? [];
+  for (const h of subHandles) {
+    const meta = navCollections.find((c: any) => c.handle === h);
+    if (!meta) continue;
+    const count = (allProductsForCounts as any[]).filter(
+      (p: any) => Array.isArray(p.collections) && p.collections.includes(h)
+    ).length;
+    if (count > 0) {
+      subCollections.push({
+        handle: h,
+        title: CATEGORY_LABELS[h] || meta.title,
+        count,
+      });
     }
   }
 }
-const subCollections = Array.from(subColCounts.entries())
-  .map(([handle, count]) => {
-    const meta = navCollections.find((c: any) => c.handle === handle);
-    return meta ? { handle, title: meta.title, count } : null;
-  })
-  .filter(Boolean)
-  .sort((a: any, b: any) => b.count - a.count)
-  .slice(0, 14) as { handle: string; title: string; count: number }[];
 
 const hasAvailability = (products as any[]).some((p: any) => p.availableForSale !== undefined);
 ---
@@ -85,7 +96,10 @@ const hasAvailability = (products as any[]).some((p: any) => p.availableForSale 
     </nav>
 
     <!-- Collection hero -->
-    <div class="coll-hero">
+    <div class={`coll-hero${CAT_IMAGES[collection.handle.toLowerCase()] ? ' coll-hero-has-image' : ''}`}>
+      {CAT_IMAGES[collection.handle.toLowerCase()] && (
+        <div class="coll-hero-bg" style={`background-image: url(${CAT_IMAGES[collection.handle.toLowerCase()]})`}></div>
+      )}
       <div>
         <div class="coll-hero-eyebrow">Colección · {collection.title}</div>
         <h1>{collection.title}</h1>

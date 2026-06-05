@@ -25,6 +25,7 @@
   /* El Norteño extras */
   --pine: #1d2e25;
   --pine-2: #28412f;
+  --ink: #1d2e25;
   --terra: #b85a2a;
   --terra-2: #d36a35;
   --gold: #c08a3a;
@@ -590,6 +591,46 @@ textarea {
   align-items: end;
   max-width: 1480px;
   margin: 0 auto;
+  position: relative;
+  overflow: hidden;
+}
+.coll-hero-bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center 30%;
+  z-index: 0;
+}
+.coll-hero-bg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(20, 32, 26, 0.75) 0%,
+    rgba(29, 46, 37, 0.55) 50%,
+    rgba(20, 32, 26, 0.8) 100%
+  );
+}
+.coll-hero > * {
+  position: relative;
+  z-index: 1;
+}
+.coll-hero-has-image .coll-hero-eyebrow {
+  color: rgba(243, 239, 230, 0.7);
+}
+.coll-hero-has-image h1 {
+  color: var(--white);
+}
+.coll-hero-has-image .coll-hero-meta {
+  border-left-color: rgba(243, 239, 230, 0.25);
+  color: rgba(243, 239, 230, 0.8);
+}
+.coll-hero-has-image .coll-hero-meta-row {
+  color: rgba(243, 239, 230, 0.6);
+}
+.coll-hero-has-image .coll-hero-meta-row strong {
+  color: var(--white);
 }
 @media (max-width: 900px) {
   .coll-hero {

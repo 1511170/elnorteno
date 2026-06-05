@@ -1,25 +1,18 @@
 {
   "$schema": "https://json.schemastore.org/wrangler.json",
   "name": "elnorteno",
-  "account_id": "948994a95e4d7d23badec650fa303120",
+  "account_id": "aeb04d8109ff71ca50a06c7cded5d764",
   "main": "worker/index.ts",
   "compatibility_date": "2026-05-01",
   "workers_dev": true,
-  // routes: configurar cuando elnorteno.com esté añadido como zona en Cloudflare
-  // "routes": [
-  //   { "pattern": "elnorteno.com", "custom_domain": true },
-  //   { "pattern": "www.elnorteno.com", "custom_domain": true },
-  // ],
+  "routes": [
+    { "pattern": "elnorteno.com", "custom_domain": true },
+    { "pattern": "www.elnorteno.com", "custom_domain": true },
+  ],
   "assets": {
     "directory": "./dist",
     "binding": "ASSETS",
   },
-  "kv_namespaces": [
-    {
-      "binding": "SHOPIFY_CACHE",
-      "id": "45f129649a6c49668cf9b9ad5d645138",
-    },
-  ],
   "durable_objects": {
     "bindings": [
       {
@@ -39,5 +32,11 @@
     "SHOPIFY_API_VERSION": "2025-10",
     "SHOPIFY_REBUILD_DEBOUNCE_SECONDS": "90",
   },
+  "kv_namespaces": [
+    {
+      "binding": "SHOPIFY_CACHE",
+      "id": "bfe27ab27f3044f79a557d3b00734092",
+    },
+  ],
   "observability": { "enabled": true },
 }

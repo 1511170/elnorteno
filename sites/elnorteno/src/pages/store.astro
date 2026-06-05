@@ -5,12 +5,33 @@ import { getCachedCollections, getCachedProducts } from '../lib/build-data';
 const allCollections = await getCachedCollections();
 const allProducts = await getCachedProducts();
 const INTERNAL = new Set(['frontpage', 'home-page', 'home', 'all']);
-const navCollections = (allCollections as any[]).filter(c => !INTERNAL.has(c.handle.toLowerCase())).slice(0, 5);
+const MAIN_CATEGORIES = ['pesca', 'camping', 'tiro-deportivo', 'outdoor', 'caza'];
+
+const navCollections = [
+  ...MAIN_CATEGORIES.map(handle =>
+    (allCollections as any[]).find((c: any) => c.handle.toLowerCase() === handle)
+  ).filter(Boolean),
+  ...(allCollections as any[]).filter(c =>
+    !INTERNAL.has(c.handle.toLowerCase()) &&
+    !MAIN_CATEGORIES.includes(c.handle.toLowerCase())
+  ),
+].slice(0, 5);
+
 const vendors = [...new Set((allProducts as any[]).map(p => p.vendor).filter(Boolean))].sort() as string[];
 
 function fmtPrice(n: number) {
   return '$' + Math.round(n).toLocaleString('es-CO');
 }
+
+// Imágenes locales para las categorías principales
+const CAT_IMAGES: Record<string, string> = {
+  pesca:            '/images/categories/pesca.jpeg',
+  camping:          '/images/categories/camping.jpeg',
+  'tiro-deportivo': '/images/categories/tiro-deportivo.jpeg',
+  tiro:             '/images/categories/tiro-deportivo.jpeg',
+  outdoor:          '/images/categories/outdoor.jpeg',
+  caza:             '/images/categories/caza.jpeg',
+};
 
 const catGradients = [
   'linear-gradient(135deg, #1d2e25 0%, #28412f 50%, #2b3a32 100%)',
@@ -42,8 +63,10 @@ const catGradients = [
       <div class="cat-grid">
         <!-- Large card (first collection) -->
         <a href={`/store/${navCollections[0].handle}`} class="cat-card">
-          <div class="cat-card-bg" style={navCollections[0].image?.url ? '' : `background:${catGradients[0]}`}>
-            {navCollections[0].image?.url && <img src={navCollections[0].image.url} alt={navCollections[0].title} />}
+          <div class="cat-card-bg" style={CAT_IMAGES[navCollections[0].handle.toLowerCase()] || navCollections[0].image?.url ? '' : `background:${catGradients[0]}`}>
+            {(CAT_IMAGES[navCollections[0].handle.toLowerCase()] || navCollections[0].image?.url) && (
+              <img src={CAT_IMAGES[navCollections[0].handle.toLowerCase()] || navCollections[0].image.url} alt={navCollections[0].title} />
+            )}
           </div>
           <div class="cat-card-overlay"></div>
           <span class="cat-card-tag">Colección</span>
@@ -62,8 +85,10 @@ const catGradients = [
         <div class="cat-grid-right">
           {navCollections[1] && (
             <a href={`/store/${navCollections[1].handle}`} class="cat-card">
-              <div class="cat-card-bg" style={navCollections[1].image?.url ? '' : `background:${catGradients[1]}`}>
-                {navCollections[1].image?.url && <img src={navCollections[1].image.url} alt={navCollections[1].title} />}
+              <div class="cat-card-bg" style={CAT_IMAGES[navCollections[1].handle.toLowerCase()] || navCollections[1].image?.url ? '' : `background:${catGradients[1]}`}>
+                {(CAT_IMAGES[navCollections[1].handle.toLowerCase()] || navCollections[1].image?.url) && (
+                  <img src={CAT_IMAGES[navCollections[1].handle.toLowerCase()] || navCollections[1].image.url} alt={navCollections[1].title} />
+                )}
               </div>
               <div class="cat-card-overlay"></div>
               <span class="cat-card-tag">Colección</span>
@@ -81,8 +106,10 @@ const catGradients = [
           <div class="cat-grid-right-bottom">
             {navCollections.slice(2, 4).map((col: any, idx: number) => (
               <a href={`/store/${col.handle}`} class="cat-card cat-card-small">
-                <div class="cat-card-bg" style={col.image?.url ? '' : `background:${catGradients[idx + 2]}`}>
-                  {col.image?.url && <img src={col.image.url} alt={col.title} />}
+                <div class="cat-card-bg" style={CAT_IMAGES[col.handle.toLowerCase()] || col.image?.url ? '' : `background:${catGradients[idx + 2]}`}>
+                  {(CAT_IMAGES[col.handle.toLowerCase()] || col.image?.url) && (
+                    <img src={CAT_IMAGES[col.handle.toLowerCase()] || col.image.url} alt={col.title} />
+                  )}
                 </div>
                 <div class="cat-card-overlay"></div>
                 <div class="cat-card-content">
@@ -98,8 +125,10 @@ const catGradients = [
         <!-- Third column (5th collection) -->
         {navCollections[4] && (
           <a href={`/store/${navCollections[4].handle}`} class="cat-card">
-            <div class="cat-card-bg" style={navCollections[4].image?.url ? '' : `background:${catGradients[4]}`}>
-              {navCollections[4].image?.url && <img src={navCollections[4].image.url} alt={navCollections[4].title} />}
+            <div class="cat-card-bg" style={CAT_IMAGES[navCollections[4].handle.toLowerCase()] || navCollections[4].image?.url ? '' : `background:${catGradients[4]}`}>
+              {(CAT_IMAGES[navCollections[4].handle.toLowerCase()] || navCollections[4].image?.url) && (
+                <img src={CAT_IMAGES[navCollections[4].handle.toLowerCase()] || navCollections[4].image.url} alt={navCollections[4].title} />
+              )}
             </div>
             <div class="cat-card-overlay"></div>
             <span class="cat-card-tag">Colección</span>

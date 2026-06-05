@@ -2,6 +2,7 @@
 import Layout from '../../layouts/Layout.astro';
 import ProductGallery from '../../components/product/ProductGallery.astro';
 import { ProductInfo, ProductSchema } from '@skills-official/shopify-ecommerce';
+import WhatsappProductCTA from '@skills-community/whatsapp-cta/components/WhatsappProductCTA.astro';
 import { getCachedProducts } from '../../lib/build-data';
 
 export async function getStaticPaths() {
@@ -66,7 +67,19 @@ function fmtPrice(n: number) {
     <section class="pdp">
       <ProductGallery images={product.images ?? []} />
       <div class="pdp-right">
-        <ProductInfo product={product} />
+        <ProductInfo product={product}>
+          <WhatsappProductCTA
+            slot="cta-extras"
+            phone="573156819303"
+            productName={product.title}
+            productUrl={`${Astro.site?.origin ?? 'https://elnorteno.pages.dev'}/products/${product.handle}`}
+            productId={product.variants?.[0]?.sku ?? product.handle}
+            productBrand={product.vendor}
+            productCategory={product.productType ?? product.tags?.[0]}
+            messageTemplate='Hola, vi este producto en El Norteño y me interesa: "{name}". ¿Está disponible? {url}'
+            label="Consultar por WhatsApp"
+          />
+        </ProductInfo>
 
         <!-- Trust badges -->
         <div class="pdp-features">
