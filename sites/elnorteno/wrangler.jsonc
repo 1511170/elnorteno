@@ -31,6 +31,7 @@
     "SHOPIFY_STORE_DOMAIN": "elnorteno.myshopify.com",
     "SHOPIFY_API_VERSION": "2025-10",
     "SHOPIFY_REBUILD_DEBOUNCE_SECONDS": "90",
+    "SHOPIFY_STOREFRONT_ACCESS_TOKEN": "981a16aa242efd0855ad16f0d47e20dd",
   },
   "kv_namespaces": [
     {
