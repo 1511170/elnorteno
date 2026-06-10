@@ -68,6 +68,82 @@ if (collection) {
 }
 
 const hasAvailability = (products as any[]).some((p: any) => p.availableForSale !== undefined);
+
+const CATEGORY_SEO: Record<string, { title: string; h1: string; description: string; eyebrow?: string }> = {
+  pesca: {
+    title: 'Pesca deportiva en Colombia',
+    h1: 'Pesca deportiva',
+    eyebrow: 'Categoría principal · Pesca',
+    description: 'Cañas, molinetes, señuelos, anzuelos, nylon y accesorios de pesca deportiva con asesoría especializada y envío nacional en Colombia.',
+  },
+  camping: {
+    title: 'Camping y campismo en Colombia',
+    h1: 'Camping y campismo',
+    eyebrow: 'Categoría principal · Camping',
+    description: 'Carpas, colchones inflables, linternas y equipo para acampar con atención por WhatsApp y tiendas en Bucaramanga, Medellín y Valledupar.',
+  },
+  'tiro-deportivo': {
+    title: 'Tiro deportivo y armas de aire',
+    h1: 'Tiro deportivo',
+    eyebrow: 'Categoría principal · Tiro deportivo',
+    description: 'Rifles de aire comprimido, miras, diábolos y accesorios para tiro deportivo responsable, sujetos a disponibilidad y normativa aplicable en Colombia.',
+  },
+  outdoor: {
+    title: 'Equipo outdoor y aventura',
+    h1: 'Outdoor y aventura',
+    eyebrow: 'Categoría principal · Outdoor',
+    description: 'Herramientas, linternas, binoculares, gorras, accesorios de ruta y equipo outdoor para salidas de campo, montaña y aventura.',
+  },
+  caza: {
+    title: 'Equipo de caza y campo',
+    h1: 'Caza y campo',
+    eyebrow: 'Categoría principal · Caza',
+    description: 'Accesorios de campo, óptica, equipo outdoor y productos relacionados para caza y actividades rurales, con compra responsable y asesoría especializada.',
+  },
+  'canas-para-pesca': {
+    title: 'Cañas de pesca',
+    h1: 'Cañas de pesca',
+    description: 'Cañas de pesca para río, lago y mar: spinning, casting y combos seleccionados para pesca deportiva en Colombia.',
+  },
+  'senuelos-y-carnadas': {
+    title: 'Señuelos y carnadas para pesca',
+    h1: 'Señuelos y carnadas',
+    description: 'Señuelos duros, señuelos suaves, jigs, carnadas y marcas especializadas para pesca deportiva.',
+  },
+  'molinetes-de-pesca': {
+    title: 'Molinetes de pesca',
+    h1: 'Molinetes de pesca',
+    description: 'Molinetes de spinning, casting y mosqueo para armar equipos de pesca deportivos con asesoría de El Norteño.',
+  },
+  'armas-de-aire': {
+    title: 'Armas de aire para tiro deportivo',
+    h1: 'Armas de aire',
+    description: 'Armas de aire y accesorios para tiro deportivo responsable, sujetos a disponibilidad, edad mínima y normativa aplicable.',
+  },
+  'rifles-de-aire-comprimido': {
+    title: 'Rifles de aire comprimido',
+    h1: 'Rifles de aire comprimido',
+    description: 'Rifles de aire comprimido y accesorios para práctica deportiva responsable, con asesoría especializada.',
+  },
+};
+
+function humanizeHandle(handle: string): string {
+  return handle
+    .split('-')
+    .filter(Boolean)
+    .map((part) => part.length <= 3 ? part.toUpperCase() : part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' ')
+    .replace(/Senuelos/g, 'Señuelos')
+    .replace(/Canas/g, 'Cañas');
+}
+
+const seo = CATEGORY_SEO[collection?.handle] ?? {
+  title: CATEGORY_LABELS[collection?.handle] || collection?.title || humanizeHandle(collection?.handle ?? 'coleccion'),
+  h1: CATEGORY_LABELS[collection?.handle] || collection?.title || humanizeHandle(collection?.handle ?? 'coleccion'),
+  description: collection?.description || `Compra ${CATEGORY_LABELS[collection?.handle]?.toLowerCase() || collection?.title?.toLowerCase() || 'productos'} en El Norteño. Asesoría por WhatsApp, tiendas físicas y envío nacional en Colombia.`,
+};
+const pageTitle = `${seo.title} | El Norteño Colombia`;
+const pageDescription = seo.description;
 ---
 
 {notFound && (
@@ -82,12 +158,12 @@ const hasAvailability = (products as any[]).some((p: any) => p.availableForSale 
 
 {!notFound && collection && (
   <Layout
-    title={collection.title}
-    description={collection.description}
-    image={collection.image?.url}
+    title={pageTitle}
+    description={pageDescription}
+    image={CAT_IMAGES[collection.handle.toLowerCase()] ?? collection.image?.url ?? '/og-image.png'}
     whatsappContext={{
       type: 'collection',
-      name: collection.title,
+      name: seo.h1,
       url: `${Astro.site?.origin ?? 'https://elnorteno.com'}/store/${collection.handle}`,
     }}
   >
@@ -97,7 +173,7 @@ const hasAvailability = (products as any[]).some((p: any) => p.availableForSale 
       <span>/</span>
       <a href="/store">Tienda</a>
       <span>/</span>
-      <span style="color:var(--ink)">{collection.title}</span>
+      <span style="color:var(--ink)">{seo.h1}</span>
     </nav>
 
     <!-- Collection hero -->
@@ -106,11 +182,11 @@ const hasAvailability = (products as any[]).some((p: any) => p.availableForSale 
         <div class="coll-hero-bg" style={`background-image: url(${CAT_IMAGES[collection.handle.toLowerCase()]})`}></div>
       )}
       <div>
-        <div class="coll-hero-eyebrow">Colección · {collection.title}</div>
-        <h1>{collection.title}</h1>
+        <div class="coll-hero-eyebrow">{seo.eyebrow ?? `Colección · ${seo.h1}`}</div>
+        <h1>{seo.h1}</h1>
       </div>
       <div class="coll-hero-meta">
-        {collection.description && <p>{collection.description}</p>}
+        <p>{pageDescription}</p>
         <div class="coll-hero-meta-row">
           <span>Referencias</span>
           <strong>{products.length}</strong>
