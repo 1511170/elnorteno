@@ -8,9 +8,11 @@ import {
   GTMSetup,
   LittledataPixel,
 } from '@skills-official/shopify-ecommerce';
+import LocalBusinessSchema from '@skills-official/shopify-ecommerce/components/seo/LocalBusinessSchema.astro';
 import GoogleAnalytics from '@skills-official/tracking-analytics/components/GoogleAnalytics.astro';
 import WhatsappFloatingButton from '@skills-community/whatsapp-cta/components/WhatsappFloatingButton.astro';
 import { getCachedCollections } from '../lib/build-data';
+import { STORE_LOCATIONS } from '../lib/categories';
 
 interface Props {
   title?: string;
@@ -60,6 +62,9 @@ function buildWhatsappMessage(ctx: typeof whatsappContext): string {
 const whatsappMessage = buildWhatsappMessage(whatsappContext);
 const whatsappUrl = `https://wa.me/573156819303?text=${encodeURIComponent(whatsappMessage)}`;
 const fullImage = image.startsWith('http') ? image : `${siteUrl}${image}`;
+const logoUrl = siteConfig.site.logo?.startsWith('http')
+  ? siteConfig.site.logo
+  : `${siteUrl}${siteConfig.site.logo ?? '/logo.svg'}`;
 const titleFull = title === siteName ? title : `${title} | ${siteName}`;
 
 const collections = await getCachedCollections();
@@ -119,7 +124,25 @@ const gaId = import.meta.env.GA_MEASUREMENT_ID;
     {littledataId && <LittledataPixel trackerId={littledataId} />}
 
     <!-- Schema.org -->
-    <OrganizationSchema config={siteConfig} />
+    <OrganizationSchema
+      name={siteName}
+      url={siteUrl}
+      logo={logoUrl}
+      description={siteConfig.site.description}
+    />
+    {STORE_LOCATIONS.map((loc) => (
+      <LocalBusinessSchema
+        name={`El Norteño ${loc.city}`}
+        url={`${siteUrl}/contacto`}
+        telephone={loc.phones[0]}
+        image={fullImage}
+        description={`Tienda El Norteño en ${loc.city}: asesoría en pesca, camping, outdoor, tiro deportivo y equipo de campo.`}
+        street={loc.address}
+        locality={loc.city}
+        country="CO"
+        priceRange="$$"
+      />
+    ))}
 
     <!-- Shopify ecommerce design tokens -->
     <link rel="stylesheet" href="/shopify-tokens.css" />

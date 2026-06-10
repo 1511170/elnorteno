@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 180" role="img" aria-labelledby="title desc">
+  <title id="title">El Norteño</title>
+  <desc id="desc">Logotipo textual de El Norteño, tienda outdoor en Colombia.</desc>
+  <rect width="720" height="180" rx="22" fill="#1d2e25"/>
+  <path d="M54 128 121 48l42 50 24-27 76 57H54Z" fill="#e9dfc7" opacity=".92"/>
+  <path d="M54 128h612" stroke="#b85a2a" stroke-width="6" stroke-linecap="round"/>
+  <text x="304" y="91" fill="#f3efe6" font-family="Impact, Anton, Arial Black, sans-serif" font-size="58" letter-spacing="2">EL NORTEÑO</text>
+  <text x="308" y="123" fill="#c08a3a" font-family="Arial, sans-serif" font-size="18" letter-spacing="7">EST · 1987 · COLOMBIA</text>
+</svg>
