@@ -35,9 +35,9 @@ export interface SiteConfig {
 export default {
   site: {
     domain: "elnorteno.com",
-    name: "elnorteno",
-    description: "Sitio web de elnorteno",
-    language: "es",
+    name: "El Norteño",
+    description: "Tienda outdoor en Colombia: pesca deportiva, camping, tiro deportivo, caza y equipo de campo con asesoría por WhatsApp, envío nacional y tiendas en Bucaramanga, Medellín y Valledupar.",
+    language: "es-CO",
     logo: "/logo.svg",
     favicon: "/favicon.ico",
   },

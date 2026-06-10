@@ -2,6 +2,15 @@
 import Layout from '../layouts/Layout.astro';
 import { ProductCard } from '@skills-official/shopify-ecommerce';
 import { getCachedProducts, getCachedCollections } from '../lib/build-data';
+import fs from 'fs';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const publicDir = join(__dirname, '../../public');
+function hasPublicAsset(assetPath: string) {
+  return fs.existsSync(join(publicDir, assetPath.replace(/^\//, '')));
+}
 
 const allProducts = await getCachedProducts();
 const allCollections = await getCachedCollections();
@@ -11,8 +20,9 @@ const INTERNAL_HANDLES = new Set(['frontpage', 'home-page', 'home', 'all']);
 // Categorías principales del home en orden exacto
 const MAIN_CATEGORIES = ['pesca', 'camping', 'tiro-deportivo', 'outdoor', 'caza'];
 
-// Imágenes locales para las categorías principales (no dependen de Shopify)
-const CAT_IMAGES: Record<string, string> = {
+// Imágenes locales para las categorías principales (no dependen de Shopify).
+// Solo se usan si existen en public/; si faltan, caemos a la imagen de Shopify o al gradiente.
+const CAT_IMAGE_PATHS: Record<string, string> = {
   pesca:            '/images/categories/pesca.jpeg',
   camping:          '/images/categories/camping.jpeg',
   'tiro-deportivo': '/images/categories/tiro-deportivo.jpeg',
@@ -20,6 +30,10 @@ const CAT_IMAGES: Record<string, string> = {
   outdoor:          '/images/categories/outdoor.jpeg',
   caza:             '/images/categories/caza.jpeg',
 };
+const CAT_IMAGES = Object.fromEntries(
+  Object.entries(CAT_IMAGE_PATHS).filter(([, path]) => hasPublicAsset(path))
+) as Record<string, string>;
+const HERO_IMAGE = hasPublicAsset('/images/hero-paramo.jpeg') ? '/images/hero-paramo.jpeg' : null;
 
 // Placeholders para categorías principales que no existan en Shopify (vacías = no expuestas)
 const MAIN_PLACEHOLDERS: Record<string, any> = {
@@ -78,8 +92,8 @@ function colBg(handle: string) {
 function colSub(handle: string) {
   return catSubtitles[handle.toLowerCase()] ?? '';
 }
-function colImage(handle: string) {
-  return CAT_IMAGES[handle.toLowerCase()] ?? col.image?.url ?? null;
+function colImage(col: any) {
+  return CAT_IMAGES[col.handle.toLowerCase()] ?? col.image?.url ?? null;
 }
 ---
 
@@ -113,7 +127,7 @@ function colImage(handle: string) {
     </div>
 
     <div class="hero-visual">
-      <div class="hero-img"></div>
+      <div class="hero-img" style={HERO_IMAGE ? `background-image: url(${HERO_IMAGE})` : undefined}></div>
       <div class="hero-stat-tag mono">N · 06°33' · O 73°08'</div>
       <div class="hero-label mono" style="top:45%;left:15%">— PÁRAMO DE SANTURBÁN</div>
       <div class="hero-label mono" style="top:30%;right:18%;text-align:right">ALT 3.420 m</div>
@@ -187,11 +201,9 @@ function colImage(handle: string) {
             <a href={`/store/${col.handle}`} class="cat-card">
               <div
                 class="cat-card-img"
-                style={CAT_IMAGES[col.handle.toLowerCase()]
-                  ? `background-image: url(${CAT_IMAGES[col.handle.toLowerCase()]}); background-size: cover; background-position: center`
-                  : col.image
-                    ? `background-image: url(${col.image.url}); background-size: cover; background-position: center`
-                    : `background: ${colBg(col.handle)}`}
+                style={colImage(col)
+                  ? `background-image: url(${colImage(col)}); background-size: cover; background-position: center`
+                  : `background: ${colBg(col.handle)}`}
               ></div>
               <div class="cat-card-overlay"></div>
               <div class="cat-card-content">
@@ -418,7 +430,7 @@ function colImage(handle: string) {
   .hero-img {
     position: absolute;
     inset: 0;
-    background-image: url('/images/hero-paramo.jpeg');
+    background: linear-gradient(135deg, #2a3a2c 0%, #1d2e25 40%, #14201a 100%);
     background-size: cover;
     background-position: center 30%;
   }
