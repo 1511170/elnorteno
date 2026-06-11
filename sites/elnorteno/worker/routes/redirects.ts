@@ -119,9 +119,14 @@ export function getRedirect(pathname: string): string | null {
   if (EXACT_REDIRECTS[cleanPathname]) return EXACT_REDIRECTS[cleanPathname];
 
   // Old WooCommerce product URLs:
-  // /product/{slug}, /producto/{slug}, /productos/{slug}, /tienda/{slug}
-  const productMatch = cleanPathname.match(/^\/(?:product|producto|productos)\/([^/]+)$/);
-  if (productMatch) return productTarget(productMatch[1]);
+  // /product/{slug}, /producto/{slug}, /productos/{slug}, /tienda/{slug}, /shop/{slug}
+  const productMatch = cleanPathname.match(/^\/(?:product|producto|productos|tienda|shop)\/([^/]+)$/);
+  if (productMatch && productMatch[1] !== "page") return productTarget(productMatch[1]);
+
+  // Old tag/brand/filter archives. Send to store to avoid legacy 404s from indexed facets.
+  if (/^\/(?:product-tag|tag|marca|brand|pa_marca|product_brand)\/[^/]+$/.test(cleanPathname)) {
+    return "/store";
+  }
 
   // Old WooCommerce category URLs, including nested categories:
   // /product-category/{slug}, /categoria-producto/{parent}/{slug}
