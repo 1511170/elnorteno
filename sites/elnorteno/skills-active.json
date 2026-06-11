@@ -9,7 +9,8 @@
     "shopify-ecommerce",
     "testimonials",
     "tracking-analytics",
-    "whatsapp-cta"
+    "whatsapp-cta",
+    "google-marketing-insights"
   ],
   "_comment": "Skills se añaden con: kinto skill add <nombre> --site=<sitio>"
 }
