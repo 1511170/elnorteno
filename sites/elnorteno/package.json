@@ -10,7 +10,8 @@
     "astro": "astro",
     "worker:dev": "wrangler dev",
     "worker:deploy": "wrangler deploy",
-    "deploy": "npm run build && wrangler deploy",
+    "redirects:generate": "node scripts/generate-product-redirects.mjs",
+    "deploy": "npm run build && npm run redirects:generate && wrangler deploy",
     "validate": "node scripts/validate.js",
     "skills:list": "node scripts/skill-list.js"
   },

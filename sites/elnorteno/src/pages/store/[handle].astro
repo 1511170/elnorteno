@@ -3,14 +3,29 @@ import Layout from '../../layouts/Layout.astro';
 import { getCachedCollections, getCachedProducts } from '../../lib/build-data';
 import { CATEGORY_HIERARCHY, CATEGORY_LABELS } from '../../config/categories';
 
+export function productsForCollection(collectionHandle: string, products: any[]) {
+  const direct = products.filter((p: any) =>
+    Array.isArray(p.collections) && p.collections.includes(collectionHandle)
+  );
+  if (direct.length > 0) return direct;
+
+  const subHandles = CATEGORY_HIERARCHY[collectionHandle] ?? [];
+  if (subHandles.length > 0) {
+    const synthetic = products.filter((p: any) =>
+      Array.isArray(p.collections) && p.collections.some((h: string) => subHandles.includes(h))
+    );
+    if (synthetic.length > 0) return synthetic;
+  }
+
+  return direct;
+}
+
 export async function getStaticPaths() {
   const collections = await getCachedCollections();
   const allProducts = await getCachedProducts();
 
   return (collections as any[]).map((c) => {
-    const products = (allProducts as any[]).filter((p) =>
-      Array.isArray(p.collections) && p.collections.includes(c.handle)
-    );
+    const products = productsForCollection(c.handle, allProducts as any[]);
     return {
       params: { handle: c.handle },
       props: { collection: c, products },
@@ -26,9 +41,7 @@ const navCollections = (allCollections as any[]).filter(c => !INTERNAL.has(c.han
 const totalProductsCount = (allProductsForCounts as any[]).length;
 const collectionCounts: Record<string, number> = {};
 for (const col of navCollections) {
-  collectionCounts[col.handle] = (allProductsForCounts as any[]).filter(
-    (p: any) => Array.isArray(p.collections) && p.collections.includes(col.handle)
-  ).length;
+  collectionCounts[col.handle] = productsForCollection(col.handle, allProductsForCounts as any[]).length;
 }
 
 const notFound = !collection;

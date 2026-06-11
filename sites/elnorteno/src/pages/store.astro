@@ -1,6 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import { getCachedCollections, getCachedProducts } from '../lib/build-data';
+import { CATEGORY_HIERARCHY } from '../config/categories';
 
 const allCollections = await getCachedCollections();
 const allProducts = await getCachedProducts();
@@ -32,6 +33,23 @@ const CAT_IMAGES: Record<string, string> = {
   outdoor:          '/images/categories/outdoor.jpeg',
   caza:             '/images/categories/caza.jpeg',
 };
+
+function productsForCollection(collectionHandle: string, products: any[]) {
+  const direct = products.filter((p: any) =>
+    Array.isArray(p.collections) && p.collections.includes(collectionHandle)
+  );
+  if (direct.length > 0) return direct;
+
+  const subHandles = CATEGORY_HIERARCHY[collectionHandle] ?? [];
+  if (subHandles.length > 0) {
+    const synthetic = products.filter((p: any) =>
+      Array.isArray(p.collections) && p.collections.some((h: string) => subHandles.includes(h))
+    );
+    if (synthetic.length > 0) return synthetic;
+  }
+
+  return direct;
+}
 
 const catGradients = [
   'linear-gradient(135deg, #1d2e25 0%, #28412f 50%, #2b3a32 100%)',
@@ -73,7 +91,7 @@ const catGradients = [
           <div class="cat-card-content">
             <div>
               <h3>{navCollections[0].title}</h3>
-              <div class="cat-card-sub">{(allProducts as any[]).filter(p => Array.isArray(p.collections) && p.collections.includes(navCollections[0].handle)).length} productos</div>
+              <div class="cat-card-sub">{productsForCollection(navCollections[0].handle, allProducts as any[]).length} productos</div>
             </div>
             <div class="cat-card-arrow">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14"/><path d="m13 5 7 7-7 7"/></svg>
@@ -95,7 +113,7 @@ const catGradients = [
               <div class="cat-card-content">
                 <div>
                   <h3>{navCollections[1].title}</h3>
-                  <div class="cat-card-sub">{(allProducts as any[]).filter(p => Array.isArray(p.collections) && p.collections.includes(navCollections[1].handle)).length} productos</div>
+                  <div class="cat-card-sub">{productsForCollection(navCollections[1].handle, allProducts as any[]).length} productos</div>
                 </div>
                 <div class="cat-card-arrow">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14"/><path d="m13 5 7 7-7 7"/></svg>
@@ -135,7 +153,7 @@ const catGradients = [
             <div class="cat-card-content">
               <div>
                 <h3>{navCollections[4].title}</h3>
-                <div class="cat-card-sub">{(allProducts as any[]).filter(p => Array.isArray(p.collections) && p.collections.includes(navCollections[4].handle)).length} productos</div>
+                <div class="cat-card-sub">{productsForCollection(navCollections[4].handle, allProducts as any[]).length} productos</div>
               </div>
               <div class="cat-card-arrow">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14"/><path d="m13 5 7 7-7 7"/></svg>

@@ -280,8 +280,8 @@ export async function getCachedProducts(): Promise<
 
     const dt = ((Date.now() - t0) / 1000).toFixed(1);
     if (_products.length === 0) {
-      console.warn(
-        `[build-data] ⚠️  Shopify devolvió 0 productos en ${dt}s — revisa token / scopes / API version`,
+      throw new Error(
+        `[build-data] Shopify devolvió 0 productos en ${dt}s — se cancela el build para no desplegar catálogo vacío`,
       );
     } else {
       console.log(
@@ -291,7 +291,7 @@ export async function getCachedProducts(): Promise<
   } catch (e: any) {
     console.error(`[build-data] ❌ Error cargando productos:`, e.message);
     if (e.stack) console.error(e.stack.split("\n").slice(0, 5).join("\n"));
-    _products = [];
+    throw e;
   }
   return _products;
 }
