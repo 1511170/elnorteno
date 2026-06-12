@@ -1,5 +1,7 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import CollectionListSchema from '@skills-official/shopify-ecommerce/components/seo/CollectionListSchema.astro';
+import SchemaOrg from '@skills-community/seo-ai-citations/components/SchemaOrg.astro';
 import { getCachedCollections, getCachedProducts } from '../../lib/build-data';
 import { CATEGORY_HIERARCHY, CATEGORY_LABELS } from '../../config/categories';
 
@@ -157,6 +159,92 @@ const seo = CATEGORY_SEO[collection?.handle] ?? {
 };
 const pageTitle = `${seo.title} | El Norteño Colombia`;
 const pageDescription = seo.description;
+const siteUrl = Astro.site?.origin ?? 'https://elnorteno.com';
+const collectionUrl = collection ? `${siteUrl}/store/${collection.handle}` : `${siteUrl}/store`;
+const collectionImage = collection ? (CAT_IMAGES[collection.handle.toLowerCase()] ?? collection.image?.url ?? '/og-image.png') : '/og-image.png';
+const collectionImageUrl = collectionImage.startsWith('http') ? collectionImage : `${siteUrl}${collectionImage}`;
+const breadcrumbItems = collection ? [
+  { name: 'Inicio', url: '/' },
+  { name: 'Tienda', url: '/store' },
+  { name: seo.h1, url: `/store/${collection.handle}` },
+] : [];
+
+type FAQ = { q: string; a: string };
+type CollectionGuide = {
+  intro: string;
+  bullets: string[];
+  compliance?: string;
+  faqs: FAQ[];
+};
+
+const COLLECTION_GUIDES: Record<string, CollectionGuide> = {
+  'rifles-de-aire-comprimido': {
+    intro: 'En esta categoría encuentras rifles de aire comprimido para práctica deportiva responsable, iniciación, entrenamiento recreativo y uso de campo permitido. En El Norteño priorizamos asesoría humana para elegir calibre, potencia, ergonomía, mira y accesorios según el uso real del cliente.',
+    bullets: [
+      'Define primero el uso: práctica de precisión, entrenamiento recreativo o actividad de campo permitida.',
+      'Revisa calibre, peso, sistema de propulsión, tipo de mira, disponibilidad de diábolos y mantenimiento.',
+      'Consulta disponibilidad por WhatsApp antes de comprar si necesitas una referencia exacta de marca, calibre o combo.',
+    ],
+    compliance: 'Compra y uso sujetos a disponibilidad, edad mínima, condiciones del fabricante y normativa aplicable en Colombia. El Norteño promueve uso responsable y asesoría antes de la compra.',
+    faqs: [
+      { q: '¿Qué debo tener en cuenta antes de comprar un rifle de aire comprimido?', a: 'Debes revisar el uso previsto, calibre, potencia, peso, sistema de disparo, accesorios incluidos, disponibilidad de diábolos y requisitos de uso responsable según la normativa aplicable en Colombia.' },
+      { q: '¿El Norteño asesora para elegir calibre y accesorios?', a: 'Sí. Puedes consultar por WhatsApp o en tienda física para recibir orientación sobre calibre, miras, diábolos, mantenimiento y compatibilidad según el producto disponible.' },
+      { q: '¿Hacen envíos de rifles de aire comprimido en Colombia?', a: 'El Norteño ofrece envío nacional sujeto a disponibilidad, cobertura logística, validaciones internas y cumplimiento de la normativa aplicable para este tipo de producto.' },
+      { q: '¿Los rifles incluyen garantía?', a: 'La garantía depende de la marca y referencia. En la página de producto y por WhatsApp puedes confirmar condiciones de garantía, disponibilidad y servicio postventa.' },
+    ],
+  },
+  'armas-de-aire': {
+    intro: 'La sección de armas de aire agrupa rifles, pistolas, diábolos, miras y accesorios para tiro deportivo responsable. Está pensada para comparar referencias, marcas y complementos con acompañamiento de El Norteño.',
+    bullets: [
+      'Compara rifles, pistolas y accesorios por marca, calibre, uso y disponibilidad.',
+      'Complementa la compra con diábolos, miras, estuches, mantenimiento y elementos compatibles.',
+      'Usa los filtros y el WhatsApp contextual para validar referencia, ciudad de entrega y recomendaciones.',
+    ],
+    compliance: 'Los productos de esta categoría se ofrecen para práctica deportiva y uso responsable. Toda comunicación debe respetar políticas de plataforma, edad mínima, restricciones logísticas y normativa aplicable.',
+    faqs: [
+      { q: '¿Qué incluye la categoría armas de aire?', a: 'Incluye rifles de aire comprimido, pistolas de aire, diábolos, miras y accesorios relacionados con práctica de tiro deportivo responsable.' },
+      { q: '¿Puedo recibir asesoría antes de comprar?', a: 'Sí. El Norteño atiende por WhatsApp y en tiendas físicas para orientar sobre compatibilidad, calibre, accesorios y disponibilidad.' },
+      { q: '¿Qué marcas se manejan en armas de aire?', a: 'La disponibilidad cambia por inventario. En el catálogo puedes encontrar referencias de marcas como Gamo, Crosman y otras según importación y stock vigente.' },
+      { q: '¿Hay condiciones especiales de compra o envío?', a: 'Sí. La venta, despacho y uso están sujetos a disponibilidad, validaciones internas y normativa aplicable para este tipo de producto en Colombia.' },
+    ],
+  },
+  'tiro-deportivo': {
+    intro: 'Tiro deportivo reúne productos para práctica responsable: armas de aire, rifles, pistolas, miras, diábolos y accesorios. Esta página organiza el catálogo para que el usuario encuentre rápidamente la subcategoría correcta y pueda consultar con un asesor.',
+    bullets: [
+      'Empieza por elegir la subcategoría: armas de aire, rifles, pistolas, miras, diábolos o accesorios.',
+      'Evalúa marca, calibre, accesorios, disponibilidad y condiciones de garantía antes de decidir.',
+      'Para referencias sensibles o dudas de compatibilidad, confirma con un asesor de El Norteño.',
+    ],
+    compliance: 'Categoría orientada a tiro deportivo responsable. El contenido evita promesas agresivas y debe respetar políticas publicitarias, reglas de marketplace y normativa colombiana aplicable.',
+    faqs: [
+      { q: '¿Qué productos encuentro en tiro deportivo?', a: 'Encuentras rifles de aire comprimido, pistolas de aire, miras, diábolos y accesorios para práctica deportiva responsable.' },
+      { q: '¿Cuál es la diferencia entre armas de aire y rifles de aire comprimido?', a: 'Armas de aire es una categoría amplia que incluye rifles, pistolas y accesorios. Rifles de aire comprimido es una subcategoría específica de rifles.' },
+      { q: '¿El Norteño tiene tiendas físicas para asesoría?', a: 'Sí. El Norteño cuenta con atención en Bucaramanga, Medellín y Valledupar, además de asesoría por WhatsApp.' },
+      { q: '¿Puedo consultar disponibilidad antes de comprar?', a: 'Sí. Cada producto tiene CTA de WhatsApp para confirmar disponibilidad, condiciones y recomendaciones antes de finalizar la compra.' },
+    ],
+  },
+};
+
+const guide = collection ? COLLECTION_GUIDES[collection.handle] : undefined;
+const faqs = guide?.faqs ?? [];
+const collectionPageSchema = collection ? {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  '@id': `${collectionUrl}#collection`,
+  name: seo.h1,
+  description: pageDescription,
+  url: collectionUrl,
+  image: collectionImageUrl,
+  inLanguage: 'es-CO',
+  isPartOf: { '@type': 'WebSite', '@id': `${siteUrl}/#website`, name: 'El Norteño' },
+  about: [seo.h1, ...(subCollections.slice(0, 8).map((sub) => sub.title))],
+  mainEntity: {
+    '@type': 'ItemList',
+    '@id': `${collectionUrl}#itemlist`,
+    name: seo.h1,
+    numberOfItems: products.length,
+  },
+} : null;
 ---
 
 {notFound && (
@@ -180,6 +268,26 @@ const pageDescription = seo.description;
       url: `${Astro.site?.origin ?? 'https://elnorteno.com'}/store/${collection.handle}`,
     }}
   >
+    <CollectionListSchema
+      collection={collection}
+      products={products}
+      baseUrl={siteUrl}
+      listName={`${seo.h1} | El Norteño`}
+      slot="head"
+    />
+    <SchemaOrg
+      type={faqs.length > 0 ? ['BreadcrumbList', 'FAQPage'] : ['BreadcrumbList']}
+      siteUrl={siteUrl}
+      siteName="El Norteño"
+      siteLanguage="es"
+      breadcrumbs={breadcrumbItems}
+      faqs={faqs}
+      slot="head"
+    />
+    {collectionPageSchema && (
+      <script type="application/ld+json" set:html={JSON.stringify(collectionPageSchema)} slot="head" />
+    )}
+
     <!-- Breadcrumb -->
     <nav class="crumb" aria-label="Breadcrumb">
       <a href="/">Inicio</a>
@@ -443,6 +551,32 @@ const pageDescription = seo.description;
       </div>
     </div>
 
+    {guide && (
+      <section class="collection-guide" aria-labelledby="collection-guide-title">
+        <div class="collection-guide-copy">
+          <div class="h-meta"><span class="line-el"></span><span>Guía de compra</span></div>
+          <h2 id="collection-guide-title">Cómo elegir {seo.h1.toLowerCase()}.</h2>
+          <p>{guide.intro}</p>
+          <ul>
+            {guide.bullets.map((item) => <li>{item}</li>)}
+          </ul>
+          {guide.compliance && <p class="collection-guide-note">{guide.compliance}</p>}
+        </div>
+        <div class="collection-faq" aria-labelledby="collection-faq-title">
+          <div class="h-meta"><span class="line-el"></span><span>Preguntas frecuentes</span></div>
+          <h2 id="collection-faq-title">Dudas antes de comprar.</h2>
+          <div class="faq-list">
+            {faqs.map((faq) => (
+              <details class="faq-item">
+                <summary>{faq.q}</summary>
+                <p>{faq.a}</p>
+              </details>
+            ))}
+          </div>
+        </div>
+      </section>
+    )}
+
     <!-- Mobile filter bottom-sheet -->
     <dialog class="filter-sheet" data-filter-sheet aria-label="Filtros">
       <div class="filter-sheet-inner">
@@ -467,6 +601,93 @@ const pageDescription = seo.description;
     </dialog>
   </Layout>
 )}
+
+<style>
+  .collection-guide {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(320px, .9fr);
+    gap: clamp(28px, 5vw, 72px);
+    max-width: 1320px;
+    margin: clamp(56px, 8vw, 110px) auto 0;
+    padding: 0 clamp(20px, 4vw, 48px) clamp(56px, 8vw, 96px);
+  }
+  .collection-guide h2 {
+    margin: 12px 0 18px;
+    font-family: var(--font-display);
+    font-size: clamp(34px, 5vw, 72px);
+    line-height: .9;
+    color: var(--pine);
+    letter-spacing: -.03em;
+    text-transform: uppercase;
+  }
+  .collection-guide p {
+    margin: 0 0 18px;
+    color: var(--slate);
+    font-size: 16px;
+    line-height: 1.7;
+  }
+  .collection-guide ul {
+    display: grid;
+    gap: 12px;
+    margin: 24px 0;
+    padding: 0;
+    list-style: none;
+  }
+  .collection-guide li {
+    position: relative;
+    padding-left: 28px;
+    color: var(--ink);
+    line-height: 1.55;
+  }
+  .collection-guide li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: .7em;
+    width: 12px;
+    height: 2px;
+    background: var(--terra);
+  }
+  .collection-guide-note {
+    border-left: 3px solid var(--terra);
+    padding: 14px 0 14px 18px;
+    background: color-mix(in srgb, var(--terra) 7%, transparent);
+    font-size: 14px !important;
+  }
+  .faq-list {
+    display: grid;
+    gap: 10px;
+  }
+  .faq-item {
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: var(--paper);
+    overflow: hidden;
+  }
+  .faq-item summary {
+    cursor: pointer;
+    padding: 18px 20px;
+    font-weight: 700;
+    color: var(--pine);
+    list-style: none;
+  }
+  .faq-item summary::-webkit-details-marker { display: none; }
+  .faq-item summary::after {
+    content: '+';
+    float: right;
+    color: var(--terra);
+    font-family: var(--font-mono);
+  }
+  .faq-item[open] summary::after { content: '–'; }
+  .faq-item p {
+    padding: 0 20px 20px;
+    margin: 0;
+    font-size: 15px;
+  }
+  @media (max-width: 900px) {
+    .collection-guide { grid-template-columns: 1fr; }
+  }
+</style>
 
 <script>
   // ── Filter state ──────────────────────────────────────────────
