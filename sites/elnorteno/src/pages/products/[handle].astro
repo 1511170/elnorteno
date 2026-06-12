@@ -2,8 +2,10 @@
 import Layout from '../../layouts/Layout.astro';
 import ProductGallery from '../../components/product/ProductGallery.astro';
 import { ProductInfo, ProductSchema } from '@skills-official/shopify-ecommerce';
+import SchemaOrg from '@skills-community/seo-ai-citations/components/SchemaOrg.astro';
 import WhatsappProductCTA from '@skills-community/whatsapp-cta/components/WhatsappProductCTA.astro';
 import { getCachedProducts } from '../../lib/build-data';
+import { CATEGORY_LABELS } from '../../config/categories';
 
 export async function getStaticPaths() {
   const products = await getCachedProducts();
@@ -34,6 +36,118 @@ if (product) {
 function fmtPrice(n: number) {
   return '$' + Math.round(n).toLocaleString('es-CO');
 }
+
+const siteUrl = Astro.site?.origin ?? 'https://elnorteno.com';
+const productUrl = product ? `${siteUrl}/products/${product.handle}` : `${siteUrl}/store`;
+
+const PRIORITY_COLLECTIONS = [
+  'rifles-de-aire-comprimido',
+  'armas-de-aire',
+  'tiro-deportivo',
+  'pesca',
+  'camping',
+  'canas-para-pesca',
+  'senuelos-y-carnadas',
+  'molinetes-de-pesca',
+  'outdoor',
+  'caza',
+];
+
+function getPrimaryCollection(p: any): string | undefined {
+  const cols: string[] = Array.isArray(p?.collections) ? p.collections : [];
+  return PRIORITY_COLLECTIONS.find((h) => cols.includes(h)) || cols[0];
+}
+
+const primaryCollection = product ? getPrimaryCollection(product) : undefined;
+const primaryCollectionName = primaryCollection
+  ? (CATEGORY_LABELS[primaryCollection] || primaryCollection.split('-').join(' '))
+  : (product?.productType || 'Tienda');
+const primaryCollectionUrl = primaryCollection ? `/store/${primaryCollection}` : '/store';
+const breadcrumbItems = product ? [
+  { name: 'Inicio', url: '/' },
+  { name: 'Tienda', url: '/store' },
+  { name: primaryCollectionName, url: primaryCollectionUrl },
+  { name: product.title, url: `/products/${product.handle}` },
+] : [];
+
+type FAQ = { q: string; a: string };
+
+type ProductGuide = {
+  detailHeading: string;
+  intro: string;
+  bullets: string[];
+  faqs: FAQ[];
+};
+
+function mapMetafieldFaqs(p: any): FAQ[] {
+  const raw = p?.metafields?.faqs;
+  if (!Array.isArray(raw)) return [];
+  return raw
+    .map((faq: any) => ({
+      q: faq.q || faq.question || faq.name,
+      a: faq.a || faq.answer || faq.text,
+    }))
+    .filter((faq: FAQ) => faq.q && faq.a);
+}
+
+function guideForProduct(p: any, collectionHandle?: string): ProductGuide {
+  const title = p?.title || 'este producto';
+  const category = collectionHandle || p?.productType || '';
+
+  if (['rifles-de-aire-comprimido', 'armas-de-aire', 'tiro-deportivo'].includes(category)) {
+    return {
+      detailHeading: 'Uso deportivo responsable',
+      intro: `${title} hace parte de nuestro catálogo de tiro deportivo y armas de aire. Antes de comprar, valida disponibilidad, calibre, accesorios compatibles y condiciones de uso responsable con un asesor de El Norteño.`,
+      bullets: ['Confirma calibre, potencia y accesorios incluidos.', 'Revisa compatibilidad con diábolos, miras, estuche y mantenimiento.', 'Compra y despacho sujetos a disponibilidad, validaciones internas y normativa aplicable en Colombia.'],
+      faqs: [
+        { q: `¿${title} está disponible para envío?`, a: 'La disponibilidad y el despacho dependen del inventario vigente, ciudad de destino, validaciones internas y condiciones aplicables para esta categoría. Confírmalo por WhatsApp antes de comprar.' },
+        { q: '¿Puedo recibir asesoría antes de comprar?', a: 'Sí. El Norteño ofrece asesoría por WhatsApp y en tiendas físicas para revisar calibre, accesorios, uso previsto y compatibilidad.' },
+        { q: '¿Qué debo revisar antes de elegir un producto de tiro deportivo?', a: 'Revisa calibre, marca, garantía, accesorios compatibles, mantenimiento, disponibilidad de consumibles y cumplimiento de la normativa aplicable.' },
+      ],
+    };
+  }
+
+  if (['pesca', 'canas-para-pesca', 'senuelos-y-carnadas', 'molinetes-de-pesca'].includes(category)) {
+    return {
+      detailHeading: 'Compatibilidad de pesca',
+      intro: `${title} está pensado para armar o complementar un equipo de pesca deportiva. La mejor elección depende de técnica, especie objetivo, ambiente de pesca y compatibilidad con caña, molinete, línea o señuelo.`,
+      bullets: ['Valida tamaño, resistencia, peso y uso recomendado.', 'Combina la referencia con línea, caña, molinete o terminales compatibles.', 'Consulta por WhatsApp si buscas una recomendación para río, lago, mar o una especie específica.'],
+      faqs: [
+        { q: `¿Cómo sé si ${title} sirve para mi tipo de pesca?`, a: 'Revisa técnica, ambiente, especie objetivo, resistencia y compatibilidad con el resto del equipo. Si tienes dudas, un asesor puede ayudarte por WhatsApp.' },
+        { q: '¿El Norteño ayuda a combinar caña, molinete, línea y señuelo?', a: 'Sí. Puedes indicar tu equipo actual o el tipo de pesca que haces para validar opciones compatibles disponibles.' },
+        { q: '¿Hacen envíos de productos de pesca en Colombia?', a: 'Sí. El Norteño ofrece envío nacional sujeto a disponibilidad, ciudad de destino y condiciones logísticas del producto.' },
+      ],
+    };
+  }
+
+  if (['camping', 'outdoor', 'caza'].includes(category)) {
+    return {
+      detailHeading: 'Equipo para salida de campo',
+      intro: `${title} hace parte del equipo outdoor seleccionado por El Norteño para camping, campo, viaje o actividades al aire libre. Evalúa tamaño, peso, resistencia, mantenimiento y condiciones del destino antes de comprar.`,
+      bullets: ['Revisa medidas, peso, material y facilidad de transporte.', 'Confirma si aplica para lluvia, frío, uso frecuente o salidas ocasionales.', 'Consulta disponibilidad, garantía y recomendaciones según ciudad o destino.'],
+      faqs: [
+        { q: `¿${title} sirve para camping o salidas outdoor?`, a: 'Depende del destino, clima, frecuencia de uso y necesidades del usuario. Revisa la ficha y consulta por WhatsApp si necesitas una recomendación específica.' },
+        { q: '¿Puedo recoger en tienda física?', a: 'Según disponibilidad, puedes coordinar recogida o asesoría en tiendas de Bucaramanga, Medellín y Valledupar.' },
+        { q: '¿Tiene garantía?', a: 'La garantía depende de la marca y referencia. Puedes confirmar condiciones en la página del producto o por WhatsApp.' },
+      ],
+    };
+  }
+
+  return {
+    detailHeading: 'Detalles del producto',
+    intro: `${title} está disponible en El Norteño con asesoría por WhatsApp, envío nacional y atención en tiendas físicas. Revisa marca, categoría, disponibilidad y compatibilidad antes de finalizar la compra.`,
+    bullets: ['Confirma disponibilidad antes de comprar.', 'Revisa marca, SKU, precio y condiciones de garantía.', 'Consulta por WhatsApp si necesitas una recomendación o producto complementario.'],
+    faqs: [
+      { q: `¿${title} está disponible?`, a: 'La disponibilidad depende del inventario vigente. Puedes confirmarla desde el botón de WhatsApp del producto.' },
+      { q: '¿Hacen envíos en Colombia?', a: 'Sí. El Norteño ofrece envío nacional sujeto a cobertura logística, disponibilidad y características del producto.' },
+      { q: '¿Puedo pedir asesoría antes de comprar?', a: 'Sí. Puedes contactar a El Norteño por WhatsApp o visitar una tienda física para recibir orientación.' },
+    ],
+  };
+}
+
+const productGuide = product ? guideForProduct(product, primaryCollection) : undefined;
+const metafieldFaqs = product ? mapMetafieldFaqs(product) : [];
+const productFaqs = metafieldFaqs.length > 0 ? metafieldFaqs : (productGuide?.faqs ?? []);
 ---
 
 {notFound && (
@@ -57,13 +171,32 @@ function fmtPrice(n: number) {
       url: `${Astro.site?.origin ?? 'https://elnorteno.com'}/products/${product.handle}`,
     }}
   >
-    <ProductSchema product={product} url={Astro.url.href} slot="head" />
+    <ProductSchema
+      product={product}
+      url={productUrl}
+      siteUrl={siteUrl}
+      sellerName="El Norteño"
+      sellerUrl={siteUrl}
+      categoryName={primaryCollectionName}
+      slot="head"
+    />
+    <SchemaOrg
+      type={productFaqs.length > 0 ? ['BreadcrumbList', 'FAQPage'] : ['BreadcrumbList']}
+      siteUrl={siteUrl}
+      siteName="El Norteño"
+      siteLanguage="es"
+      breadcrumbs={breadcrumbItems}
+      faqs={productFaqs}
+      slot="head"
+    />
 
     <!-- Breadcrumb -->
     <nav class="crumb" aria-label="Breadcrumb">
       <a href="/">Inicio</a>
       <span>/</span>
       <a href="/store">Tienda</a>
+      <span>/</span>
+      <a href={primaryCollectionUrl}>{primaryCollectionName}</a>
       <span>/</span>
       <span style="color:var(--ink)">{product.title}</span>
     </nav>
@@ -129,14 +262,14 @@ function fmtPrice(n: number) {
       <div class="pdp-tab-content" data-panel="detalles">
         <div class="pdp-tab-body">
           <div>
-            <div class="pdp-tab-eyebrow">Construcción</div>
-            <p>Cada pieza pasa por una revisión manual en nuestra bodega antes de salir. Buscamos detalles que delatan corte de costo — costuras flojas, herrajes blandos, telas que pierden tacto con el primer lavado — y solo dejamos pasar lo que aguantaría una salida nuestra.</p>
-            <p>Este producto se fabricó pensando en uso intenso y mantenimiento mínimo. Si te falla algo dentro de los primeros 24 meses, lo reparamos o lo reemplazamos.</p>
+            <div class="pdp-tab-eyebrow">{productGuide?.detailHeading ?? 'Detalles'}</div>
+            <p>{productGuide?.intro}</p>
+            {product.description && <p>{product.description}</p>}
           </div>
           <div>
-            <div class="pdp-tab-eyebrow">Pensado para</div>
+            <div class="pdp-tab-eyebrow">Antes de comprar</div>
             <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px;">
-              {['Salidas de fin de semana en condiciones variables', 'Uso intensivo con mantenimiento básico', 'Cargar peso real sin compromisos de durabilidad', 'Trabajar bien en frío, humedad y polvo'].map((item, i) => (
+              {(productGuide?.bullets ?? []).map((item, i) => (
                 <li style="display:flex;gap:10px;align-items:flex-start;font-size:14px;">
                   <span style="color:var(--terra);font-family:var(--font-mono);font-size:11px;margin-top:3px;flex-shrink:0;">0{i+1}</span>
                   {item}
@@ -223,6 +356,25 @@ function fmtPrice(n: number) {
       </div>
     </section>
 
+    {productFaqs.length > 0 && (
+      <section class="pdp-faq" aria-labelledby="pdp-faq-title">
+        <div class="section-head">
+          <div>
+            <div class="h-meta"><span class="line-el"></span><span>Preguntas frecuentes</span></div>
+            <h2 id="pdp-faq-title">Antes de decidir.</h2>
+          </div>
+        </div>
+        <div class="pdp-faq-list">
+          {productFaqs.map((faq) => (
+            <details class="pdp-faq-item">
+              <summary>{faq.q}</summary>
+              <p>{faq.a}</p>
+            </details>
+          ))}
+        </div>
+      </section>
+    )}
+
     <!-- Relacionados -->
     {related.length > 0 && (
       <section class="rel-section">
@@ -254,6 +406,49 @@ function fmtPrice(n: number) {
 
 <style>
   .pdp-right { padding-top: 12px; }
+  .pdp-faq {
+    max-width: 1180px;
+    margin: clamp(52px, 7vw, 96px) auto 0;
+    padding: 0 clamp(20px, 4vw, 48px);
+  }
+  .pdp-faq-list {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+  }
+  .pdp-faq-item {
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    background: var(--paper);
+    overflow: hidden;
+  }
+  .pdp-faq-item summary {
+    cursor: pointer;
+    list-style: none;
+    padding: 18px 20px;
+    color: var(--pine);
+    font-weight: 700;
+    line-height: 1.35;
+  }
+  .pdp-faq-item summary::-webkit-details-marker { display: none; }
+  .pdp-faq-item summary::after {
+    content: '+';
+    float: right;
+    color: var(--terra);
+    font-family: var(--font-mono);
+    margin-left: 12px;
+  }
+  .pdp-faq-item[open] summary::after { content: '–'; }
+  .pdp-faq-item p {
+    margin: 0;
+    padding: 0 20px 20px;
+    color: var(--slate);
+    font-size: 14px;
+    line-height: 1.65;
+  }
+  @media (max-width: 900px) {
+    .pdp-faq-list { grid-template-columns: 1fr; }
+  }
 </style>
 
 <script>
