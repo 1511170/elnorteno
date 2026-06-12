@@ -1,0 +1,134 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import SchemaOrg from '@skills-community/seo-ai-citations/components/SchemaOrg.astro';
+import { GUIDES, type Guide } from '../../data/guides';
+
+export function getStaticPaths() {
+  return GUIDES.map((guide) => ({ params: { slug: guide.slug }, props: { guide } }));
+}
+
+const { guide } = Astro.props as { guide: Guide };
+const siteUrl = Astro.site?.origin ?? 'https://elnorteno.com';
+const canonical = `${siteUrl}/guias/${guide.slug}/`;
+const breadcrumbs = [
+  { name: 'Inicio', url: '/' },
+  { name: 'Guías', url: '/guias' },
+  { name: guide.title, url: `/guias/${guide.slug}` },
+];
+---
+
+<Layout
+  title={guide.title}
+  description={guide.description}
+  canonical={canonical}
+  type="article"
+  publishedTime={guide.updated}
+  modifiedTime={guide.updated}
+  whatsappContext={{ type: 'general' }}
+>
+  <SchemaOrg
+    type={['BreadcrumbList', 'FAQPage', 'HowTo', 'BlogPosting']}
+    siteUrl={siteUrl}
+    siteName="El Norteño"
+    siteLanguage="es"
+    breadcrumbs={breadcrumbs}
+    faqs={guide.faqs}
+    steps={guide.steps.map((step) => ({ ...step, url: canonical }))}
+    data={{
+      title: guide.title,
+      description: guide.description,
+      author: 'El Norteño',
+      datePublished: guide.updated,
+      dateModified: guide.updated,
+      url: canonical,
+      howToName: guide.title,
+      howToDescription: guide.description,
+    }}
+    slot="head"
+  />
+
+  <nav class="crumb" aria-label="Breadcrumb">
+    <a href="/">Inicio</a><span>/</span><a href="/guias">Guías</a><span>/</span><span style="color:var(--ink)">{guide.title}</span>
+  </nav>
+
+  <article class="guide-page">
+    <header class="guide-hero">
+      <div class="coll-hero-eyebrow">Guía · {guide.category}</div>
+      <h1>{guide.title}</h1>
+      <p>{guide.intro}</p>
+      <div class="guide-meta">Actualizado: {guide.updated} · El Norteño Colombia</div>
+    </header>
+
+    <div class="guide-layout">
+      <div class="guide-content">
+        {guide.sections.map((section) => (
+          <section>
+            <h2>{section.heading}</h2>
+            <p>{section.body}</p>
+            {section.bullets && (
+              <ul>
+                {section.bullets.map((item) => <li>{item}</li>)}
+              </ul>
+            )}
+          </section>
+        ))}
+
+        <section>
+          <h2>Pasos rápidos</h2>
+          <ol>
+            {guide.steps.map((step) => <li><strong>{step.name}:</strong> {step.text}</li>)}
+          </ol>
+        </section>
+
+        {guide.compliance && <p class="guide-note">{guide.compliance}</p>}
+      </div>
+
+      <aside class="guide-aside">
+        <h2>Enlaces útiles</h2>
+        <div class="guide-links">
+          {guide.links.map((link) => <a href={link.href}>{link.label}</a>)}
+        </div>
+      </aside>
+    </div>
+
+    <section class="guide-faq">
+      <div class="h-meta"><span class="line-el"></span><span>Preguntas frecuentes</span></div>
+      <h2>Dudas comunes</h2>
+      <div class="guide-faq-list">
+        {guide.faqs.map((faq) => (
+          <details>
+            <summary>{faq.q}</summary>
+            <p>{faq.a}</p>
+          </details>
+        ))}
+      </div>
+    </section>
+  </article>
+</Layout>
+
+<style>
+  .guide-page { max-width: 1240px; margin: 0 auto; padding: 0 clamp(20px, 4vw, 48px) 96px; }
+  .guide-hero { padding: clamp(44px, 7vw, 92px) 0 clamp(32px, 5vw, 60px); border-bottom: 1px solid var(--line); }
+  .guide-hero h1 { margin: 12px 0 20px; max-width: 940px; font-family: var(--font-display); font-size: clamp(44px, 7vw, 92px); line-height: .9; color: var(--pine); text-transform: uppercase; letter-spacing: -.03em; }
+  .guide-hero p { max-width: 760px; color: var(--slate); font-size: 18px; line-height: 1.7; }
+  .guide-meta { margin-top: 18px; font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; letter-spacing: .14em; color: var(--slate); }
+  .guide-layout { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: clamp(32px, 6vw, 82px); padding-top: 56px; }
+  .guide-content section { margin-bottom: 42px; }
+  .guide-content h2, .guide-aside h2, .guide-faq h2 { font-family: var(--font-display); text-transform: uppercase; color: var(--pine); letter-spacing: -.02em; }
+  .guide-content h2 { font-size: clamp(28px, 4vw, 48px); margin: 0 0 14px; }
+  .guide-content p, .guide-content li, .guide-faq p { color: var(--slate); line-height: 1.75; }
+  .guide-content ul, .guide-content ol { padding-left: 22px; }
+  .guide-note { border-left: 3px solid var(--terra); padding: 16px 0 16px 18px; background: color-mix(in srgb, var(--terra) 7%, transparent); }
+  .guide-aside { position: sticky; top: 96px; align-self: start; border: 1px solid var(--line); border-radius: 18px; padding: 24px; background: var(--paper); }
+  .guide-links { display: grid; gap: 10px; }
+  .guide-links a { display: block; padding: 12px 14px; border-radius: 999px; border: 1px solid var(--line); color: var(--pine); text-decoration: none; font-weight: 700; }
+  .guide-faq { margin-top: 42px; }
+  .guide-faq-list { display: grid; gap: 12px; margin-top: 18px; }
+  .guide-faq details { border: 1px solid var(--line); border-radius: 16px; background: var(--paper); overflow: hidden; }
+  .guide-faq summary { cursor: pointer; padding: 18px 20px; font-weight: 800; color: var(--pine); list-style: none; }
+  .guide-faq summary::-webkit-details-marker { display: none; }
+  .guide-faq summary::after { content: '+'; float: right; color: var(--terra); }
+  .guide-faq details[open] summary::after { content: '–'; }
+  .guide-faq details p { margin: 0; padding: 0 20px 20px; }
+  @media (max-width: 900px) { .guide-layout { grid-template-columns: 1fr; } .guide-aside { position: static; } }
+</style>
