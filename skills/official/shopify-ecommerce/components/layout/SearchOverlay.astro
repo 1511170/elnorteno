@@ -223,6 +223,48 @@ const publicCollections = collections.filter((c) => !INTERNAL_HANDLES.has(c.hand
     let activeCategory = 'all';
     let selectedIndex = -1;
     let debounceTimer: ReturnType<typeof setTimeout>;
+    let lastTrackedSearch = '';
+
+    function trackSearch(query: string, resultsCount: number) {
+      const normalized = query.trim().toLowerCase();
+      if (normalized.length < 2) return;
+      const key = `${normalized}|${activeCategory}|${resultsCount}`;
+      if (key === lastTrackedSearch) return;
+      lastTrackedSearch = key;
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({
+        event: 'view_search_results',
+        search_term: normalized,
+        results_count: resultsCount,
+        search_category: activeCategory,
+        ecommerce: {
+          search_term: normalized,
+          results_count: resultsCount,
+          search_category: activeCategory,
+        },
+      });
+    }
+
+    function trackSelect(item: HTMLAnchorElement, index: number) {
+      const name = item.querySelector('.search-result-name')?.textContent?.trim() || '';
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({
+        event: 'select_item',
+        item_list_name: 'site_search',
+        item_list_id: activeCategory,
+        search_term: input.value.trim().toLowerCase(),
+        ecommerce: {
+          item_list_name: 'site_search',
+          item_list_id: activeCategory,
+          search_term: input.value.trim().toLowerCase(),
+          items: [{
+            item_name: name,
+            item_id: item.getAttribute('href')?.replace('/products/', '').replace(/\/$/, '') || '',
+            index: index + 1,
+          }],
+        },
+      });
+    }
 
     function open() {
       overlay.removeAttribute('hidden');
@@ -309,6 +351,7 @@ const publicCollections = collections.filter((c) => !INTERNAL_HANDLES.has(c.hand
       }
       selectedIndex = -1;
       showResultsState();
+      trackSearch(query, top.length);
     }
 
     input.addEventListener('input', () => {
@@ -329,6 +372,13 @@ const publicCollections = collections.filter((c) => !INTERNAL_HANDLES.has(c.hand
         chips.forEach((c) => c.classList.toggle('active', c === chip));
         if (input.value.trim().length >= 2) runSearch(input.value.trim());
       });
+    });
+
+    overlay.addEventListener('click', (e) => {
+      const item = (e.target as HTMLElement).closest<HTMLAnchorElement>('[data-result]');
+      if (!item) return;
+      const items = Array.from(listEl.querySelectorAll<HTMLAnchorElement>('[data-result]'));
+      trackSelect(item, Math.max(0, items.indexOf(item)));
     });
 
     overlay.addEventListener('keydown', (e) => {
