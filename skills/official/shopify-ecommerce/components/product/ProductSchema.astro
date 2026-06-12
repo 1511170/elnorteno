@@ -4,34 +4,93 @@ import type { Product } from '../../lib/product-mapper';
 interface Props {
   product: Product;
   url: string;
+  siteUrl?: string;
+  sellerName?: string;
+  sellerUrl?: string;
+  categoryName?: string;
 }
 
-const { product, url } = Astro.props;
+const {
+  product,
+  url,
+  siteUrl = new URL(url).origin,
+  sellerName = 'El Norteño',
+  sellerUrl = siteUrl,
+  categoryName = product.productType || product.collections?.[0],
+} = Astro.props;
 
 const variant = product.variants[0];
 const price = variant?.price;
 const availability = product.availableForSale
   ? 'https://schema.org/InStock'
   : 'https://schema.org/OutOfStock';
+const productId = `${url.replace(/\/$/, '')}#product`;
+const images = (product.images?.length ? product.images : (product.featuredImage ? [product.featuredImage] : []))
+  .map((img) => img.url)
+  .filter(Boolean);
+const description = product.seo?.description || product.description || `${product.title} disponible en ${sellerName}.`;
+const sku = variant?.sku || product.handle;
+const priceAmount = price?.amount ? Number.parseFloat(price.amount) : undefined;
 
 const schema = {
   '@context': 'https://schema.org',
   '@type': 'Product',
+  '@id': productId,
   name: product.title,
-  description: product.description,
-  image: product.images.map((img) => img.url),
-  sku: variant?.sku || undefined,
+  description,
+  image: images,
+  sku,
+  mpn: sku,
   brand: product.vendor
     ? { '@type': 'Brand', name: product.vendor }
     : undefined,
+  category: categoryName || undefined,
   url,
+  itemCondition: 'https://schema.org/NewCondition',
   offers: {
     '@type': 'Offer',
-    price: price?.amount,
-    priceCurrency: price?.currencyCode,
+    '@id': `${url.replace(/\/$/, '')}#offer`,
+    price: priceAmount ?? price?.amount,
+    priceCurrency: price?.currencyCode || 'COP',
     availability,
-    seller: { '@type': 'Organization', name: product.vendor || undefined },
+    itemCondition: 'https://schema.org/NewCondition',
+    seller: {
+      '@type': 'Organization',
+      '@id': `${sellerUrl.replace(/\/$/, '')}#organization`,
+      name: sellerName,
+      url: sellerUrl,
+    },
     url,
+    hasMerchantReturnPolicy: {
+      '@type': 'MerchantReturnPolicy',
+      applicableCountry: 'CO',
+      returnPolicyCategory: 'https://schema.org/MerchantReturnFiniteReturnWindow',
+      merchantReturnDays: 30,
+      returnMethod: 'https://schema.org/ReturnByMail',
+      returnFees: 'https://schema.org/ReturnFeesCustomerResponsibility',
+    },
+    shippingDetails: {
+      '@type': 'OfferShippingDetails',
+      shippingDestination: {
+        '@type': 'DefinedRegion',
+        addressCountry: 'CO',
+      },
+      deliveryTime: {
+        '@type': 'ShippingDeliveryTime',
+        handlingTime: {
+          '@type': 'QuantitativeValue',
+          minValue: 1,
+          maxValue: 2,
+          unitCode: 'DAY',
+        },
+        transitTime: {
+          '@type': 'QuantitativeValue',
+          minValue: 1,
+          maxValue: 5,
+          unitCode: 'DAY',
+        },
+      },
+    },
   },
 };
 ---
