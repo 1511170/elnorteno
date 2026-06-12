@@ -4,6 +4,7 @@ import CollectionListSchema from '@skills-official/shopify-ecommerce/components/
 import SchemaOrg from '@skills-community/seo-ai-citations/components/SchemaOrg.astro';
 import { getCachedCollections, getCachedProducts } from '../../lib/build-data';
 import { CATEGORY_HIERARCHY, CATEGORY_LABELS } from '../../config/categories';
+import { GUIDES } from '../../data/guides';
 
 export function productsForCollection(collectionHandle: string, products: any[]) {
   const direct = products.filter((p: any) =>
@@ -312,6 +313,24 @@ const COLLECTION_GUIDES: Record<string, CollectionGuide> = {
 
 const guide = collection ? COLLECTION_GUIDES[collection.handle] : undefined;
 const faqs = guide?.faqs ?? [];
+const GUIDE_LINKS_BY_COLLECTION: Record<string, string[]> = {
+  pesca: ['como-elegir-cana-pesca'],
+  'canas-para-pesca': ['como-elegir-cana-pesca'],
+  'combos-cana-para-pesca': ['como-elegir-cana-pesca'],
+  'combos-spinning': ['como-elegir-cana-pesca'],
+  'molinetes-de-pesca': ['como-elegir-cana-pesca'],
+  camping: ['equipo-basico-camping-colombia'],
+  'colchones-inflables-y-colchonetas': ['equipo-basico-camping-colombia'],
+  outdoor: ['equipo-basico-camping-colombia'],
+  'tiro-deportivo': ['tiro-deportivo-responsable', 'como-elegir-rifle-aire-comprimido-colombia'],
+  'armas-de-aire': ['tiro-deportivo-responsable', 'como-elegir-rifle-aire-comprimido-colombia'],
+  'rifles-de-aire-comprimido': ['como-elegir-rifle-aire-comprimido-colombia', 'tiro-deportivo-responsable'],
+  caza: ['tiro-deportivo-responsable', 'equipo-basico-camping-colombia'],
+};
+const relatedGuideSlugs = collection ? (GUIDE_LINKS_BY_COLLECTION[collection.handle] ?? []) : [];
+const relatedGuides = relatedGuideSlugs
+  .map((slug) => GUIDES.find((g) => g.slug === slug))
+  .filter(Boolean);
 const collectionPageSchema = collection ? {
   '@context': 'https://schema.org',
   '@type': 'CollectionPage',
@@ -646,6 +665,17 @@ const collectionPageSchema = collection ? {
             {guide.bullets.map((item) => <li>{item}</li>)}
           </ul>
           {guide.compliance && <p class="collection-guide-note">{guide.compliance}</p>}
+          {relatedGuides.length > 0 && (
+            <div class="collection-guide-links" aria-label="Guías relacionadas">
+              <div class="collection-guide-links-title">Guías relacionadas</div>
+              {relatedGuides.map((relatedGuide) => relatedGuide && (
+                <a href={`/guias/${relatedGuide.slug}/`} class="collection-guide-link">
+                  <span>{relatedGuide.category}</span>
+                  <strong>{relatedGuide.title}</strong>
+                </a>
+              ))}
+            </div>
+          )}
         </div>
         <div class="collection-faq" aria-labelledby="collection-faq-title">
           <div class="h-meta"><span class="line-el"></span><span>Preguntas frecuentes</span></div>
@@ -738,6 +768,44 @@ const collectionPageSchema = collection ? {
     padding: 14px 0 14px 18px;
     background: color-mix(in srgb, var(--terra) 7%, transparent);
     font-size: 14px !important;
+  }
+  .collection-guide-links {
+    display: grid;
+    gap: 10px;
+    margin-top: 28px;
+  }
+  .collection-guide-links-title {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--slate);
+  }
+  .collection-guide-link {
+    display: grid;
+    gap: 6px;
+    padding: 16px 18px;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    background: var(--paper);
+    color: inherit;
+    text-decoration: none;
+    transition: border-color .18s ease, transform .18s ease;
+  }
+  .collection-guide-link:hover {
+    transform: translateY(-2px);
+    border-color: var(--terra);
+  }
+  .collection-guide-link span {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--terra);
+  }
+  .collection-guide-link strong {
+    color: var(--pine);
+    line-height: 1.25;
   }
   .faq-list {
     display: grid;
