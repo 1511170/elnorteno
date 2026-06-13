@@ -121,15 +121,60 @@ const CATEGORY_SEO: Record<string, { title: string; h1: string; description: str
     h1: 'Cañas de pesca',
     description: 'Cañas de pesca para río, lago y mar: spinning, casting y combos seleccionados para pesca deportiva en Colombia.',
   },
+  'canas-de-spinning': {
+    title: 'Cañas spinning para pesca',
+    h1: 'Cañas de spinning',
+    description: 'Cañas spinning para pesca deportiva: opciones versátiles para iniciar o mejorar equipos con molinete spinning, señuelos y líneas compatibles.',
+  },
+  'canas-de-casting': {
+    title: 'Cañas casting para pesca',
+    h1: 'Cañas de casting',
+    description: 'Cañas casting para pesca deportiva con control de lance, potencia y precisión, compatibles con carretes baitcasting y señuelos específicos.',
+  },
+  'combos-cana-para-pesca': {
+    title: 'Combos de caña para pesca',
+    h1: 'Combos caña para pesca',
+    description: 'Combos de pesca con caña y molinete compatibles para iniciar o completar equipo deportivo con asesoría de El Norteño en Colombia.',
+  },
+  'combos-spinning': {
+    title: 'Combos spinning para pesca',
+    h1: 'Combos spinning',
+    description: 'Combos spinning con caña y molinete para pesca deportiva en río, lago o mar, seleccionados por compatibilidad, resistencia y facilidad de uso.',
+  },
   'senuelos-y-carnadas': {
     title: 'Señuelos y carnadas para pesca',
     h1: 'Señuelos y carnadas',
     description: 'Señuelos duros, señuelos suaves, jigs, carnadas y marcas especializadas para pesca deportiva.',
   },
+  duras: {
+    title: 'Señuelos duros para pesca',
+    h1: 'Señuelos duros',
+    description: 'Señuelos duros para pesca deportiva: minnows, crankbaits, cucharas y referencias para trabajar profundidad, color y acción en el agua.',
+  },
+  suaves: {
+    title: 'Señuelos suaves para pesca',
+    h1: 'Señuelos suaves',
+    description: 'Señuelos suaves, carnadas artificiales y montajes con jigs para pesca deportiva según especie, profundidad y técnica de recuperación.',
+  },
   'molinetes-de-pesca': {
     title: 'Molinetes de pesca',
     h1: 'Molinetes de pesca',
     description: 'Molinetes de spinning, casting y mosqueo para armar equipos de pesca deportivos con asesoría de El Norteño.',
+  },
+  'molinetes-de-spinning': {
+    title: 'Molinetes spinning para pesca',
+    h1: 'Molinetes spinning',
+    description: 'Molinetes spinning para pesca deportiva: tamaños, freno, capacidad de línea y compatibilidad con cañas spinning para río, lago o mar.',
+  },
+  'molinetes-de-casting': {
+    title: 'Molinetes casting y baitcasting',
+    h1: 'Molinetes casting',
+    description: 'Molinetes casting y baitcasting para pesca deportiva con control de lance, relación de giro y compatibilidad con cañas casting.',
+  },
+  'molinetes-de-mosqueo': {
+    title: 'Molinetes de mosqueo',
+    h1: 'Molinetes de mosqueo',
+    description: 'Molinetes de mosqueo para pesca deportiva con selección por línea, freno, peso y compatibilidad con cañas de fly fishing.',
   },
   anzuelos: {
     title: 'Anzuelos de pesca',
@@ -172,14 +217,14 @@ const CATEGORY_SEO: Record<string, { title: string; h1: string; description: str
     description: 'Herramientas, alicates, accesorios outdoor y complementos para pesca, camping, campo y actividades al aire libre.',
   },
   'armas-de-aire': {
-    title: 'Armas de aire para tiro deportivo',
+    title: 'Armas de aire y pistolas de balines',
     h1: 'Armas de aire',
-    description: 'Armas de aire y accesorios para tiro deportivo responsable, sujetos a disponibilidad, edad mínima y normativa aplicable.',
+    description: 'Rifles, pistolas de balines, diábolos, miras y accesorios para tiro deportivo responsable, sujetos a disponibilidad, edad mínima y normativa aplicable.',
   },
   'rifles-de-aire-comprimido': {
-    title: 'Rifles de aire comprimido',
+    title: 'Rifles de aire comprimido en Colombia',
     h1: 'Rifles de aire comprimido',
-    description: 'Rifles de aire comprimido y accesorios para práctica deportiva responsable, con asesoría especializada.',
+    description: 'Rifles de aire comprimido, calibres 4.5 y 5.5, diábolos y accesorios para práctica deportiva responsable con asesoría de El Norteño.',
   },
 };
 
@@ -423,6 +468,15 @@ const COLLECTION_GUIDES: Record<string, CollectionGuide> = {
 };
 
 const COLLECTION_GUIDE_ALIASES: Record<string, string> = {
+  'canas-de-spinning': 'canas-para-pesca',
+  'canas-de-casting': 'canas-para-pesca',
+  'combos-cana-para-pesca': 'canas-para-pesca',
+  'combos-spinning': 'canas-para-pesca',
+  duras: 'senuelos-y-carnadas',
+  suaves: 'senuelos-y-carnadas',
+  'molinetes-de-spinning': 'molinetes-de-pesca',
+  'molinetes-de-casting': 'molinetes-de-pesca',
+  'molinetes-de-mosqueo': 'molinetes-de-pesca',
   monofilamento: 'nylon-para-pesca',
   fluorocarbono: 'nylon-para-pesca',
   'terminales-para-pesca': 'nylon-para-pesca',
@@ -435,9 +489,17 @@ const faqs = guide?.faqs ?? [];
 const GUIDE_LINKS_BY_COLLECTION: Record<string, string[]> = {
   pesca: ['como-elegir-cana-pesca'],
   'canas-para-pesca': ['como-elegir-cana-pesca'],
+  'canas-de-spinning': ['como-elegir-cana-pesca'],
+  'canas-de-casting': ['como-elegir-cana-pesca'],
   'combos-cana-para-pesca': ['como-elegir-cana-pesca'],
   'combos-spinning': ['como-elegir-cana-pesca'],
   'molinetes-de-pesca': ['como-elegir-cana-pesca'],
+  'molinetes-de-spinning': ['como-elegir-cana-pesca'],
+  'molinetes-de-casting': ['como-elegir-cana-pesca'],
+  'molinetes-de-mosqueo': ['como-elegir-cana-pesca'],
+  'senuelos-y-carnadas': ['como-elegir-cana-pesca'],
+  duras: ['como-elegir-cana-pesca'],
+  suaves: ['como-elegir-cana-pesca'],
   anzuelos: ['como-elegir-cana-pesca'],
   jigs: ['como-elegir-cana-pesca'],
   'nylon-para-pesca': ['como-elegir-cana-pesca'],
