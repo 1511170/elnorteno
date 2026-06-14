@@ -6,6 +6,7 @@ import SchemaOrg from '@skills-community/seo-ai-citations/components/SchemaOrg.a
 import WhatsappProductCTA from '@skills-community/whatsapp-cta/components/WhatsappProductCTA.astro';
 import { getCachedProducts } from '../../lib/build-data';
 import { CATEGORY_LABELS } from '../../config/categories';
+import { GUIDES } from '../../data/guides';
 
 export async function getStaticPaths() {
   const products = await getCachedProducts();
@@ -44,11 +45,28 @@ const PRIORITY_COLLECTIONS = [
   'rifles-de-aire-comprimido',
   'armas-de-aire',
   'tiro-deportivo',
-  'pesca',
-  'camping',
   'canas-para-pesca',
-  'senuelos-y-carnadas',
+  'canas-de-spinning',
+  'canas-de-casting',
+  'combos-cana-para-pesca',
+  'combos-spinning',
   'molinetes-de-pesca',
+  'molinetes-de-spinning',
+  'molinetes-de-casting',
+  'molinetes-de-mosqueo',
+  'senuelos-y-carnadas',
+  'duras',
+  'suaves',
+  'anzuelos',
+  'jigs',
+  'nylon-para-pesca',
+  'monofilamento',
+  'fluorocarbono',
+  'terminales-para-pesca',
+  'pesca',
+  'colchones-inflables-y-colchonetas',
+  'herramientas-alicates-y-otros',
+  'camping',
   'outdoor',
   'caza',
 ];
@@ -58,7 +76,51 @@ function getPrimaryCollection(p: any): string | undefined {
   return PRIORITY_COLLECTIONS.find((h) => cols.includes(h)) || cols[0];
 }
 
+const PRODUCT_GUIDE_LINKS_BY_COLLECTION: Record<string, string[]> = {
+  'rifles-de-aire-comprimido': ['como-elegir-rifle-aire-comprimido-colombia', 'tiro-deportivo-responsable'],
+  'armas-de-aire': ['como-elegir-rifle-aire-comprimido-colombia', 'tiro-deportivo-responsable'],
+  'tiro-deportivo': ['tiro-deportivo-responsable', 'como-elegir-rifle-aire-comprimido-colombia'],
+  'canas-para-pesca': ['como-elegir-cana-pesca'],
+  'canas-de-spinning': ['como-elegir-cana-pesca'],
+  'canas-de-casting': ['como-elegir-cana-pesca'],
+  'combos-cana-para-pesca': ['como-elegir-cana-pesca'],
+  'combos-spinning': ['como-elegir-cana-pesca'],
+  'molinetes-de-pesca': ['como-elegir-cana-pesca'],
+  'molinetes-de-spinning': ['como-elegir-cana-pesca'],
+  'molinetes-de-casting': ['como-elegir-cana-pesca'],
+  'molinetes-de-mosqueo': ['como-elegir-cana-pesca'],
+  'senuelos-y-carnadas': ['como-elegir-cana-pesca'],
+  duras: ['como-elegir-cana-pesca'],
+  suaves: ['como-elegir-cana-pesca'],
+  anzuelos: ['como-elegir-cana-pesca'],
+  jigs: ['como-elegir-cana-pesca'],
+  'nylon-para-pesca': ['como-elegir-cana-pesca'],
+  monofilamento: ['como-elegir-cana-pesca'],
+  fluorocarbono: ['como-elegir-cana-pesca'],
+  'terminales-para-pesca': ['como-elegir-cana-pesca'],
+  pesca: ['como-elegir-cana-pesca'],
+  camping: ['equipo-basico-camping-colombia'],
+  'colchones-inflables-y-colchonetas': ['equipo-basico-camping-colombia'],
+  outdoor: ['equipo-basico-camping-colombia'],
+  'herramientas-alicates-y-otros': ['equipo-basico-camping-colombia'],
+  caza: ['tiro-deportivo-responsable', 'equipo-basico-camping-colombia'],
+};
+
+function guidesForProduct(p: any, collectionHandle?: string) {
+  const cols: string[] = Array.isArray(p?.collections) ? p.collections : [];
+  const guideSlugs = new Set<string>();
+  for (const handle of [collectionHandle, ...cols]) {
+    if (!handle) continue;
+    for (const slug of PRODUCT_GUIDE_LINKS_BY_COLLECTION[handle] ?? []) guideSlugs.add(slug);
+  }
+  return [...guideSlugs]
+    .map((slug) => GUIDES.find((guide) => guide.slug === slug))
+    .filter(Boolean)
+    .slice(0, 2);
+}
+
 const primaryCollection = product ? getPrimaryCollection(product) : undefined;
+const relatedGuides = product ? guidesForProduct(product, primaryCollection) : [];
 const primaryCollectionName = primaryCollection
   ? (CATEGORY_LABELS[primaryCollection] || primaryCollection.split('-').join(' '))
   : (product?.productType || 'Tienda');
@@ -93,13 +155,20 @@ function mapMetafieldFaqs(p: any): FAQ[] {
 function guideForProduct(p: any, collectionHandle?: string): ProductGuide {
   const title = p?.title || 'este producto';
   const category = collectionHandle || p?.productType || '';
+  const normalizedTitle = String(title).toLowerCase();
+  const caliberMatch = normalizedTitle.match(/(?:cal(?:ibre)?\.?\s*)?(4[,.]5|5[,.]5|6[,.]35|7[,.]62)\b/);
+  const caliberText = caliberMatch ? caliberMatch[1].replace('.', ',') : undefined;
 
   if (['rifles-de-aire-comprimido', 'armas-de-aire', 'tiro-deportivo'].includes(category)) {
+    const caliberFaq = caliberText
+      ? { q: `¿Qué significa calibre ${caliberText} en ${title}?`, a: `El calibre ${caliberText} indica el diámetro aproximado del diábolo compatible. Antes de comprar, confirma disponibilidad de munición/diábolos, uso deportivo previsto, accesorios y condiciones de envío con un asesor de El Norteño.` }
+      : { q: '¿Cómo confirmo el calibre compatible?', a: 'Revisa la ficha del producto, el empaque o consulta por WhatsApp. Confirmar calibre evita comprar diábolos o accesorios incompatibles.' };
     return {
       detailHeading: 'Uso deportivo responsable',
       intro: `${title} hace parte de nuestro catálogo de tiro deportivo y armas de aire. Antes de comprar, valida disponibilidad, calibre, accesorios compatibles y condiciones de uso responsable con un asesor de El Norteño.`,
       bullets: ['Confirma calibre, potencia y accesorios incluidos.', 'Revisa compatibilidad con diábolos, miras, estuche y mantenimiento.', 'Compra y despacho sujetos a disponibilidad, validaciones internas y normativa aplicable en Colombia.'],
       faqs: [
+        caliberFaq,
         { q: `¿${title} está disponible para envío?`, a: 'La disponibilidad y el despacho dependen del inventario vigente, ciudad de destino, validaciones internas y condiciones aplicables para esta categoría. Confírmalo por WhatsApp antes de comprar.' },
         { q: '¿Puedo recibir asesoría antes de comprar?', a: 'Sí. El Norteño ofrece asesoría por WhatsApp y en tiendas físicas para revisar calibre, accesorios, uso previsto y compatibilidad.' },
         { q: '¿Qué debo revisar antes de elegir un producto de tiro deportivo?', a: 'Revisa calibre, marca, garantía, accesorios compatibles, mantenimiento, disponibilidad de consumibles y cumplimiento de la normativa aplicable.' },
@@ -107,7 +176,7 @@ function guideForProduct(p: any, collectionHandle?: string): ProductGuide {
     };
   }
 
-  if (['pesca', 'canas-para-pesca', 'senuelos-y-carnadas', 'molinetes-de-pesca'].includes(category)) {
+  if (['pesca', 'canas-para-pesca', 'canas-de-spinning', 'canas-de-casting', 'combos-cana-para-pesca', 'combos-spinning', 'senuelos-y-carnadas', 'duras', 'suaves', 'molinetes-de-pesca', 'molinetes-de-spinning', 'molinetes-de-casting', 'molinetes-de-mosqueo', 'anzuelos', 'jigs', 'nylon-para-pesca', 'monofilamento', 'fluorocarbono', 'terminales-para-pesca'].includes(category)) {
     return {
       detailHeading: 'Compatibilidad de pesca',
       intro: `${title} está pensado para armar o complementar un equipo de pesca deportiva. La mejor elección depende de técnica, especie objetivo, ambiente de pesca y compatibilidad con caña, molinete, línea o señuelo.`,
@@ -375,6 +444,26 @@ const productFaqs = metafieldFaqs.length > 0 ? metafieldFaqs : (productGuide?.fa
       </section>
     )}
 
+    {relatedGuides.length > 0 && (
+      <section class="pdp-guides" aria-labelledby="pdp-guides-title">
+        <div class="section-head">
+          <div>
+            <div class="h-meta"><span class="line-el"></span><span>Guías relacionadas</span></div>
+            <h2 id="pdp-guides-title">Compra con más contexto.</h2>
+          </div>
+        </div>
+        <div class="pdp-guide-grid">
+          {relatedGuides.map((guide) => guide && (
+            <a href={`/guias/${guide.slug}/`} class="pdp-guide-card">
+              <span>{guide.category}</span>
+              <strong>{guide.title}</strong>
+              <small>{guide.description}</small>
+            </a>
+          ))}
+        </div>
+      </section>
+    )}
+
     <!-- Relacionados -->
     {related.length > 0 && (
       <section class="rel-section">
@@ -410,6 +499,48 @@ const productFaqs = metafieldFaqs.length > 0 ? metafieldFaqs : (productGuide?.fa
     max-width: 1180px;
     margin: clamp(52px, 7vw, 96px) auto 0;
     padding: 0 clamp(20px, 4vw, 48px);
+  }
+  .pdp-guides {
+    max-width: 1180px;
+    margin: clamp(40px, 6vw, 80px) auto 0;
+    padding: 0 clamp(20px, 4vw, 48px);
+  }
+  .pdp-guide-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+  }
+  .pdp-guide-card {
+    display: grid;
+    gap: 8px;
+    padding: 22px;
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    background: color-mix(in srgb, var(--sand) 35%, var(--paper));
+    color: inherit;
+    text-decoration: none;
+    transition: transform .2s ease, border-color .2s ease;
+  }
+  .pdp-guide-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--terra);
+  }
+  .pdp-guide-card span {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--terra);
+  }
+  .pdp-guide-card strong {
+    color: var(--pine);
+    font-size: 18px;
+    line-height: 1.25;
+  }
+  .pdp-guide-card small {
+    color: var(--slate);
+    font-size: 14px;
+    line-height: 1.55;
   }
   .pdp-faq-list {
     display: grid;
@@ -447,7 +578,8 @@ const productFaqs = metafieldFaqs.length > 0 ? metafieldFaqs : (productGuide?.fa
     line-height: 1.65;
   }
   @media (max-width: 900px) {
-    .pdp-faq-list { grid-template-columns: 1fr; }
+    .pdp-faq-list,
+    .pdp-guide-grid { grid-template-columns: 1fr; }
   }
 </style>
 
