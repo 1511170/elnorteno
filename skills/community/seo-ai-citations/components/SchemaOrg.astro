@@ -188,14 +188,16 @@ function buildHowToSchema(items: Array<{ name: string; text: string; url?: strin
 }
 
 function buildBlogPostingSchema(postData: Record<string, any>) {
+  const authorType = postData.authorType || 'Person';
+  const author = authorType === 'Organization'
+    ? { "@id": `${siteUrl}/#organization`, "@type": "Organization", "name": postData.author || siteName }
+    : { "@type": "Person", "name": postData.author || siteName };
+
   return {
     "@type": "BlogPosting",
     "headline": postData.title || "",
     "description": postData.description || postData.excerpt || "",
-    "author": {
-      "@type": "Person",
-      "name": postData.author || siteName
-    },
+    "author": author,
     "publisher": { "@id": `${siteUrl}/#organization` },
     "datePublished": postData.datePublished || "",
     "dateModified": postData.dateModified || postData.datePublished || "",

@@ -5,9 +5,25 @@ interface Props {
   logo: string;
   description: string;
   sameAs?: string[];
+  alternateName?: string;
+  foundingDate?: string;
+  knowsAbout?: string[];
+  areaServed?: Array<string | Record<string, unknown>>;
+  contactPoint?: Array<Record<string, unknown>>;
 }
 
-const { name, url, logo, description, sameAs = [] } = Astro.props;
+const {
+  name,
+  url,
+  logo,
+  description,
+  sameAs = [],
+  alternateName,
+  foundingDate,
+  knowsAbout = [],
+  areaServed = [],
+  contactPoint = [],
+} = Astro.props;
 
 const schema = {
   '@context': 'https://schema.org',
@@ -16,12 +32,17 @@ const schema = {
       '@type': 'Organization',
       '@id': `${url}/#organization`,
       name,
+      alternateName: alternateName || undefined,
       url,
       logo: {
         '@type': 'ImageObject',
         url: logo,
       },
       description,
+      foundingDate: foundingDate || undefined,
+      areaServed: areaServed.length ? areaServed : undefined,
+      knowsAbout: knowsAbout.length ? knowsAbout : undefined,
+      contactPoint: contactPoint.length ? contactPoint : undefined,
       sameAs: sameAs.length ? sameAs : undefined,
     },
     {
