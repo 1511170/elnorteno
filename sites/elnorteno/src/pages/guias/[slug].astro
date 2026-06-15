@@ -37,7 +37,8 @@ const breadcrumbs = [
     data={{
       title: guide.title,
       description: guide.description,
-      author: 'El Norteño',
+      author: 'El Norteño Colombia',
+      authorType: 'Organization',
       datePublished: guide.updated,
       dateModified: guide.updated,
       url: canonical,
@@ -57,6 +58,11 @@ const breadcrumbs = [
       <h1>{guide.title}</h1>
       <p>{guide.intro}</p>
       <div class="guide-meta">Actualizado: {guide.updated} · El Norteño Colombia</div>
+      <div class="guide-trust" aria-label="Información editorial de la guía">
+        <span><strong>Quién:</strong> Equipo de El Norteño Colombia</span>
+        <span><strong>Cómo:</strong> asesoría de tienda, catálogo activo y preguntas frecuentes de clientes</span>
+        <span><strong>Por qué:</strong> ayudar a elegir con compatibilidad, disponibilidad y compra responsable</span>
+      </div>
     </header>
 
     <div class="guide-layout">
@@ -112,6 +118,8 @@ const breadcrumbs = [
   .guide-hero h1 { margin: 12px 0 20px; max-width: 940px; font-family: var(--font-display); font-size: clamp(44px, 7vw, 92px); line-height: .9; color: var(--pine); text-transform: uppercase; letter-spacing: -.03em; }
   .guide-hero p { max-width: 760px; color: var(--slate); font-size: 18px; line-height: 1.7; }
   .guide-meta { margin-top: 18px; font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; letter-spacing: .14em; color: var(--slate); }
+  .guide-trust { display: grid; gap: 8px; max-width: 820px; margin-top: 18px; padding: 16px 18px; border: 1px solid var(--line); border-radius: 18px; background: var(--paper); color: var(--slate); font-size: 14px; line-height: 1.55; }
+  .guide-trust strong { color: var(--pine); }
   .guide-layout { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: clamp(32px, 6vw, 82px); padding-top: 56px; }
   .guide-content section { margin-bottom: 42px; }
   .guide-content h2, .guide-aside h2, .guide-faq h2 { font-family: var(--font-display); text-transform: uppercase; color: var(--pine); letter-spacing: -.02em; }

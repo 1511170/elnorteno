@@ -129,6 +129,34 @@ const gaId = import.meta.env.GA_MEASUREMENT_ID;
       url={siteUrl}
       logo={logoUrl}
       description={siteConfig.site.description}
+      alternateName="El Norteno"
+      foundingDate="1987"
+      areaServed={[
+        { '@type': 'Country', name: 'Colombia' },
+        { '@type': 'City', name: 'Bucaramanga' },
+        { '@type': 'City', name: 'Medellín' },
+        { '@type': 'City', name: 'Valledupar' },
+      ]}
+      knowsAbout={[
+        'pesca deportiva en Colombia',
+        'cañas de pesca',
+        'molinetes de pesca',
+        'señuelos y carnadas',
+        'camping y campismo',
+        'equipo outdoor',
+        'tiro deportivo responsable',
+        'rifles de aire comprimido',
+        'armas de aire',
+        'miras para rifles de aire',
+        'equipo de campo',
+      ]}
+      contactPoint={STORE_LOCATIONS.map((loc) => ({
+        '@type': 'ContactPoint',
+        telephone: loc.phones[0],
+        contactType: 'customer support',
+        areaServed: 'CO',
+        availableLanguage: ['es-CO'],
+      }))}
     />
     {STORE_LOCATIONS.map((loc) => (
       <LocalBusinessSchema
