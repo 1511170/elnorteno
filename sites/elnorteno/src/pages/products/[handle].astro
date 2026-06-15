@@ -77,9 +77,9 @@ function getPrimaryCollection(p: any): string | undefined {
 }
 
 const PRODUCT_GUIDE_LINKS_BY_COLLECTION: Record<string, string[]> = {
-  'rifles-de-aire-comprimido': ['rifles-aire-55-precio-colombia', 'como-elegir-rifle-aire-comprimido-colombia', 'tiro-deportivo-responsable'],
-  'armas-de-aire': ['rifles-aire-55-precio-colombia', 'como-elegir-rifle-aire-comprimido-colombia', 'tiro-deportivo-responsable'],
-  'tiro-deportivo': ['tiro-deportivo-responsable', 'rifles-aire-55-precio-colombia', 'como-elegir-rifle-aire-comprimido-colombia'],
+  'rifles-de-aire-comprimido': ['miras-para-rifles-de-aire-colombia', 'rifles-aire-55-precio-colombia', 'como-elegir-rifle-aire-comprimido-colombia', 'tiro-deportivo-responsable'],
+  'armas-de-aire': ['miras-para-rifles-de-aire-colombia', 'rifles-aire-55-precio-colombia', 'como-elegir-rifle-aire-comprimido-colombia', 'tiro-deportivo-responsable'],
+  'tiro-deportivo': ['tiro-deportivo-responsable', 'miras-para-rifles-de-aire-colombia', 'rifles-aire-55-precio-colombia', 'como-elegir-rifle-aire-comprimido-colombia'],
   'canas-para-pesca': ['como-elegir-cana-pesca'],
   'canas-de-spinning': ['como-elegir-cana-pesca'],
   'canas-de-casting': ['como-elegir-cana-pesca'],
@@ -109,6 +109,11 @@ const PRODUCT_GUIDE_LINKS_BY_COLLECTION: Record<string, string[]> = {
 function guidesForProduct(p: any, collectionHandle?: string) {
   const cols: string[] = Array.isArray(p?.collections) ? p.collections : [];
   const guideSlugs = new Set<string>();
+  const text = `${p?.title ?? ''} ${p?.handle ?? ''} ${p?.productType ?? ''}`.toLowerCase();
+  if (/\bmira\b|\bmiras\b|scope|optic|optica|óptica/.test(text)) {
+    guideSlugs.add('miras-para-rifles-de-aire-colombia');
+    guideSlugs.add('tiro-deportivo-responsable');
+  }
   for (const handle of [collectionHandle, ...cols]) {
     if (!handle) continue;
     for (const slug of PRODUCT_GUIDE_LINKS_BY_COLLECTION[handle] ?? []) guideSlugs.add(slug);

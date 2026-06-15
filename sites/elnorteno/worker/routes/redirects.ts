@@ -41,6 +41,16 @@ const EXACT_REDIRECTS: Record<string, string> = {
   "/airvision/": "/store/ubiquiti",
   "/unifi": "/store/ubiquiti",
   "/unifi/": "/store/ubiquiti",
+  // High-impression legacy SEO pages from Search Console.
+  // Send exact sensitive-accessory archives to an informational, policy-safe guide.
+  "/categoria-productos/tiro-deportivo/accesorios-tiro-deportivo/miras": "/guias/miras-para-rifles-de-aire-colombia",
+  "/categoria-productos/tiro-deportivo/accesorios-tiro-deportivo/miras/": "/guias/miras-para-rifles-de-aire-colombia",
+  "/categoria-producto/tiro-deportivo/accesorios-tiro-deportivo/miras": "/guias/miras-para-rifles-de-aire-colombia",
+  "/categoria-producto/tiro-deportivo/accesorios-tiro-deportivo/miras/": "/guias/miras-para-rifles-de-aire-colombia",
+  "/categoria-productos/marcas/gamo": "/store/rifles-de-aire-comprimido",
+  "/categoria-productos/marcas/gamo/": "/store/rifles-de-aire-comprimido",
+  "/marca/gamo": "/store/rifles-de-aire-comprimido",
+  "/marca/gamo/": "/store/rifles-de-aire-comprimido",
 };
 
 const CATEGORY_REDIRECTS: Record<string, string> = {

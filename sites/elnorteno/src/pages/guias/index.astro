@@ -1,34 +1,15 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import SchemaOrg from '@skills-community/seo-ai-citations/components/SchemaOrg.astro';
+import { GUIDES } from '../../data/guides';
 
 const siteUrl = Astro.site?.origin ?? 'https://elnorteno.com';
-const guides = [
-  {
-    title: 'Cómo elegir un rifle de aire comprimido en Colombia',
-    description: 'Calibre, uso responsable, accesorios, disponibilidad y normativa aplicable.',
-    href: '/guias/como-elegir-rifle-aire-comprimido-colombia/',
-    category: 'Tiro deportivo',
-  },
-  {
-    title: 'Cómo elegir una caña de pesca',
-    description: 'Técnica, acción, potencia, longitud, molinete, línea y ambiente de pesca.',
-    href: '/guias/como-elegir-cana-pesca/',
-    category: 'Pesca deportiva',
-  },
-  {
-    title: 'Equipo básico para camping en Colombia',
-    description: 'Carpa, descanso, iluminación, hidratación, cocina, clima y organización.',
-    href: '/guias/equipo-basico-camping-colombia/',
-    category: 'Camping',
-  },
-  {
-    title: 'Tiro deportivo responsable: qué revisar antes de comprar',
-    description: 'Compra responsable, accesorios, mantenimiento, asesoría y cumplimiento.',
-    href: '/guias/tiro-deportivo-responsable/',
-    category: 'Tiro deportivo',
-  },
-];
+const guides = GUIDES.map((guide) => ({
+  title: guide.title,
+  description: guide.description,
+  href: `/guias/${guide.slug}/`,
+  category: guide.category,
+}));
 
 const breadcrumbs = [
   { name: 'Inicio', url: '/' },
