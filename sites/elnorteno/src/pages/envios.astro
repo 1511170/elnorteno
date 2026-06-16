@@ -1,0 +1,61 @@
+---
+import Layout from '../layouts/Layout.astro';
+import PolicyPage from '../components/legal/PolicyPage.astro';
+
+const sections = [
+  {
+    title: 'Cobertura',
+    body: 'El Norteño realiza despachos dentro de Colombia, sujeto a cobertura logística, disponibilidad del producto y validaciones internas de cada pedido.',
+    bullets: [
+      'La cobertura puede variar según ciudad, municipio, zona rural o restricciones del transportador.',
+      'También puedes comprar o recoger información directamente en nuestras tiendas de Bucaramanga, Medellín y Valledupar.',
+      'Para productos voluminosos, pesados, frágiles o de categoría sensible, el equipo puede confirmar condiciones especiales antes del despacho.',
+    ],
+  },
+  {
+    title: 'Tiempos de entrega',
+    body: 'Los tiempos dependen de disponibilidad, confirmación de pago, destino y operación del transportador. Antes de prometer una fecha exacta, confirmamos el caso por nuestros canales de atención.',
+    bullets: [
+      'El despacho inicia después de validar pago, datos de contacto y disponibilidad.',
+      'Los tiempos pueden cambiar por temporada alta, clima, novedades logísticas o zonas de difícil acceso.',
+      'Si el producto requiere validación adicional, te contactaremos antes de avanzar con el envío.',
+    ],
+  },
+  {
+    title: 'Costo del envío',
+    body: 'El costo se informa durante el proceso de compra o por WhatsApp, de acuerdo con destino, peso, volumen, transportador y condiciones del pedido.',
+    bullets: [
+      'Cuando aplique una promoción de envío, se informará en el sitio o en la asesoría comercial.',
+      'El valor final puede depender de la dirección entregada por el cliente y de la disponibilidad logística.',
+    ],
+  },
+  {
+    title: 'Productos sensibles o con restricciones',
+    body: 'Algunas categorías requieren manejo responsable y pueden estar sujetas a edad mínima, validaciones, restricciones de despacho, disponibilidad, documentación o normativa aplicable en Colombia.',
+    bullets: [
+      'No todos los productos pueden enviarse por todos los transportadores o a todos los destinos.',
+      'El Norteño puede solicitar información adicional o recomendar compra presencial cuando sea necesario.',
+      'La publicación de un producto no garantiza despacho automático si existen restricciones aplicables.',
+    ],
+  },
+  {
+    title: 'Seguimiento y novedades',
+    body: 'Cuando el pedido sea despachado, compartiremos la información disponible de seguimiento por los canales de atención. Si hay una novedad, te ayudaremos a revisar el caso con el transportador.',
+  },
+];
+---
+
+<Layout
+  title="Política de envíos"
+  description="Cobertura, tiempos, costos y condiciones de envío de El Norteño en Colombia."
+  canonical="https://elnorteno.com/envios"
+  whatsappContext={{ type: 'general' }}
+>
+  <PolicyPage
+    eyebrow="Soporte · Envíos"
+    title="Política de envíos"
+    description="Conoce cómo gestionamos despachos, cobertura nacional, costos, tiempos estimados y validaciones para compras en El Norteño."
+    updated="16 de junio de 2026"
+    sections={sections}
+  />
+</Layout>

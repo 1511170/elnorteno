@@ -1,0 +1,61 @@
+---
+import Layout from '../layouts/Layout.astro';
+import PolicyPage from '../components/legal/PolicyPage.astro';
+
+const sections = [
+  {
+    title: 'Solicitud de cambios o devoluciones',
+    body: 'Si necesitas reportar una novedad con tu compra, contáctanos lo antes posible por WhatsApp o en una tienda física. Revisaremos el caso con la información del pedido y el estado del producto.',
+    bullets: [
+      'Ten a la mano número de pedido o factura, nombre del comprador, fotos y descripción de la novedad.',
+      'El producto debe conservar empaque, accesorios, manuales y condiciones que permitan revisar el caso.',
+      'No envíes un producto de vuelta sin coordinación previa con nuestro equipo.',
+    ],
+  },
+  {
+    title: 'Condiciones generales',
+    body: 'La aceptación de una devolución, cambio o garantía depende de la revisión del producto, el motivo reportado, la trazabilidad de compra y la normativa aplicable en Colombia.',
+    bullets: [
+      'No se aceptan productos con uso indebido, daños por manipulación, instalación incorrecta, golpes, humedad no atribuible al producto o desgaste normal.',
+      'Algunas referencias pueden tener condiciones específicas del fabricante, importador o proveedor.',
+      'Los productos de categoría sensible pueden requerir validaciones adicionales o manejo presencial.',
+    ],
+  },
+  {
+    title: 'Garantías',
+    body: 'Cuando un producto tenga posible falla de calidad o funcionamiento, revisaremos el caso y, si aplica, gestionaremos el proceso con proveedor, fabricante o importador.',
+    bullets: [
+      'El diagnóstico puede requerir inspección física del producto.',
+      'Los tiempos de respuesta pueden depender de terceros autorizados para revisión técnica.',
+      'La garantía no cubre daños causados por uso contrario a las instrucciones o por modificaciones no autorizadas.',
+    ],
+  },
+  {
+    title: 'Derecho de retracto y normas aplicables',
+    body: 'Cuando la compra y el producto cumplan las condiciones legales aplicables para retracto u otra protección del consumidor en Colombia, El Norteño atenderá la solicitud según la normativa vigente.',
+    bullets: [
+      'Algunas excepciones pueden aplicar por naturaleza del producto, estado, uso, higiene, personalización o restricciones legales/logísticas.',
+      'Si tienes dudas, contáctanos antes de comprar para confirmar si una referencia tiene condiciones especiales.',
+    ],
+  },
+  {
+    title: 'Reembolsos o saldos a favor',
+    body: 'Cuando corresponda un reembolso, cambio o saldo a favor, te indicaremos el método, tiempos estimados y soportes necesarios después de aprobar la revisión del caso.',
+  },
+];
+---
+
+<Layout
+  title="Cambios, devoluciones y garantías"
+  description="Condiciones de cambios, devoluciones, garantías y revisión de novedades de compra en El Norteño Colombia."
+  canonical="https://elnorteno.com/devoluciones"
+  whatsappContext={{ type: 'general' }}
+>
+  <PolicyPage
+    eyebrow="Soporte · Postventa"
+    title="Cambios, devoluciones y garantías"
+    description="Revisa cómo solicitar ayuda postventa, qué información necesitamos y qué condiciones aplican para cambios, devoluciones o garantías."
+    updated="16 de junio de 2026"
+    sections={sections}
+  />
+</Layout>
