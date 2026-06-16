@@ -1,0 +1,60 @@
+---
+import Layout from '../layouts/Layout.astro';
+import PolicyPage from '../components/legal/PolicyPage.astro';
+
+const sections = [
+  {
+    title: 'Uso del sitio',
+    body: 'Al navegar o comprar en elnorteno.com aceptas usar el sitio de forma lícita, responsable y respetuosa de las condiciones comerciales, logísticas y normativas aplicables en Colombia.',
+    bullets: [
+      'La información publicada busca orientar la compra, pero puede requerir confirmación por disponibilidad, precio, imágenes, referencias o condiciones del proveedor.',
+      'No está permitido usar el sitio para fraude, abuso, scraping no autorizado, suplantación o actividades contrarias a la ley.',
+    ],
+  },
+  {
+    title: 'Productos, precios y disponibilidad',
+    body: 'El catálogo puede cambiar sin previo aviso por inventario, proveedor, temporada, correcciones o actualización de Shopify/KINTO.',
+    bullets: [
+      'La disponibilidad final se confirma durante el proceso de compra o por nuestros canales de atención.',
+      'Si existe un error evidente de precio, descripción, imagen o inventario, El Norteño podrá corregirlo y contactar al cliente antes de confirmar el pedido.',
+      'Las imágenes pueden ser referenciales; revisa la ficha del producto y consulta si necesitas una característica específica.',
+    ],
+  },
+  {
+    title: 'Compras y pagos',
+    body: 'Los pedidos están sujetos a confirmación de pago, validación de datos, disponibilidad y políticas internas de seguridad.',
+    bullets: [
+      'Los pagos pueden ser procesados por pasarelas o proveedores externos con sus propias condiciones de seguridad.',
+      'El Norteño puede contactar al comprador para validar información del pedido antes de despachar.',
+    ],
+  },
+  {
+    title: 'Categorías sensibles',
+    body: 'Algunas categorías como tiro deportivo, armas de aire, caza, cuchillos, munición, pólvora, arquería o accesorios relacionados requieren manejo responsable.',
+    bullets: [
+      'La compra, despacho, tenencia o uso puede estar sujeto a edad mínima, validaciones, normativa aplicable y restricciones logísticas.',
+      'El Norteño no promueve usos indebidos, violentos o ilegales de ningún producto.',
+      'Podemos limitar, cancelar o redirigir una compra cuando existan restricciones de despacho, validación o cumplimiento.',
+    ],
+  },
+  {
+    title: 'Atención, soporte y comunicaciones',
+    body: 'Nuestros canales oficiales están publicados en la página de contacto. Para trazabilidad, conserva factura, comprobantes de pago y comunicaciones relacionadas con el pedido.',
+  },
+];
+---
+
+<Layout
+  title="Términos y condiciones"
+  description="Condiciones de uso, compra, disponibilidad, pagos y categorías sensibles de El Norteño Colombia."
+  canonical="https://elnorteno.com/terminos"
+  whatsappContext={{ type: 'general' }}
+>
+  <PolicyPage
+    eyebrow="Legal · Condiciones de compra"
+    title="Términos y condiciones"
+    description="Condiciones generales para navegar, consultar y comprar en elnorteno.com, con enfoque de comercio responsable en Colombia."
+    updated="16 de junio de 2026"
+    sections={sections}
+  />
+</Layout>

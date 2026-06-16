@@ -1,0 +1,61 @@
+---
+import Layout from '../layouts/Layout.astro';
+import PolicyPage from '../components/legal/PolicyPage.astro';
+
+const sections = [
+  {
+    title: 'Datos que podemos tratar',
+    body: 'Para atender compras, consultas y solicitudes, El Norteño puede tratar datos personales entregados por el usuario de forma directa o mediante los canales del sitio.',
+    bullets: [
+      'Nombre, documento cuando aplique, teléfono, WhatsApp, correo electrónico y dirección de envío.',
+      'Información del pedido, productos consultados o comprados, medios de pago utilizados por pasarelas externas y novedades postventa.',
+      'Datos técnicos básicos de navegación, analítica, cookies y medición publicitaria cuando estén activos en el sitio.',
+    ],
+  },
+  {
+    title: 'Finalidades',
+    body: 'Usamos la información para operar la tienda, prestar soporte, mejorar la experiencia y cumplir obligaciones comerciales o legales.',
+    bullets: [
+      'Procesar pedidos, coordinar despachos, confirmar disponibilidad y prestar atención al cliente.',
+      'Responder solicitudes por WhatsApp, teléfono, formularios o tiendas físicas.',
+      'Gestionar garantías, devoluciones, facturación, prevención de fraude y cumplimiento normativo.',
+      'Medir tráfico, rendimiento del sitio y campañas de marketing de forma responsable.',
+    ],
+  },
+  {
+    title: 'Terceros y encargados',
+    body: 'Podemos compartir información necesaria con proveedores que ayudan a operar el servicio, siempre limitada a la finalidad correspondiente.',
+    bullets: [
+      'Transportadoras, pasarelas de pago, plataformas ecommerce, servicios de analítica, hosting, atención al cliente y herramientas de marketing.',
+      'Autoridades o terceros cuando exista obligación legal o una solicitud válida.',
+    ],
+  },
+  {
+    title: 'Derechos del titular',
+    body: 'Como titular de datos personales en Colombia, puedes solicitar acceso, actualización, corrección, supresión cuando proceda, prueba de autorización o revocar autorización según la normativa aplicable.',
+    bullets: [
+      'Para ejercer tus derechos, contáctanos por los canales publicados en la página de contacto.',
+      'Podemos solicitar información para verificar identidad y ubicar el registro relacionado.',
+    ],
+  },
+  {
+    title: 'Seguridad y conservación',
+    body: 'Aplicamos medidas razonables para proteger la información y conservarla sólo durante el tiempo necesario para las finalidades autorizadas, obligaciones legales, contables, comerciales o de soporte.',
+  },
+];
+---
+
+<Layout
+  title="Política de privacidad"
+  description="Tratamiento de datos personales, finalidades, terceros y derechos de titulares en El Norteño Colombia."
+  canonical="https://elnorteno.com/privacidad"
+  whatsappContext={{ type: 'general' }}
+>
+  <PolicyPage
+    eyebrow="Legal · Datos personales"
+    title="Política de privacidad"
+    description="Información sobre el tratamiento de datos personales de clientes y usuarios de El Norteño en Colombia."
+    updated="16 de junio de 2026"
+    sections={sections}
+  />
+</Layout>
