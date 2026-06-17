@@ -86,20 +86,36 @@ const SENSITIVE_TERMS = [
   "magnesio",
 ];
 
+// Numeric Google taxonomy IDs avoid Merchant Center text-label mismatches.
+// Source checked: https://www.google.com/basepages/producttype/taxonomy-with-ids.en-US.txt
 const GOOGLE_CATEGORY_BY_COLLECTION: Array<[string, string]> = [
-  ["canas", "Sporting Goods > Outdoor Recreation > Fishing > Fishing Rods"],
-  ["molinetes", "Sporting Goods > Outdoor Recreation > Fishing > Fishing Reels"],
-  ["senuelos", "Sporting Goods > Outdoor Recreation > Fishing > Fishing Lures"],
-  ["anzuelos", "Sporting Goods > Outdoor Recreation > Fishing > Fishing Hooks"],
-  ["nylon", "Sporting Goods > Outdoor Recreation > Fishing > Fishing Line"],
-  ["fluorocarbono", "Sporting Goods > Outdoor Recreation > Fishing > Fishing Line"],
-  ["monofilamento", "Sporting Goods > Outdoor Recreation > Fishing > Fishing Line"],
-  ["pesca", "Sporting Goods > Outdoor Recreation > Fishing"],
-  ["camping", "Sporting Goods > Outdoor Recreation > Camping & Hiking"],
+  ["canas", "4927"], // Fishing Rods
+  ["molinetes", "4926"], // Fishing Reels
+  ["senuelos", "3603"], // Fishing Baits & Lures
+  ["carnada", "3603"],
+  ["anzuelos", "3359"], // Fishing Hooks
+  ["jigs", "3603"],
+  ["terminales", "499823"], // Fishing Tackle
+  ["uniones", "7222"], // Fishing Snaps & Swivels
+  ["nylon", "1037"], // Fishing Lines & Leaders
+  ["fluorocarbono", "1037"],
+  ["monofilamento", "1037"],
+  ["pesca", "3334"], // Fishing
+  ["camping", "1013"], // Camping & Hiking
 ];
 
-function escapeXml(value: unknown): string {
+function sanitizeText(value: unknown): string {
   return String(value ?? "")
+    .normalize("NFC")
+    .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F-\u009F]/g, " ")
+    .replace(/[\uD800-\uDFFF]/g, "")
+    .replace(/�/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function escapeXml(value: unknown): string {
+  return sanitizeText(value)
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
@@ -112,12 +128,35 @@ function stripHtml(value: string): string {
     .replace(/<script[\s\S]*?<\/script>/gi, " ")
     .replace(/<style[\s\S]*?<\/style>/gi, " ")
     .replace(/<[^>]+>/g, " ")
+    .replace(/&nbsp;/gi, " ")
+    .replace(/&amp;/gi, "&")
+    .replace(/&quot;/gi, '"')
+    .replace(/&#39;/g, "'")
     .replace(/\s+/g, " ")
     .trim();
 }
 
 function truncate(value: string, max: number): string {
   return value.length > max ? `${value.slice(0, max - 1).trim()}…` : value;
+}
+
+function titleCase(value: unknown): string {
+  const original = sanitizeText(value);
+  if (!original) return original;
+  const letters = original.replace(/[^A-Za-zÁÉÍÓÚÜÑáéíóúüñ]/g, "");
+  const upper = letters.replace(/[^A-ZÁÉÍÓÚÜÑ]/g, "").length;
+  const isMostlyUpper = letters.length >= 4 && upper / letters.length > 0.75;
+  if (!isMostlyUpper) return original;
+
+  const keepUpper = new Set(["3d", "3db", "gps", "uv", "led", "xl", "xxl", "usa"]);
+  const lowerWords = new Set(["de", "del", "la", "las", "el", "los", "y", "para", "por", "con", "en"]);
+
+  return original.toLocaleLowerCase("es-CO").replace(/[\p{L}\p{N}][\p{L}\p{N}'´-]*/gu, (word, offset) => {
+    if (keepUpper.has(word)) return word.toUpperCase();
+    if (/^\d/.test(word)) return word.toUpperCase();
+    if (offset > 0 && lowerWords.has(word)) return word;
+    return word.charAt(0).toLocaleUpperCase("es-CO") + word.slice(1);
+  });
 }
 
 function normalizeText(value: unknown): string {
@@ -170,7 +209,7 @@ function primaryCollection(product: any): string {
 function googleCategory(product: any): string {
   const text = normalizeText([product.title, product.productType, product.handle, productCollections(product).join(" ")].join(" "));
   return GOOGLE_CATEGORY_BY_COLLECTION.find(([needle]) => text.includes(needle))?.[1]
-    ?? "Sporting Goods > Outdoor Recreation";
+    ?? "1011"; // Sporting Goods > Outdoor Recreation
 }
 
 function productPrice(product: any): number {
@@ -180,19 +219,44 @@ function productPrice(product: any): number {
   return Number.isFinite(price) ? price : 0;
 }
 
+function productImage(product: any): any {
+  return product.featuredImage || product.images?.[0] || null;
+}
+
+function hasMerchantQualityImage(product: any): boolean {
+  const image = productImage(product);
+  if (!image?.url) return false;
+  const width = Number(image.width ?? 0);
+  const height = Number(image.height ?? 0);
+  return !width || !height || (width >= 500 && height >= 500);
+}
+
+function merchantImageUrl(url: string): string {
+  try {
+    const parsed = new URL(url);
+    if (parsed.hostname.includes("cdn.shopify.com")) {
+      parsed.searchParams.set("width", "1000");
+    }
+    return parsed.toString();
+  } catch {
+    return url;
+  }
+}
+
 function itemXml(product: any): string {
   const variant = product.variants?.[0] ?? {};
   const price = Math.round(productPrice(product));
-  const description = truncate(stripHtml(product.descriptionHtml || product.description || product.title), 5000);
-  const brand = product.vendor || "El Norteño";
+  const title = truncate(titleCase(product.title), 150);
+  const description = truncate(sanitizeText(stripHtml(product.descriptionHtml || product.description || product.title)), 5000);
+  const brand = sanitizeText(product.vendor || "El Norteño");
   const collection = primaryCollection(product);
-  const image = product.featuredImage?.url || product.images?.[0]?.url || "";
+  const image = merchantImageUrl(productImage(product)?.url || "");
   const availability = product.availableForSale && variant.availableForSale !== false ? "in_stock" : "out_of_stock";
 
   const fields: Array<[string, string | number | undefined]> = [
-    ["g:id", product.handle],
-    ["g:title", truncate(product.title, 150)],
-    ["g:description", description || product.title],
+    ["g:id", sanitizeText(product.handle)],
+    ["g:title", title],
+    ["g:description", description || title],
     ["g:link", `${SITE_URL}/products/${product.handle}/`],
     ["g:image_link", image],
     ["g:availability", availability],
@@ -220,7 +284,7 @@ export const GET: APIRoute = async () => {
   const safeProducts = (products as any[])
     .filter((product) => product.availableForSale)
     .filter((product) => productPrice(product) > 0)
-    .filter((product) => product.featuredImage?.url || product.images?.[0]?.url)
+    .filter(hasMerchantQualityImage)
     .filter(isPolicySafe)
     .sort((a, b) => String(a.title).localeCompare(String(b.title), "es"));
 
