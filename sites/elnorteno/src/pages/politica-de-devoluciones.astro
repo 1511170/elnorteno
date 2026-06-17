@@ -1,0 +1,33 @@
+---
+import Layout from '../layouts/Layout.astro';
+import PolicyPage from '../components/legal/PolicyPage.astro';
+
+const sections = [
+  {
+    title: 'Política canónica de devoluciones y reembolsos',
+    body: 'La política completa y vigente está publicada en /devoluciones. Incluye condiciones para productos no deseados, derecho de retracto cuando aplique, garantías, cambios, reembolsos, estado del producto, productos sensibles y canales de atención.',
+    bullets: [
+      'Disponible públicamente sin iniciar sesión ni entregar datos personales.',
+      'Publicada en español para clientes en Colombia.',
+      'Accesible desde el footer del sitio como “Devoluciones y reembolsos”.',
+    ],
+  },
+];
+---
+
+<Layout
+  title="Política de devoluciones"
+  description="Acceso público a la política de devoluciones y reembolsos de El Norteño Colombia."
+  canonical="https://elnorteno.com/devoluciones"
+  whatsappContext={{ type: 'general' }}
+>
+  <PolicyPage
+    eyebrow="Soporte · Devoluciones"
+    title="Política de devoluciones"
+    description="Consulta la política completa de devoluciones, reembolsos, cambios y garantías de El Norteño."
+    updated="16 de junio de 2026"
+    sections={sections}
+    ctaTitle="Ver política completa"
+    ctaText="La versión canónica está en https://elnorteno.com/devoluciones y está enlazada de forma visible desde el footer del sitio."
+  />
+</Layout>
