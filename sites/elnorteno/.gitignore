@@ -30,3 +30,9 @@ Thumbs.db
 .idea/
 .vscode/
 *.swp
+
+# Incoming POS data (no commitear exports POS)
+data/incoming/
+
+# Reports / dry-runs (datos operacionales temporales)
+data/*.json
