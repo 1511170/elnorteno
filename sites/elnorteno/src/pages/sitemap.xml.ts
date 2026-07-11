@@ -1,7 +1,9 @@
 import type { APIRoute } from "astro";
 import { getCachedCollections, getCachedProducts } from "../lib/build-data";
+import { GUIDES } from "../data/guides";
 
 const SITE = "https://elnorteno.com";
+const STORE_CITY_SLUGS = ["bucaramanga", "medellin", "valledupar"];
 
 function escapeXml(value: string): string {
   return value
@@ -27,6 +29,13 @@ export const GET: APIRoute = async () => {
     url("/", "1.0", "daily"),
     url("/store/", "0.95", "daily"),
     url("/contacto/", "0.7", "monthly"),
+    ...STORE_CITY_SLUGS.map((city) => url(`/tiendas/${city}/`, "0.72", "monthly")),
+    url("/guias/", "0.8", "weekly"),
+    url("/envios/", "0.55", "monthly"),
+    url("/devoluciones/", "0.55", "monthly"),
+    url("/privacidad/", "0.4", "yearly"),
+    url("/terminos/", "0.4", "yearly"),
+    ...GUIDES.map((guide) => url(`/guias/${encodeURIComponent(guide.slug)}/`, "0.72", "monthly")),
     ...((collections as any[])
       .filter((c) => c?.handle && !["frontpage", "home-page", "home", "all"].includes(String(c.handle).toLowerCase()))
       .map((c) => url(`/store/${encodeURIComponent(c.handle)}/`, "0.85", "daily"))),

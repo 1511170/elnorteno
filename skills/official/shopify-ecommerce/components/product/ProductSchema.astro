@@ -8,6 +8,8 @@ interface Props {
   sellerName?: string;
   sellerUrl?: string;
   categoryName?: string;
+  storeLocations?: { city: string; address: string; phones?: string[] }[];
+  areaServed?: string[];
 }
 
 const {
@@ -17,6 +19,8 @@ const {
   sellerName = 'El Norteño',
   sellerUrl = siteUrl,
   categoryName = product.productType || product.collections?.[0],
+  storeLocations = [],
+  areaServed = ['Colombia', 'Bucaramanga', 'Medellín', 'Valledupar'],
 } = Astro.props;
 
 const variant = product.variants[0];
@@ -32,6 +36,18 @@ const description = product.seo?.description || product.description || `${produc
 const sku = variant?.sku || product.handle;
 const priceAmount = price?.amount ? Number.parseFloat(price.amount) : undefined;
 
+const availableAtOrFrom = storeLocations.map((loc) => ({
+  '@type': 'Store',
+  name: `El Norteño ${loc.city}`,
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: loc.address,
+    addressLocality: loc.city,
+    addressCountry: 'CO',
+  },
+  telephone: loc.phones?.[0],
+}));
+
 const schema = {
   '@context': 'https://schema.org',
   '@type': 'Product',
@@ -46,6 +62,10 @@ const schema = {
     : undefined,
   category: categoryName || undefined,
   url,
+  areaServed: areaServed.map((name) => ({
+    '@type': name === 'Colombia' ? 'Country' : 'City',
+    name,
+  })),
   itemCondition: 'https://schema.org/NewCondition',
   offers: {
     '@type': 'Offer',
@@ -61,6 +81,9 @@ const schema = {
       url: sellerUrl,
     },
     url,
+    eligibleRegion: { '@type': 'Country', name: 'Colombia' },
+    areaServed: { '@type': 'Country', name: 'Colombia' },
+    availableAtOrFrom: availableAtOrFrom.length ? availableAtOrFrom : undefined,
     hasMerchantReturnPolicy: {
       '@type': 'MerchantReturnPolicy',
       applicableCountry: 'CO',

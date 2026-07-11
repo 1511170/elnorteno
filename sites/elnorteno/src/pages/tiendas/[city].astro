@@ -1,0 +1,189 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import SchemaOrg from '@skills-community/seo-ai-citations/components/SchemaOrg.astro';
+import { STORE_LOCATIONS, googleMapsUrl } from '../../lib/categories';
+import { GUIDES } from '../../data/guides';
+
+import { CITY_PAGE_COPY } from '../../data/city-pages';
+
+export function getStaticPaths() {
+  return STORE_LOCATIONS.map((loc) => ({
+    params: { city: CITY_PAGE_COPY[loc.city]?.slug ?? loc.city.toLowerCase() },
+    props: { loc, copy: CITY_PAGE_COPY[loc.city] },
+  }));
+}
+
+const { loc, copy } = Astro.props;
+const siteUrl = Astro.site?.origin ?? 'https://elnorteno.com';
+const pageUrl = `${siteUrl}/tiendas/${copy.slug}/`;
+const title = `El Norteño ${loc.city}: tienda outdoor, pesca y camping en ${copy.region}`;
+const description = `${copy.intro} Dirección: ${loc.address}. WhatsApp ${loc.whatsappDisplay}.`;
+const breadcrumbs = [
+  { name: 'Inicio', url: '/' },
+  { name: 'Contacto', url: '/contacto/' },
+  { name: `Tienda ${loc.city}`, url: `/tiendas/${copy.slug}/` },
+];
+const faqs = [
+  { q: `¿Dónde queda El Norteño ${loc.city}?`, a: `La tienda El Norteño ${loc.city} está en ${loc.address}, ${loc.city}, Colombia. Puedes abrir el mapa desde esta página o escribir por WhatsApp para confirmar indicaciones.` },
+  { q: `¿Qué productos puedo comprar en El Norteño ${loc.city}?`, a: 'Puedes consultar productos de pesca deportiva, camping, outdoor, tiro deportivo responsable, accesorios y equipo de campo. La disponibilidad depende del inventario vigente.' },
+  { q: `¿Puedo recoger productos en la tienda de ${loc.city}?`, a: `Sí, según disponibilidad puedes coordinar recogida o asesoría en la tienda de ${loc.city}. También hay envíos a toda Colombia.` },
+  { q: `¿Hacen envíos desde ${loc.city} a otras ciudades de Colombia?`, a: 'El Norteño ofrece envío nacional sujeto a cobertura logística, disponibilidad y características del producto.' },
+];
+const localSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Store',
+  '@id': `${pageUrl}#store`,
+  name: `El Norteño ${loc.city}`,
+  url: pageUrl,
+  telephone: loc.phones[0],
+  description,
+  priceRange: '$$',
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: loc.address,
+    addressLocality: loc.city,
+    addressRegion: copy.region,
+    addressCountry: 'CO',
+  },
+  areaServed: [
+    { '@type': 'City', name: loc.city },
+    { '@type': 'AdministrativeArea', name: copy.region },
+    { '@type': 'Country', name: 'Colombia' },
+  ],
+  department: [
+    { '@type': 'Store', name: 'Pesca deportiva' },
+    { '@type': 'Store', name: 'Camping y outdoor' },
+    { '@type': 'Store', name: 'Tiro deportivo responsable' },
+  ],
+  parentOrganization: { '@id': `${siteUrl}#organization`, name: 'El Norteño' },
+};
+---
+
+<Layout
+  title={title}
+  description={description}
+  canonical={pageUrl}
+  whatsappContext={{ type: 'general' }}
+>
+  <SchemaOrg
+    type={['BreadcrumbList', 'FAQPage']}
+    siteUrl={siteUrl}
+    siteName="El Norteño"
+    siteLanguage="es-CO"
+    breadcrumbs={breadcrumbs}
+    faqs={faqs}
+    slot="head"
+  />
+  <script slot="head" type="application/ld+json" set:html={JSON.stringify(localSchema)} />
+
+  <nav class="crumb" aria-label="Breadcrumb">
+    <a href="/">Inicio</a><span>/</span><a href="/contacto/">Contacto</a><span>/</span><span style="color:var(--ink)">{loc.city}</span>
+  </nav>
+
+  <section class="city-hero">
+    <div class="coll-hero-eyebrow">Sucursal El Norteño · {loc.city}, Colombia</div>
+    <h1>Tienda outdoor, pesca y camping en <em>{loc.city}</em></h1>
+    <p>{copy.intro}</p>
+    <div class="city-actions">
+      <a class="btn btn-primary" href={`https://wa.me/${loc.whatsapp}`} target="_blank" rel="noopener">WhatsApp {loc.whatsappDisplay}</a>
+      <a class="btn btn-ghost" href={googleMapsUrl(loc.address, loc.city)} target="_blank" rel="noopener">Ver en Google Maps</a>
+      <a class="btn btn-ghost" href="/store/">Ver catálogo</a>
+    </div>
+  </section>
+
+  <section class="city-grid">
+    <article class="city-card city-card-main">
+      <span class="city-label">Dirección</span>
+      <h2>El Norteño {loc.city}</h2>
+      <address>{loc.address}, {loc.city}, {copy.region}, Colombia</address>
+      <div class="phone-list">
+        {loc.phones.map((phone) => <a href={`tel:${phone.replace(/[\s()]/g, '')}`}>{phone}</a>)}
+      </div>
+    </article>
+
+    <article class="city-card">
+      <span class="city-label">Qué encuentras</span>
+      <ul>
+        <li>Pesca deportiva: cañas, molinetes, señuelos, anzuelos y líneas.</li>
+        <li>Camping y outdoor: carpas, linternas, colchones, herramientas y accesorios.</li>
+        <li>Tiro deportivo responsable: rifles de aire, pistolas de aire, diábolos, miras y accesorios según disponibilidad.</li>
+      </ul>
+    </article>
+
+    <article class="city-card">
+      <span class="city-label">Cobertura local</span>
+      <p>Atendemos clientes de {loc.city}, {copy.region} y ciudades cercanas, además de envíos a toda Colombia.</p>
+      <div class="chips">{copy.neighborhoods.map((item) => <span>{item}</span>)}</div>
+    </article>
+  </section>
+
+  <section class="city-section">
+    <div class="section-head">
+      <div>
+        <div class="h-meta"><span class="line-el"></span><span>SEO local / AEO</span></div>
+        <h2>Compra con asesoría local en {loc.city}</h2>
+      </div>
+    </div>
+    <div class="city-benefits">
+      {copy.highlights.map((item) => <div><strong>{item}</strong><span>Consulta disponibilidad, referencia, SKU, ciudad de entrega y productos compatibles antes de comprar.</span></div>)}
+    </div>
+  </section>
+
+  <section class="city-section">
+    <div class="section-head">
+      <div>
+        <div class="h-meta"><span class="line-el"></span><span>Preguntas frecuentes</span></div>
+        <h2>Antes de visitar o comprar.</h2>
+      </div>
+    </div>
+    <div class="faq-grid">
+      {faqs.map((faq) => <details><summary>{faq.q}</summary><p>{faq.a}</p></details>)}
+    </div>
+  </section>
+
+  <section class="city-section">
+    <div class="section-head">
+      <div>
+        <div class="h-meta"><span class="line-el"></span><span>Guías de compra</span></div>
+        <h2>Contenido útil antes de elegir.</h2>
+      </div>
+    </div>
+    <div class="guide-grid">
+      {GUIDES.slice(0, 4).map((guide) => (
+        <a href={`/guias/${guide.slug}/`}>
+          <span>{guide.category}</span>
+          <strong>{guide.title}</strong>
+          <small>{guide.description}</small>
+        </a>
+      ))}
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .city-hero { max-width: 1120px; margin: 0 auto; padding: clamp(56px, 8vw, 110px) clamp(20px, 4vw, 48px) 36px; }
+  .city-hero h1 { font-family: var(--font-display); font-size: clamp(46px, 8vw, 96px); line-height: .92; letter-spacing: -.04em; text-transform: uppercase; color: var(--pine); margin: 12px 0 20px; max-width: 980px; }
+  .city-hero h1 em { color: var(--terra); font-style: normal; }
+  .city-hero p { max-width: 760px; color: var(--slate); font-size: 18px; line-height: 1.7; }
+  .city-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
+  .city-grid, .city-section { max-width: 1120px; margin: 0 auto; padding: 32px clamp(20px, 4vw, 48px); }
+  .city-grid { display: grid; grid-template-columns: 1.15fr 1fr 1fr; gap: 16px; }
+  .city-card { border: 1px solid var(--line); border-radius: 22px; background: var(--paper); padding: 26px; }
+  .city-card-main { background: color-mix(in srgb, var(--sand) 45%, var(--paper)); }
+  .city-label { font-family: var(--font-mono); font-size: 11px; letter-spacing: .15em; text-transform: uppercase; color: var(--terra); }
+  .city-card h2 { font-family: var(--font-display); color: var(--pine); font-size: 34px; margin: 10px 0; text-transform: uppercase; }
+  .city-card address, .city-card p, .city-card li { color: var(--slate); line-height: 1.65; font-style: normal; }
+  .phone-list { display: grid; gap: 8px; margin-top: 16px; }
+  .phone-list a { color: var(--pine); font-weight: 700; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+  .chips span { border: 1px solid var(--line); border-radius: 999px; padding: 8px 11px; font-size: 12px; color: var(--pine); background: var(--bg); }
+  .city-benefits { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .city-benefits div, .faq-grid details, .guide-grid a { border: 1px solid var(--line); border-radius: 18px; padding: 22px; background: var(--paper); }
+  .city-benefits strong, .guide-grid strong { display: block; color: var(--pine); margin-bottom: 8px; }
+  .city-benefits span, .guide-grid small, .faq-grid p { color: var(--slate); line-height: 1.6; }
+  .faq-grid, .guide-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+  .faq-grid summary { cursor: pointer; color: var(--pine); font-weight: 700; }
+  .guide-grid a { text-decoration: none; color: inherit; display: grid; gap: 8px; }
+  .guide-grid span { font-family: var(--font-mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--terra); }
+  @media (max-width: 900px) { .city-grid, .city-benefits, .faq-grid, .guide-grid { grid-template-columns: 1fr; } }
+</style>

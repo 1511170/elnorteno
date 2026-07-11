@@ -113,6 +113,40 @@ export const GUIDES: Guide[] = [
     ],
     compliance: 'Contenido informativo y policy-safe para accesorios de tiro deportivo. No promueve usos indebidos ni reemplaza revisión normativa, edad mínima, logística o condiciones aplicables en Colombia.',
   },
+
+  {
+    slug: 'pistolas-aire-comprimido-colombia',
+    title: 'Pistolas de aire comprimido en Colombia: qué revisar antes de comprar',
+    description: 'Guía responsable para comparar pistolas de aire comprimido, pistolas de balines y CO2 en Colombia: calibre, consumibles, accesorios, disponibilidad y condiciones aplicables.',
+    category: 'Tiro deportivo',
+    updated: '2026-07-09',
+    intro: 'Las búsquedas de pistolas de aire comprimido suelen mezclar precio, balines, CO2, marca y disponibilidad. Esta guía ayuda a comparar opciones de forma responsable, con énfasis en compatibilidad, asesoría y condiciones aplicables en Colombia.',
+    sections: [
+      { heading: 'Define uso, sistema y consumibles', body: 'Antes de elegir, identifica si buscas una referencia para práctica deportiva responsable, iniciación o colección. Revisa sistema de propulsión, calibre, balines o diábolos compatibles, CO2 cuando aplique y mantenimiento recomendado.', bullets: ['Confirma calibre y consumibles antes de comprar.', 'Revisa si requiere cápsulas CO2, diábolos, balines, cargadores o accesorios específicos.', 'No compres sólo por apariencia: compatibilidad, garantía y disponibilidad importan.'] },
+      { heading: 'Precio y disponibilidad cambian por referencia', body: 'El precio puede variar por marca, sistema, materiales, accesorios incluidos, importación, garantía e inventario local. Conviene revisar el catálogo activo y confirmar disponibilidad por WhatsApp antes de decidir.' },
+      { heading: 'Compra responsable y condiciones en Colombia', body: 'La compra, despacho y uso pueden estar sujetos a edad mínima, validaciones internas, restricciones logísticas y normativa aplicable. Esta guía es informativa y no reemplaza revisión legal o condiciones específicas del producto.' },
+    ],
+    steps: [
+      { name: 'Identifica la referencia', text: 'Ten claro si buscas pistola de aire, pistola de balines, CO2, accesorios o consumibles.' },
+      { name: 'Valida compatibilidad', text: 'Revisa calibre, balines o diábolos, CO2, cargadores, mantenimiento y accesorios compatibles.' },
+      { name: 'Confirma condiciones', text: 'Consulta disponibilidad, despacho, garantía, edad mínima cuando aplique y condiciones internas antes de comprar.' },
+    ],
+    faqs: [
+      { q: '¿Dónde comprar pistolas de aire comprimido en Colombia?', a: 'Puedes revisar la categoría de armas de aire de El Norteño y confirmar disponibilidad por WhatsApp o en tiendas físicas. La venta y despacho dependen de inventario y condiciones aplicables.' },
+      { q: '¿Qué diferencia hay entre pistola de balines y pistola CO2?', a: 'Depende del sistema de propulsión, calibre, tipo de consumible, mantenimiento y referencia. Algunas usan cápsulas CO2 y otras sistemas distintos; siempre confirma compatibilidad antes de comprar.' },
+      { q: '¿Qué accesorios debo revisar?', a: 'Balines o diábolos compatibles, cápsulas CO2 si aplica, cargadores, estuche, elementos de limpieza, repuestos y recomendaciones del fabricante.' },
+      { q: '¿La compra tiene condiciones especiales?', a: 'Sí. Puede estar sujeta a edad mínima, disponibilidad, validaciones internas, logística y normativa aplicable en Colombia. Consulta antes de comprar.' },
+    ],
+    links: [
+      { label: 'Ver armas de aire', href: '/store/armas-de-aire/' },
+      { label: 'Ver tiro deportivo', href: '/store/tiro-deportivo/' },
+      { label: 'Ver rifles de aire comprimido', href: '/store/rifles-de-aire-comprimido/' },
+      { label: 'Guía de rifles de aire', href: '/guias/como-elegir-rifle-aire-comprimido-colombia/' },
+      { label: 'Tiro deportivo responsable', href: '/guias/tiro-deportivo-responsable/' },
+      { label: 'Contactar asesor', href: '/contacto' },
+    ],
+    compliance: 'Contenido informativo y policy-safe para compra responsable. No promueve usos indebidos ni reemplaza revisión normativa, edad mínima, logística o condiciones aplicables en Colombia.',
+  },
   {
     slug: 'como-elegir-cana-pesca',
     title: 'Cómo elegir una caña de pesca',

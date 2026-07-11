@@ -6,6 +6,7 @@ import SchemaOrg from '@skills-community/seo-ai-citations/components/SchemaOrg.a
 import WhatsappProductCTA from '@skills-community/whatsapp-cta/components/WhatsappProductCTA.astro';
 import { getCachedProducts } from '../../lib/build-data';
 import { CATEGORY_LABELS } from '../../config/categories';
+import { STORE_LOCATIONS } from '../../lib/categories';
 import { GUIDES } from '../../data/guides';
 
 export async function getStaticPaths() {
@@ -36,6 +37,29 @@ if (product) {
 
 function fmtPrice(n: number) {
   return '$' + Math.round(n).toLocaleString('es-CO');
+}
+
+
+function stripHtml(value: string): string {
+  return String(value || '').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+}
+
+function clampMeta(value: string, max = 155): string {
+  const clean = stripHtml(value);
+  if (clean.length <= max) return clean;
+  return clean.slice(0, max - 1).replace(/\s+\S*$/, '') + '…';
+}
+
+function buildProductSeo(p: any, categoryName: string) {
+  const title = p?.title || 'Producto';
+  const sku = p?.variants?.[0]?.sku || p?.handle;
+  const titleBase = p?.seo?.title || title;
+  const hasColombia = /colombia/i.test(titleBase);
+  const seoTitle = hasColombia ? titleBase : `${titleBase} en Colombia`;
+  const referenceText = sku ? ` Ref. ${sku}.` : '';
+  const baseDescription = p?.seo?.description || p?.description || `${title} disponible en El Norteño.`;
+  const seoDescription = clampMeta(`${title} en Colombia.${referenceText} Envío nacional y asesoría en Bucaramanga, Medellín y Valledupar. ${baseDescription} Categoría: ${categoryName}.`, 165);
+  return { seoTitle, seoDescription };
 }
 
 const siteUrl = Astro.site?.origin ?? 'https://elnorteno.com';
@@ -78,7 +102,7 @@ function getPrimaryCollection(p: any): string | undefined {
 
 const PRODUCT_GUIDE_LINKS_BY_COLLECTION: Record<string, string[]> = {
   'rifles-de-aire-comprimido': ['miras-para-rifles-de-aire-colombia', 'rifles-aire-55-precio-colombia', 'como-elegir-rifle-aire-comprimido-colombia', 'tiro-deportivo-responsable'],
-  'armas-de-aire': ['miras-para-rifles-de-aire-colombia', 'rifles-aire-55-precio-colombia', 'como-elegir-rifle-aire-comprimido-colombia', 'tiro-deportivo-responsable'],
+  'armas-de-aire': ['pistolas-aire-comprimido-colombia', 'miras-para-rifles-de-aire-colombia', 'rifles-aire-55-precio-colombia', 'como-elegir-rifle-aire-comprimido-colombia', 'tiro-deportivo-responsable'],
   'tiro-deportivo': ['tiro-deportivo-responsable', 'miras-para-rifles-de-aire-colombia', 'rifles-aire-55-precio-colombia', 'como-elegir-rifle-aire-comprimido-colombia'],
   'canas-para-pesca': ['como-elegir-cana-pesca'],
   'canas-de-spinning': ['como-elegir-cana-pesca'],
@@ -222,6 +246,7 @@ function guideForProduct(p: any, collectionHandle?: string): ProductGuide {
 const productGuide = product ? guideForProduct(product, primaryCollection) : undefined;
 const metafieldFaqs = product ? mapMetafieldFaqs(product) : [];
 const productFaqs = metafieldFaqs.length > 0 ? metafieldFaqs : (productGuide?.faqs ?? []);
+const productSeo = product ? buildProductSeo(product, primaryCollectionName) : undefined;
 ---
 
 {notFound && (
@@ -236,8 +261,8 @@ const productFaqs = metafieldFaqs.length > 0 ? metafieldFaqs : (productGuide?.fa
 
 {!notFound && product && (
   <Layout
-    title={product.seo?.title || product.title}
-    description={product.seo?.description || product.description}
+    title={productSeo?.seoTitle || product.title}
+    description={productSeo?.seoDescription || product.description}
     image={product.featuredImage?.url}
     whatsappContext={{
       type: 'product',
@@ -252,6 +277,8 @@ const productFaqs = metafieldFaqs.length > 0 ? metafieldFaqs : (productGuide?.fa
       sellerName="El Norteño"
       sellerUrl={siteUrl}
       categoryName={primaryCollectionName}
+      storeLocations={STORE_LOCATIONS}
+      areaServed={['Colombia', 'Bucaramanga', 'Medellín', 'Valledupar']}
       slot="head"
     />
     <SchemaOrg
@@ -299,7 +326,7 @@ const productFaqs = metafieldFaqs.length > 0 ? metafieldFaqs : (productGuide?.fa
             <div class="ico">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h11v9H3z"/><path d="M14 10h4l3 3v3h-7z"/><circle cx="7" cy="18" r="1.5"/><circle cx="17" cy="18" r="1.5"/></svg>
             </div>
-            <div><strong>Envío nacional</strong><span>Servientrega y Coordinadora</span></div>
+            <div><strong>Envío a toda Colombia</strong><span>Servientrega y Coordinadora</span></div>
           </div>
           <div class="pdp-feature">
             <div class="ico">
@@ -317,7 +344,7 @@ const productFaqs = metafieldFaqs.length > 0 ? metafieldFaqs : (productGuide?.fa
             <div class="ico">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21C12 21 4 13.5 4 9a8 8 0 0 1 16 0c0 4.5-8 12-8 12z"/><circle cx="12" cy="9" r="2"/></svg>
             </div>
-            <div><strong>Recoge en tienda</strong><span>Bucaramanga · Medellín · Valledupar</span></div>
+            <div><strong>Tiendas en Colombia</strong><span>Bucaramanga · Medellín · Valledupar</span></div>
           </div>
         </div>
       </div>
@@ -341,7 +368,9 @@ const productFaqs = metafieldFaqs.length > 0 ? metafieldFaqs : (productGuide?.fa
             {product.description && <p>{product.description}</p>}
           </div>
           <div>
-            <div class="pdp-tab-eyebrow">Antes de comprar</div>
+            <div class="pdp-tab-eyebrow">SEO local / disponibilidad</div>
+            <p><strong>{product.title}</strong> se vende en Colombia con despacho nacional y asesoría desde nuestras tiendas físicas en <strong>Bucaramanga</strong>, <strong>Medellín</strong> y <strong>Valledupar</strong>. Si buscas esta referencia por nombre, marca o SKU, confirma inventario vigente por WhatsApp antes de comprar.</p>
+            <div class="pdp-tab-eyebrow" style="margin-top:18px">Antes de comprar</div>
             <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px;">
               {(productGuide?.bullets ?? []).map((item, i) => (
                 <li style="display:flex;gap:10px;align-items:flex-start;font-size:14px;">
@@ -360,9 +389,10 @@ const productFaqs = metafieldFaqs.length > 0 ? metafieldFaqs : (productGuide?.fa
           <dl class="spec-table">
             <dt>Marca</dt><dd>{product.vendor || '—'}</dd>
             <dt>Categoría</dt><dd>{product.productType || '—'}</dd>
-            <dt>SKU</dt><dd>{product.variants?.[0]?.sku || product.handle.toUpperCase()}</dd>
+            <dt>SKU / referencia</dt><dd>{product.variants?.[0]?.sku || product.handle.toUpperCase()}</dd>
             <dt>Material principal</dt><dd>Según especificación técnica</dd>
-            <dt>Origen</dt><dd>Diseño Colombia</dd>
+            <dt>País de venta</dt><dd>Colombia</dd>
+            <dt>Disponibilidad local</dt><dd>Bucaramanga · Medellín · Valledupar · envío nacional</dd>
           </dl>
           <dl class="spec-table">
             <dt>Garantía</dt><dd>2 años (defectos de fábrica)</dd>
@@ -418,7 +448,7 @@ const productFaqs = metafieldFaqs.length > 0 ? metafieldFaqs : (productGuide?.fa
         <div class="pdp-tab-body">
           <div>
             <div class="pdp-tab-eyebrow">Envíos</div>
-            <p>Envío nacional por <strong>Servientrega</strong> y <strong>Coordinadora</strong> con guía rastreable. Tarifa según ciudad y peso. Entrega entre 1-5 días hábiles.</p>
+            <p>Envío nacional a <strong>toda Colombia</strong> por <strong>Servientrega</strong> y <strong>Coordinadora</strong> con guía rastreable. Tarifa según ciudad, peso y características del producto. Entrega estimada entre 1-5 días hábiles.</p>
             <p>También puedes recoger sin costo en cualquiera de nuestras tres tiendas físicas: <strong>Bucaramanga, Medellín y Valledupar</strong>.</p>
           </div>
           <div>

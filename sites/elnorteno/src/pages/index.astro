@@ -178,6 +178,36 @@ function colImage(col: any) {
     </div>
   </section>
 
+  <!-- ===== FEATURED PRODUCTS ===== -->
+  {featuredProducts.length > 0 && (
+    <section class="section" style="padding-top:48px">
+      <div class="shell">
+        <div class="section-head">
+          <div>
+            <div class="h-meta">
+              <span class="h-meta-line"></span>
+              <span class="mono">01 · Productos destacados</span>
+            </div>
+            <h2 class="h-display section-h2">
+              Nuestros<br>productos.
+            </h2>
+          </div>
+          <div style="display:flex;gap:12px;align-items:center">
+            <a href="/store" class="btn btn-ghost">
+              Ver todo
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </a>
+          </div>
+        </div>
+        <div class="products-grid">
+          {featuredProducts.map((product: any) => (
+            <ProductCard product={product} />
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
   <!-- ===== CATEGORÍAS ===== -->
   {navCollections.length > 0 && (
     <section class="section">
@@ -186,14 +216,14 @@ function colImage(col: any) {
           <div>
             <div class="h-meta">
               <span class="h-meta-line"></span>
-              <span class="mono">01 · Categorías</span>
+              <span class="mono">03 · Categorías</span>
             </div>
             <h2 class="h-display section-h2">
-              Equipo por<br>terreno.
+              Explora por<br>actividad.
             </h2>
           </div>
           <p class="section-sub">
-            Filtra por la actividad que te lleva afuera y arma tu próxima salida.
+            Si prefieres navegar por pesca, camping, tiro deportivo u outdoor, entra directo a la categoría.
           </p>
         </div>
 
@@ -225,36 +255,6 @@ function colImage(col: any) {
             Ver toda la tienda
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
           </a>
-        </div>
-      </div>
-    </section>
-  )}
-
-  <!-- ===== FEATURED PRODUCTS ===== -->
-  {featuredProducts.length > 0 && (
-    <section class="section" style="padding-top:48px">
-      <div class="shell">
-        <div class="section-head">
-          <div>
-            <div class="h-meta">
-              <span class="h-meta-line"></span>
-              <span class="mono">02 · Probados en ruta</span>
-            </div>
-            <h2 class="h-display section-h2">
-              Lo más<br>llevado.
-            </h2>
-          </div>
-          <div style="display:flex;gap:12px;align-items:center">
-            <a href="/store" class="btn btn-ghost">
-              Ver todo
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-            </a>
-          </div>
-        </div>
-        <div class="products-grid">
-          {featuredProducts.map((product: any) => (
-            <ProductCard product={product} />
-          ))}
         </div>
       </div>
     </section>
@@ -304,7 +304,7 @@ function colImage(col: any) {
           <div>
             <div class="h-meta">
               <span class="h-meta-line"></span>
-              <span class="mono">03 · Recién llegado</span>
+              <span class="mono">02 · Recién llegado</span>
             </div>
             <h2 class="h-display section-h2">
               Nuevo<br>en tienda.

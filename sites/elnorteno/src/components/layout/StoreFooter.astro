@@ -108,6 +108,7 @@ const currentYear = new Date().getFullYear();
               target="_blank"
               rel="noopener"
             >Mapa →</a>
+            <a href={`/tiendas/${loc.city.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')}/`}>Página local →</a>
           </div>
         </div>
       ))}
